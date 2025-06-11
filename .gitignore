@@ -1,0 +1,62 @@
+# OS X
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+
+# Xcode
+*/build/*
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata
+profile
+*.moved-aside
+DerivedData
+.idea/
+*.hmap
+*.xcscmblueprint
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Dependencies
+vendor
+
+# Fastlane
+fastlane/Preview.html
+fastlane/report.xml
+fastlane/README.md
+Preview.html
+fastlane/test_output/
+fastlane/google_cloud_keys.json
+fastlane/screenshots
+fastlane/jetpack_screenshots
+fastlane/promo_screenshots
+fastlane/jetpack_promo_screenshots
+fastlane/metadata/review_information
+default.profraw
+derived-data/
+
+# CI Artifacts Location
+Artifacts
+
+# All encrypted secrets should be stored under .configure-files
+# Everything without a .enc extension is ignored
+.configure-files/*
+!.configure-files/*.enc
+
+# SwiftPM
+.build
+.swiftpm
