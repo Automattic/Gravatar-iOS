@@ -1,0 +1,15 @@
+{
+  "originHash" : "a4b9c833663be0011e458dbad100ef01b3bf9754d5f3eabddf7b5262c0fd8cb2",
+  "pins" : [
+    {
+      "identity" : "gravatar-sdk-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Automattic/Gravatar-SDK-iOS.git",
+      "state" : {
+        "revision" : "dd58fcdeaa145191eb9870d8b19f26659393219f",
+        "version" : "3.3.0"
+      }
+    }
+  ],
+  "version" : 3
+}

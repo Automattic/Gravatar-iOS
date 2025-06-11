@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		1EDD7FD32DF9BD6A00E5F1B6 /* Gravatar in Frameworks */ = {isa = PBXBuildFile; productRef = 1EDD7FD22DF9BD6A00E5F1B6 /* Gravatar */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		1EDD7F9F2DF9B94500E5F1B6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -39,6 +43,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1EDD7FD32DF9BD6A00E5F1B6 /* Gravatar in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,6 +95,7 @@
 			);
 			name = GravatarApp;
 			packageProductDependencies = (
+				1EDD7FD22DF9BD6A00E5F1B6 /* Gravatar */,
 			);
 			productName = GravatarApp;
 			productReference = 1EDD7F902DF9B94300E5F1B6 /* GravatarApp.app */;
@@ -146,6 +152,9 @@
 			);
 			mainGroup = 1EDD7F872DF9B94300E5F1B6;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1EDD7FD12DF9BD6A00E5F1B6 /* XCRemoteSwiftPackageReference "Gravatar-SDK-iOS" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1EDD7F912DF9B94300E5F1B6 /* Products */;
 			projectDirPath = "";
@@ -463,6 +472,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1EDD7FD12DF9BD6A00E5F1B6 /* XCRemoteSwiftPackageReference "Gravatar-SDK-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Automattic/Gravatar-SDK-iOS.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.3.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1EDD7FD22DF9BD6A00E5F1B6 /* Gravatar */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1EDD7FD12DF9BD6A00E5F1B6 /* XCRemoteSwiftPackageReference "Gravatar-SDK-iOS" */;
+			productName = Gravatar;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1EDD7F882DF9B94300E5F1B6 /* Project object */;
 }
