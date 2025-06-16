@@ -1,5 +1,5 @@
-import Foundation
 import Analytics
+import Foundation
 
 enum WelcomeScreenEvent {
     static let authButtonPressed: AnalyticsEvent = AuthButtonPressed()
