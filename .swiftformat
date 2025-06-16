@@ -1,12 +1,12 @@
 ## SwiftFormat version
---minversion 0.54.5
+--minversion 0.56.4
 
 ## Swift version
 
 # Some rules are applicable only to newer versions of Swift.
 # Any rules applicable to Swift versions that are newer than the version
 # specified here will be disabled.
---swiftversion 5.10
+--swiftversion 6
 
 ## File options
 
