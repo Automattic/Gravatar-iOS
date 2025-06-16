@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1E99F8A72DFBE7B500F892CD /* Analytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1E99F8A62DFBE7B500F892CD /* Analytics */; };
 		1EDD7FD32DF9BD6A00E5F1B6 /* Gravatar in Frameworks */ = {isa = PBXBuildFile; productRef = 1EDD7FD22DF9BD6A00E5F1B6 /* Gravatar */; };
 /* End PBXBuildFile section */
 
@@ -21,6 +22,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1E99F8A42DFBE72900F892CD /* Analytics */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Analytics; path = Packages/Analytics; sourceTree = "<group>"; };
 		1EDD7F902DF9B94300E5F1B6 /* GravatarApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GravatarApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EDD7F9E2DF9B94500E5F1B6 /* GravatarAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GravatarAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -43,6 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E99F8A72DFBE7B500F892CD /* Analytics in Frameworks */,
 				1EDD7FD32DF9BD6A00E5F1B6 /* Gravatar in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -62,6 +65,7 @@
 			children = (
 				1EDD7F922DF9B94300E5F1B6 /* GravatarApp */,
 				1EDD7FA12DF9B94500E5F1B6 /* GravatarAppTests */,
+				1E99F8A42DFBE72900F892CD /* Analytics */,
 				1EDD7F912DF9B94300E5F1B6 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -96,6 +100,7 @@
 			name = GravatarApp;
 			packageProductDependencies = (
 				1EDD7FD22DF9BD6A00E5F1B6 /* Gravatar */,
+				1E99F8A62DFBE7B500F892CD /* Analytics */,
 			);
 			productName = GravatarApp;
 			productReference = 1EDD7F902DF9B94300E5F1B6 /* GravatarApp.app */;
@@ -154,6 +159,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				1EDD7FD12DF9BD6A00E5F1B6 /* XCRemoteSwiftPackageReference "Gravatar-SDK-iOS" */,
+				1E99F8A52DFBE7B500F892CD /* XCLocalSwiftPackageReference "Packages/Analytics" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1EDD7F912DF9B94300E5F1B6 /* Products */;
@@ -354,7 +360,8 @@
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_STRICT_MEMORY_SAFETY = NO;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
 				XROS_DEPLOYMENT_TARGET = 2.0;
 			};
@@ -391,7 +398,8 @@
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_STRICT_MEMORY_SAFETY = NO;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
 				XROS_DEPLOYMENT_TARGET = 2.0;
 			};
@@ -473,6 +481,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		1E99F8A52DFBE7B500F892CD /* XCLocalSwiftPackageReference "Packages/Analytics" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/Analytics;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		1EDD7FD12DF9BD6A00E5F1B6 /* XCRemoteSwiftPackageReference "Gravatar-SDK-iOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -485,6 +500,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		1E99F8A62DFBE7B500F892CD /* Analytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Analytics;
+		};
 		1EDD7FD22DF9BD6A00E5F1B6 /* Gravatar */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 1EDD7FD12DF9BD6A00E5F1B6 /* XCRemoteSwiftPackageReference "Gravatar-SDK-iOS" */;
