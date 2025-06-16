@@ -1,6 +1,15 @@
 {
-  "originHash" : "a4b9c833663be0011e458dbad100ef01b3bf9754d5f3eabddf7b5262c0fd8cb2",
+  "originHash" : "1adebab19111d581423a22e0afe571b2a52cbeda78edbf16864025fe1c70915f",
   "pins" : [
+    {
+      "identity" : "automattic-tracks-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Automattic/Automattic-Tracks-iOS",
+      "state" : {
+        "revision" : "437f586a62c07c6ceec9baf043237b2afe7ea1ac",
+        "version" : "3.5.2"
+      }
+    },
     {
       "identity" : "gravatar-sdk-ios",
       "kind" : "remoteSourceControl",
@@ -8,6 +17,33 @@
       "state" : {
         "revision" : "dd58fcdeaa145191eb9870d8b19f26659393219f",
         "version" : "3.3.0"
+      }
+    },
+    {
+      "identity" : "sentry-cocoa",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/getsentry/sentry-cocoa",
+      "state" : {
+        "revision" : "930b78a63f47549c81e6e63c9172584f7d3dfdd6",
+        "version" : "8.52.1"
+      }
+    },
+    {
+      "identity" : "swift-sodium",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jedisct1/swift-sodium",
+      "state" : {
+        "revision" : "4f9164a0a2c9a6a7ff53a2833d54a5c79c957342",
+        "version" : "0.9.1"
+      }
+    },
+    {
+      "identity" : "uideviceidentifier",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/squarefrog/UIDeviceIdentifier",
+      "state" : {
+        "revision" : "4699794b08bb79a4d77785edaba6ea739e298e4b",
+        "version" : "2.3.0"
       }
     }
   ],
