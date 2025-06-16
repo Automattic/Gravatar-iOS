@@ -1,8 +1,8 @@
 import Foundation
 import AutomatticTracksEvents
+import AutomatticTracksModel
 import OSLog
 
-@MainActor
 public class Analytics {
     private let tracker: Tracker
     private let logger = Logger(subsystem: "com.gravatar", category: "gravatar.analytics")
@@ -13,13 +13,14 @@ public class Analytics {
         self.tracker.configure()
 
         updateUserProperties()
+        TracksLogging.delegate = LoggingDelegate()
     }
 
     public func track(_ event: AnalyticsEvent) {
         let properties = event.jsonProperties ?? [:]
         tracker.track(event.name, withCustomProperties: properties)
         #if DEBUG
-        logger.debug("➥ Tracking: \(event.name); properties: \(properties)")
+        logger.debug("🔹 Tracking: \(event.name); properties: \(properties)")
         #endif
     }
 
@@ -31,10 +32,6 @@ public class Analytics {
     private var defaultProperties: [String: AnyHashable] {
         [
             "user_is_logged_in": loggedInUserId != nil,
-
-            // Accessibility
-            "is_rtl_language": UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft,
-            "dynamic_font_size_category": UIApplication.shared.preferredContentSizeCategory.rawValue
         ]
     }
 }
@@ -42,7 +39,31 @@ public class Analytics {
 private extension Analytics {
     func updateUserProperties() {
         defaultProperties.forEach { (key: String, value: AnyHashable) in
-            self.tracker.setUserProperty(value, for: key)
+            tracker.setUserProperty(value, for: key)
         }
+    }
+}
+
+private class LoggingDelegate: NSObject, TracksLoggingDelegate {
+    private let logger = Logger(subsystem: "com.tracks", category: "gravatar.analytics.logger_delegate")
+
+    func logError(_ str: String) {
+        logger.error("‼️ \(str)")
+    }
+
+    func logWarning(_ str: String) {
+        logger.warning("⚠️ \(str)")
+    }
+
+    func logInfo(_ str: String) {
+        logger.info("🔸 \(str)")
+    }
+
+    func logDebug(_ str: String) {
+        logger.debug("🔸 \(str)")
+    }
+
+    func logVerbose(_ str: String) {
+        logger.log("🔸 \(str)")
     }
 }
