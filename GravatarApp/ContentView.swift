@@ -1,5 +1,5 @@
-import SwiftUI
 import Gravatar
+import SwiftUI
 
 struct ContentView: View {
     @State private var displayName: String = ""
