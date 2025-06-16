@@ -1,6 +1,6 @@
-import Foundation
 import AutomatticTracksEvents
 import AutomatticTracksModel
+import Foundation
 import OSLog
 
 public class Analytics {
@@ -36,9 +36,9 @@ public class Analytics {
     }
 }
 
-private extension Analytics {
-    func updateUserProperties() {
-        defaultProperties.forEach { (key: String, value: AnyHashable) in
+extension Analytics {
+    private func updateUserProperties() {
+        for (key, value) in defaultProperties {
             tracker.setUserProperty(value, for: key)
         }
     }

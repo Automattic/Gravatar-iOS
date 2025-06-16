@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "Analytics",
     platforms: [
-        .iOS(.v16), .macOS(.v12), .visionOS(.v1)
+        .iOS(.v16), .macOS(.v12), .visionOS(.v1),
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
@@ -24,7 +24,7 @@ let package = Package(
         .target(
             name: "Analytics",
             dependencies: [
-                .product(name: "AutomatticTracks", package: "Automattic-Tracks-iOS")
+                .product(name: "AutomatticTracks", package: "Automattic-Tracks-iOS"),
             ]
         ),
         .testTarget(

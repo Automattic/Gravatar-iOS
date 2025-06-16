@@ -25,10 +25,10 @@ dev: # Open the package in xcode
 	xed .
 
 swiftformat: check-docker # Automatically find and fixes lint issues
-	@docker run --rm -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/nicklockwood/swiftformat:$(SWIFTFORMAT_VERSION) GravatarApp GravatarAppTests
+	@docker run --rm -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/nicklockwood/swiftformat:$(SWIFTFORMAT_VERSION) GravatarApp GravatarAppTests Packages
 
 swiftformat-lint: check-docker
-	@Docker run --rm -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/nicklockwood/swiftformat:$(SWIFTFORMAT_VERSION) GravatarApp GravatarAppTests --lint
+	@Docker run --rm -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/nicklockwood/swiftformat:$(SWIFTFORMAT_VERSION) GravatarApp GravatarAppTests Packages --lint
 
 lint: # Use swiftformat to warn about format issues
 	@make swiftformat-lint

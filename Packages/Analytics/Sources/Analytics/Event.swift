@@ -18,8 +18,8 @@ extension AnalyticsEvent {
     }
 }
 
-private extension JSONEncoder {
-    static var snakeCaseEncoder: JSONEncoder {
+extension JSONEncoder {
+    fileprivate static var snakeCaseEncoder: JSONEncoder {
         let decoder = JSONEncoder()
         decoder.keyEncodingStrategy = .convertToSnakeCase
         return decoder
