@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# This file is `source`'d before calling `buildkite-agent pipeline upload`, and can be used
+# to set up some variables that will be interpolated in the `.yml` pipeline before uploading it.
+
+export IMAGE_ID: xcode-26.0-beta
+export CI_TOOLKIT="automattic/a8c-ci-toolkit#5.3.1"
