@@ -5,6 +5,8 @@
 
 agents:
   queue: "mac"
+env:
+  IMAGE_ID: $IMAGE_ID
 
 steps:
   - label: ":swift: SwiftFormat Linting"
