@@ -1,5 +1,5 @@
-import SwiftUI
 import OAuth
+import SwiftUI
 
 struct WelcomeView: View {
     @Environment(\.oauthManager) var oauthManager

@@ -65,7 +65,6 @@ extension WebAuthenticationSession: ASWebAuthenticationPresentationContextProvid
     }
 }
 
-
 // `ASWebAuthenticationSession` is not thread safe. `SessionStorage` helps to silence some warnings (Swift 6 errors),
 // but we are still importing `AuthenticationServices` as `@preconcurrency`.
 // On the other hand, there won't be more than one attempt of oauth at a time, which reduces possible concurrency issues.

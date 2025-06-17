@@ -1,5 +1,5 @@
-import SwiftUI
 import OAuth
+import SwiftUI
 
 @main
 struct GravatarAppApp: App {
