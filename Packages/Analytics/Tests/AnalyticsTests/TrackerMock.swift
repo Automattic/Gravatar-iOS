@@ -6,7 +6,7 @@ final class TrackerMock: Tracker {
     var configureCalled = false
     var userProperties: [String: AnyHashable] = [:]
 
-    func track(_ name: String, withCustomProperties: [String : AnyHashable]) {
+    func track(_ name: String, withCustomProperties: [String: AnyHashable]) {
         eventTracked = name
         propertiesTracked = withCustomProperties
     }

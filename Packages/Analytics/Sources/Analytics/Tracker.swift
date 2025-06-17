@@ -13,7 +13,7 @@ extension TracksService: Tracker {
         static let platform = "gravatar"
     }
 
-    public func track(_ name: String, withCustomProperties: [String : AnyHashable]) {
+    public func track(_ name: String, withCustomProperties: [String: AnyHashable]) {
         trackEventName(name, withCustomProperties: withCustomProperties)
     }
 
