@@ -1,6 +1,6 @@
-import SwiftUI
-import Gravatar
 import Analytics
+import Gravatar
+import SwiftUI
 
 struct ContentView: View {
     @Environment(\.analytics) var analytics

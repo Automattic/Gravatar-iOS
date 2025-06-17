@@ -1,5 +1,5 @@
-import Testing
 @testable import Analytics
+import Testing
 
 @MainActor
 @Test("Test analytics init configuration is called")
@@ -57,6 +57,7 @@ struct TestEventWithProperties: AnalyticsEvent {
     struct Properties: Encodable, Sendable {
         let testPropertyKey: String
     }
+
     var name: String = "test_event_with_properties"
     let properties: EventProperties? = Properties(testPropertyKey: "property_value")
 }
