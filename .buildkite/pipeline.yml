@@ -19,5 +19,11 @@ steps:
     notify:
       - github_commit_status:
           context: "SwiftFormat Linting"
-    agents:
-      queue: "default"
+
+  - label: "🧪 Tests"
+    key: tests
+    command: |
+      xcodebuild test -project GravatarApp.xcodeproj -scheme GravatarApp -destination 'platform=iOS Simulator,name=iPhone 16'
+    notify:
+      - github_commit_status:
+          context: "Unit tests"
