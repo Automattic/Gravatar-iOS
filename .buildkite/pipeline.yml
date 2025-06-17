@@ -19,6 +19,8 @@ steps:
     notify:
       - github_commit_status:
           context: "SwiftFormat Linting"
+    agents:
+      queue: "default"
 
   - label: "🧪 Tests"
     key: tests
