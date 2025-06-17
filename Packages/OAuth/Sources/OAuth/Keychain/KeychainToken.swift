@@ -1,0 +1,24 @@
+import Foundation
+
+struct KeychainToken: Codable {
+    let token: String
+
+    init?(data: Data) {
+        let decoder = JSONDecoder()
+        do {
+            let decodedToken = try decoder.decode(KeychainToken.self, from: data)
+            self = decodedToken
+        } catch {
+            return nil
+        }
+    }
+
+    init(token: String) {
+        self.token = token
+    }
+
+    var data: Data? {
+        let encoder = JSONEncoder()
+        return try? encoder.encode(self)
+    }
+}

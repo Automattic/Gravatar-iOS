@@ -1,10 +1,12 @@
 import SwiftUI
+import OAuth
 
 @main
 struct GravatarAppApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            WelcomeView()
+                .configureOAuth(clientID: "", redirectURI: "")
         }
     }
 }
