@@ -8,7 +8,6 @@ let package = Package(
     platforms: [
         .iOS(.v16), .macOS(.v12), .visionOS(.v1),
     ],
-
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
@@ -28,7 +27,6 @@ let package = Package(
                 .product(name: "Gravatar", package: "Gravatar-SDK-iOS"),
             ]
         ),
-
         .testTarget(
             name: "OAuthTests",
             dependencies: ["OAuth"]
