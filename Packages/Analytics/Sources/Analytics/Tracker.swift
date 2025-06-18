@@ -17,7 +17,7 @@ extension TracksService: Tracker {
     }
 
     private enum Config {
-        static let prefix = "gravatar_ios"
+        static let prefix = "gravatarios"
         static let userKey = "wpcom:user_id"
         static let platform = "gravatar"
     }
