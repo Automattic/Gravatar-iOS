@@ -96,16 +96,12 @@ public struct OAuthManager: Sendable {
         do {
             urlComponents = try urlComponents.settingQueryItems(params.queryItems, shouldEncodePlusChar: true)
             guard let finalURL = urlComponents.url else {
-                assertionFailure(
-                    "Error encoding oauth secrets. Check the config in `Configuration.shared.configure(with:oauthSecrets:)` and try again"
-                )
+                assertionFailure("Error encoding oauth secrets")
                 throw OAuthError.couldNotCreateOAuthURLWithGivenSecrets
             }
             return finalURL
         } catch {
-            assertionFailure(
-                "Error encoding oauth secrets. Check the config in `Configuration.shared.configure(with:oauthSecrets:)` and try again"
-            )
+            assertionFailure("Error encoding oauth secrets")
             throw OAuthError.couldNotCreateOAuthURLWithGivenSecrets
         }
     }
