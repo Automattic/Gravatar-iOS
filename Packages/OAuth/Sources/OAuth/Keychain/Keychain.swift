@@ -1,9 +1,9 @@
 import Foundation
 
 protocol SecureStorage: Sendable {
-    func setSecret(_ secret: KeychainToken, for key: String) throws
+    func setSecret(_ secret: SecureToken, for key: String) throws
     func deleteSecret(with key: String) throws
-    func secret(with key: String) throws -> KeychainToken?
+    func secret(with key: String) throws -> SecureToken?
 }
 
 struct Keychain: SecureStorage {
@@ -13,7 +13,7 @@ struct Keychain: SecureStorage {
         case unhandledError(status: OSStatus, message: String?)
     }
 
-    func setSecret(_ secret: KeychainToken, for key: String) throws(KeychainError) {
+    func setSecret(_ secret: SecureToken, for key: String) throws(KeychainError) {
         guard let tokenData = secret.data else {
             throw KeychainError.cannotConvertSecretIntoData
         }
@@ -31,7 +31,7 @@ struct Keychain: SecureStorage {
         }
     }
 
-    func secret(with key: String) throws(KeychainError) -> KeychainToken? {
+    func secret(with key: String) throws(KeychainError) -> SecureToken? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecMatchLimit as String: kSecMatchLimitOne,
@@ -51,7 +51,7 @@ struct Keychain: SecureStorage {
         guard
             let existingItem = item as? [String: Any],
             let secretData = existingItem[kSecValueData as String] as? Data,
-            let secret = KeychainToken(data: secretData)
+            let secret = AccessToken(data: secretData)
         else {
             throw KeychainError.unexpectedSecretData
         }

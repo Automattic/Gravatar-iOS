@@ -115,9 +115,9 @@ final actor AuthenticationSessionMock: AuthenticationSession {
 }
 
 final class SecureStorageMock: SecureStorage, @unchecked Sendable {
-    var storage: [String: OAuth.KeychainToken] = .init()
+    var storage: [String: OAuth.SecureToken] = .init()
 
-    func setSecret(_ secret: OAuth.KeychainToken, for key: String) throws {
+    func setSecret(_ secret: OAuth.SecureToken, for key: String) throws {
         storage[key] = secret
     }
 
@@ -125,7 +125,7 @@ final class SecureStorageMock: SecureStorage, @unchecked Sendable {
         storage.removeValue(forKey: key)
     }
 
-    func secret(with key: String) throws -> OAuth.KeychainToken? {
+    func secret(with key: String) throws -> OAuth.SecureToken? {
         storage[key]
     }
 }

@@ -22,7 +22,7 @@ public struct OAuthManager: Sendable {
         (try? storage.secret(with: email.rawValue) ?? nil) != nil
     }
 
-    func overrideToken(_ token: KeychainToken, for email: Email) {
+    func overrideToken(_ token: SecureToken, for email: Email) {
         deleteSession(with: email)
         try? storage.setSecret(token, for: email.rawValue)
     }
@@ -31,7 +31,7 @@ public struct OAuthManager: Sendable {
         try? storage.deleteSecret(with: email.rawValue)
     }
 
-    func sessionToken(with email: Email) -> KeychainToken? {
+    func sessionToken(with email: Email) -> SecureToken? {
         try? storage.secret(with: email.rawValue)
     }
 
@@ -58,9 +58,8 @@ public struct OAuthManager: Sendable {
         guard let email = await sessionData.restore() else { return false }
 
         do {
-            let tokenText = try tokenResponse(from: callbackURL).token
+            let newToken = try tokenResponse(from: callbackURL)
 
-            let newToken = KeychainToken(token: tokenText)
             overrideToken(newToken, for: email)
             await authenticationSession.cancel()
             Self.postNotification(.authorizationFinished)
