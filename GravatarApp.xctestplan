@@ -1,0 +1,36 @@
+{
+  "configurations" : [
+    {
+      "id" : "D3BB98F2-3025-40B1-809A-F7910A1D5559",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:GravatarApp.xcodeproj",
+      "identifier" : "1EDD7F8F2DF9B94300E5F1B6",
+      "name" : "GravatarApp"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Packages\/Analytics",
+        "identifier" : "AnalyticsTests",
+        "name" : "AnalyticsTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:GravatarApp.xcodeproj",
+        "identifier" : "1EDD7F9D2DF9B94500E5F1B6",
+        "name" : "GravatarAppTests"
+      }
+    }
+  ],
+  "version" : 1
+}

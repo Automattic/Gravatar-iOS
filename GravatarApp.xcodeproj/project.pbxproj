@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		07EB67D92E01C22300C3F133 /* GravatarApp.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = 07EB67D82E01C22300C3F133 /* GravatarApp.xctestplan */; };
 		1E99F8A72DFBE7B500F892CD /* Analytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1E99F8A62DFBE7B500F892CD /* Analytics */; };
 		1EDD7FD32DF9BD6A00E5F1B6 /* Gravatar in Frameworks */ = {isa = PBXBuildFile; productRef = 1EDD7FD22DF9BD6A00E5F1B6 /* Gravatar */; };
 /* End PBXBuildFile section */
@@ -22,6 +23,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		07EB67D82E01C22300C3F133 /* GravatarApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = GravatarApp.xctestplan; sourceTree = "<group>"; };
+		07EB67DA2E01C28400C3F133 /* GravatarApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = GravatarApp.xctestplan; sourceTree = "<group>"; };
 		1E99F8A42DFBE72900F892CD /* Analytics */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Analytics; path = Packages/Analytics; sourceTree = "<group>"; };
 		1EDD7F902DF9B94300E5F1B6 /* GravatarApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GravatarApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EDD7F9E2DF9B94500E5F1B6 /* GravatarAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GravatarAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -63,6 +66,8 @@
 		1EDD7F872DF9B94300E5F1B6 = {
 			isa = PBXGroup;
 			children = (
+				07EB67DA2E01C28400C3F133 /* GravatarApp.xctestplan */,
+				07EB67D82E01C22300C3F133 /* GravatarApp.xctestplan */,
 				1EDD7F922DF9B94300E5F1B6 /* GravatarApp */,
 				1EDD7FA12DF9B94500E5F1B6 /* GravatarAppTests */,
 				1E99F8A42DFBE72900F892CD /* Analytics */,
@@ -177,6 +182,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				07EB67D92E01C22300C3F133 /* GravatarApp.xctestplan in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
