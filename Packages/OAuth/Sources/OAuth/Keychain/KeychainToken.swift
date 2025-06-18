@@ -4,13 +4,10 @@ struct KeychainToken: Codable {
     let token: String
 
     init?(data: Data) {
-        let decoder = JSONDecoder()
-        do {
-            let decodedToken = try decoder.decode(KeychainToken.self, from: data)
-            self = decodedToken
-        } catch {
+        guard let token = String(data: data, encoding: .utf8) else {
             return nil
         }
+        self.token = token
     }
 
     init(token: String) {
@@ -18,7 +15,6 @@ struct KeychainToken: Codable {
     }
 
     var data: Data? {
-        let encoder = JSONEncoder()
-        return try? encoder.encode(self)
+        token.data(using: .utf8)
     }
 }
