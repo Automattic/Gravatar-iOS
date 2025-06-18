@@ -7,10 +7,13 @@ public class Analytics {
     private let tracker: Tracker
     private let logger = Logger(subsystem: "com.gravatar", category: "gravatar.analytics")
     private var loggedInUserId: String?
+    private let userUUIDStorage: UserUUIDStorage
 
-    public init(tracker: Tracker? = nil) {
+    public init(tracker: Tracker? = nil, userUUIDStorage: UserUUIDStorage = UserDefaults.standard) {
         self.tracker = tracker ?? TracksService(contextManager: TracksContextManager())
+        self.userUUIDStorage = userUUIDStorage
         self.tracker.configure()
+        self.tracker.setUserID(nil, userUUIDStorage: userUUIDStorage)
 
         updateUserProperties()
         TracksLogging.delegate = LoggingDelegate()
@@ -24,8 +27,10 @@ public class Analytics {
         #endif
     }
 
-    public func setUserId(_ userId: String?) {
-        loggedInUserId = userId
+    public func setUserID(_ userID: String?) {
+        loggedInUserId = userID
+        tracker.setUserID(userID, userUUIDStorage: userUUIDStorage)
+
         updateUserProperties()
     }
 
