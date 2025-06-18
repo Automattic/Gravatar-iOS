@@ -4,17 +4,18 @@ import Gravatar
 import SwiftUI
 import Testing
 
-@Test
-func example() async throws {
-    // Write your test here and use APIs like `#expect(...)` to check expected conditions.
-}
+private let redirectURI = "https://gravatar.com/callback"
+private let clientID = "clientID"
 
 struct OauthManagerTests {
     let callbackURI = URL(string: "https://gravatar.com/#access_token=YOUR_API_TOKEN&expires_in=64800&token_type=bearer&site_id=01")!
     let email = Email("some@email.com")
 
     init() async throws {
-        await Configuration.shared.setSecrets(.init(clientID: "", redirectURI: ""))
+        await Configuration.shared.setSecrets(.init(
+            clientID: clientID,
+            redirectURI: redirectURI
+        ))
     }
 
     @Test("Calling requestSession successfully will save a session")
@@ -53,6 +54,24 @@ struct OauthManagerTests {
         try await manager.requestSession(with: email)
         #expect(await session.cancelled)
     }
+
+    @Test("Parameters are added to request URL", arguments: [
+        URLQueryItem(name: "response_type", value: "code"),
+        URLQueryItem(name: "scope[1]", value: "global"),
+        URLQueryItem(name: "client_id", value: clientID),
+        URLQueryItem(name: "redirect_uri", value: redirectURI),
+    ])
+    func requestURLWithParams(queryItem: URLQueryItem) async throws {
+        let session = AuthenticationSessionMock(callbackURI: callbackURI)
+        let manager = getManager(session: session)
+        try await manager.requestSession(with: email)
+
+        let components = await URLComponents(string: session.requestURL?.absoluteString ?? "")
+
+        #expect(
+            components?.queryItems?.contains(queryItem) == true
+        )
+    }
 }
 
 extension OauthManagerTests {
@@ -72,6 +91,7 @@ extension OauthManagerTests {
 }
 
 final actor AuthenticationSessionMock: AuthenticationSession {
+    var requestURL: URL?
     let callbackURI: URL
     let error: Error?
     var cancelled = false
@@ -82,6 +102,7 @@ final actor AuthenticationSessionMock: AuthenticationSession {
     }
 
     func authenticate(using url: URL, callbackURLComponents: URLComponents) async throws -> URL {
+        requestURL = url
         if let error {
             throw error
         }

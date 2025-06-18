@@ -6,7 +6,7 @@ struct GravatarAppApp: App {
     var body: some Scene {
         WindowGroup {
             WelcomeView()
-                .configureOAuth(clientID: "", redirectURI: "")
+                .configureOAuth(clientID: Secrets.clientID, redirectURI: Secrets.redirectURI)
         }
     }
 }

@@ -129,8 +129,6 @@ private struct OAuthURLParams: Encodable {
     let redirectURI: String
     let userEmail: String
     var scope1: String
-    var scope2: String
-    var scope3: String
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case clientID
@@ -139,19 +137,29 @@ private struct OAuthURLParams: Encodable {
         case redirectURI
         case userEmail
         case scope1 = "scope[1]"
-        case scope2 = "scope[2]"
-        case scope3 = "scope[3]"
     }
 
     init(email: Email, secrets: Configuration.Secrets) {
         self.clientID = secrets.clientID
-        self.responseType = "token"
+        self.responseType = "code"
         self.blogID = "0"
         self.redirectURI = secrets.redirectURI
         self.userEmail = email.rawValue
-        self.scope1 = "gravatar-profile:read"
-        self.scope2 = "gravatar-profile:manage"
-        self.scope3 = "auth"
+        self.scope1 = "global"
+    }
+}
+
+extension OAuthURLParams {
+    var queryItems: [URLQueryItem] {
+        get throws {
+            let encoder = JSONEncoder()
+            encoder.keyEncodingStrategy = .convertToSnakeCase
+            let data = try encoder.encode(self)
+            let dictionary = try JSONSerialization.jsonObject(with: data) as? [String: String]
+            return dictionary?.map {
+                URLQueryItem(name: $0.key, value: $0.value)
+            } ?? []
+        }
     }
 }
 
