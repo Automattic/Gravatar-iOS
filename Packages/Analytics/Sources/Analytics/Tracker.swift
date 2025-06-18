@@ -9,7 +9,7 @@ public protocol Tracker {
 extension TracksService: Tracker {
     private enum Config {
         static let prefix = "gravatar_ios"
-        static let userKey = "gravatar:user_id"
+        static let userKey = "wpcom:user_id"
         static let platform = "gravatar"
     }
 
