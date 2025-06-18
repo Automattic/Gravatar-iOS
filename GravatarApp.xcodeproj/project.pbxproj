@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		07EB67D92E01C22300C3F133 /* GravatarApp.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = 07EB67D82E01C22300C3F133 /* GravatarApp.xctestplan */; };
 		1E0B559C2E004C62005D8777 /* OAuth in Resources */ = {isa = PBXBuildFile; fileRef = 1E0B559B2E004C62005D8777 /* OAuth */; };
 		1E79E4D12E019CD8008D2640 /* OAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 1E79E4D02E019CD8008D2640 /* OAuth */; };
-		07EB67D92E01C22300C3F133 /* GravatarApp.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = 07EB67D82E01C22300C3F133 /* GravatarApp.xctestplan */; };
 		1E99F8A72DFBE7B500F892CD /* Analytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1E99F8A62DFBE7B500F892CD /* Analytics */; };
 /* End PBXBuildFile section */
 
@@ -24,9 +24,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1E0B559B2E004C62005D8777 /* OAuth */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = OAuth; path = Packages/OAuth; sourceTree = "<group>"; };
 		07EB67D82E01C22300C3F133 /* GravatarApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = GravatarApp.xctestplan; sourceTree = "<group>"; };
 		07EB67DA2E01C28400C3F133 /* GravatarApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = GravatarApp.xctestplan; sourceTree = "<group>"; };
+		1E0B559B2E004C62005D8777 /* OAuth */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = OAuth; path = Packages/OAuth; sourceTree = "<group>"; };
 		1E99F8A42DFBE72900F892CD /* Analytics */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Analytics; path = Packages/Analytics; sourceTree = "<group>"; };
 		1EDD7F902DF9B94300E5F1B6 /* GravatarApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GravatarApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EDD7F9E2DF9B94500E5F1B6 /* GravatarAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GravatarAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
