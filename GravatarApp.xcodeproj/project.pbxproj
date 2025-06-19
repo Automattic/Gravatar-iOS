@@ -39,6 +39,11 @@
 			path = GravatarAppTests;
 			sourceTree = "<group>";
 		};
+		3FAB63BD2E039BBB00511E19 /* Config */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Config;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +69,7 @@
 		1EDD7F872DF9B94300E5F1B6 = {
 			isa = PBXGroup;
 			children = (
+				3FAB63BD2E039BBB00511E19 /* Config */,
 				07EB67D82E01C22300C3F133 /* GravatarApp.xctestplan */,
 				1EDD7F922DF9B94300E5F1B6 /* GravatarApp */,
 				1EDD7FA12DF9B94500E5F1B6 /* GravatarAppTests */,
@@ -219,6 +225,8 @@
 /* Begin XCBuildConfiguration section */
 		1EDD7FB02DF9B94500E5F1B6 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 3FAB63BD2E039BBB00511E19 /* Config */;
+			baseConfigurationReferenceRelativePath = Project.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -280,6 +288,8 @@
 		};
 		1EDD7FB12DF9B94500E5F1B6 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 3FAB63BD2E039BBB00511E19 /* Config */;
+			baseConfigurationReferenceRelativePath = Project.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
