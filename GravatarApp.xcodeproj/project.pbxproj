@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		07EB67D92E01C22300C3F133 /* GravatarApp.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = 07EB67D82E01C22300C3F133 /* GravatarApp.xctestplan */; };
 		1E99F8A72DFBE7B500F892CD /* Analytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1E99F8A62DFBE7B500F892CD /* Analytics */; };
 		1EDD7FD32DF9BD6A00E5F1B6 /* Gravatar in Frameworks */ = {isa = PBXBuildFile; productRef = 1EDD7FD22DF9BD6A00E5F1B6 /* Gravatar */; };
 /* End PBXBuildFile section */
@@ -180,7 +179,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				07EB67D92E01C22300C3F133 /* GravatarApp.xctestplan in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
