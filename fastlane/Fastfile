@@ -1,0 +1,86 @@
+# frozen_string_literal: true
+
+require 'dotenv'
+require 'json'
+require 'xcodeproj'
+
+fastlane_version '2.0'
+
+PROJECT_ROOT_FOLDER = File.dirname(File.expand_path(__dir__))
+
+CODE_SIGNING_STORAGE_OPTIONS = {
+  storage_mode: 's3',
+  s3_bucket: 'a8c-fastlane-match',
+  s3_region: 'us-east-2'
+}.freeze
+
+# Required for sync_code_signing to authenticate with S3.
+CODE_SIGNING_ENV_VARS = %w[
+  MATCH_S3_ACCESS_KEY
+  MATCH_S3_SECRET_ACCESS_KEY
+  MATCH_PASSWORD
+].freeze
+
+PROJECT_XCCONFIG = Xcodeproj::Config.new(File.join(PROJECT_ROOT_FOLDER, 'Config', 'Project.xcconfig'))
+APP_XCCONFIG = Xcodeproj::Config.new(File.join(PROJECT_ROOT_FOLDER, 'Config', 'GravatarApp.common.xcconfig'))
+
+# Required for app_store_connect_api_key to generate the key information to pass down the call chain.
+ASC_API_KEY_ENV_VARS = %w[
+  APP_STORE_CONNECT_API_KEY_KEY_ID
+  APP_STORE_CONNECT_API_KEY_ISSUER_ID
+  APP_STORE_CONNECT_API_KEY_KEY
+].freeze
+
+require_relative 'lib/env_manager'
+
+before_all do
+  # This is necessary for 'match' to work correctly in CI. When running
+  # locally, it has no effect so it's safe to run it before all lanes.
+  setup_ci if runner.current_platform == :ios
+
+  EnvManager.set_up(env_file_name: 'gravatar-ios.env')
+end
+
+default_platform :ios
+
+platform :ios do
+  desc 'Download and configure code signing certificates and provisioning profiles for the App Store build.'
+  lane :configure_code_signing_app_store do |readonly: true|
+    configure_code_signing(type: 'appstore', readonly: readonly)
+  end
+end
+
+def configure_code_signing(type:, readonly:)
+  EnvManager.require_env_vars!(*CODE_SIGNING_ENV_VARS)
+
+  unless readonly
+    # We need the API key instantiated only when making changes on ASC (readonly = false)
+    EnvManager.require_env_vars!(*ASC_API_KEY_ENV_VARS)
+    api_key = app_store_connect_api_key
+  end
+
+  sync_code_signing(
+    type: type,
+    team_id: asc_team_id!,
+    api_key: api_key,
+    app_identifier: app_bundle_identifier_app_store!,
+    readonly: readonly,
+    **CODE_SIGNING_STORAGE_OPTIONS
+  )
+end
+
+def asc_team_id!
+  read_from_xcconfig!(key: 'DEVELOPMENT_TEAM', xcconfig: PROJECT_XCCONFIG)
+end
+
+def app_bundle_identifier_app_store!
+  read_from_xcconfig!(key: 'PRODUCT_BUNDLE_IDENTIFIER')
+end
+
+def read_from_xcconfig!(key:, xcconfig: APP_XCCONFIG)
+  configs = xcconfig.attributes
+
+  UI.user_error!("Could not find value for #{key} in xcconfig!") unless configs.key?(key)
+
+  configs[key]
+end
