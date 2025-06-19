@@ -24,8 +24,10 @@ steps:
 
   - label: "🧪 Tests"
     key: tests
+    plugins: [$CI_TOOLKIT]
     command: |
-      xcodebuild test -project GravatarApp.xcodeproj -scheme GravatarApp -destination 'platform=iOS Simulator,name=iPhone 16,arch=arm64'
+      install_swiftpm_dependencies
+      make test
     notify:
       - github_commit_status:
           context: "Unit tests"

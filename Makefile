@@ -24,6 +24,9 @@ help:  # Display this help.
 dev: # Open the package in xcode
 	xed .
 
+test: # Run the app unit tests
+	@xcodebuild test -project GravatarApp.xcodeproj -scheme GravatarApp -destination 'platform=iOS Simulator,name=iPhone 16 Pro'
+
 swiftformat: check-docker # Automatically find and fixes lint issues
 	@docker run --rm -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/nicklockwood/swiftformat:$(SWIFTFORMAT_VERSION) GravatarApp GravatarAppTests Packages
 
