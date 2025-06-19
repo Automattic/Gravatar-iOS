@@ -24,7 +24,9 @@ steps:
 
   - label: "🧪 Tests"
     key: tests
+    plugins: [$CI_TOOLKIT]
     command: |
+      install_swiftpm_dependencies
       make test
     notify:
       - github_commit_status:
