@@ -1,0 +1,9 @@
+#include "GravatarApp.common.xcconfig"
+
+// Locked to a specific identity rather than the generic "Apple Development"
+// to avoid Xcode resolving to a valid development identity for the
+// DEVELOPMENT_TEAM that is not the one used in the provisioning profile
+// specified below.
+CODE_SIGN_IDENTITY = Apple Development: Created via API (886NX39KP6)
+
+PROVISIONING_PROFILE_SPECIFIER = Gravatar iOS Development
