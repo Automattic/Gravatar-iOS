@@ -30,3 +30,11 @@ steps:
     notify:
       - github_commit_status:
           context: "Unit tests"
+
+  - label: Package Prototype Build
+    command: |
+      bundle install
+      bundle exec fastlane build_enterprise
+    notify:
+      - github_commit_status:
+          context: Package Prototype Build
