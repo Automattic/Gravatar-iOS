@@ -22,7 +22,8 @@ CODE_SIGNING_ENV_VARS = %w[
 ].freeze
 
 PROJECT_XCCONFIG = Xcodeproj::Config.new(File.join(PROJECT_ROOT_FOLDER, 'Config', 'Project.xcconfig'))
-APP_XCCONFIG = Xcodeproj::Config.new(File.join(PROJECT_ROOT_FOLDER, 'Config', 'GravatarApp.common.xcconfig'))
+APP_STORE_XCCONFIG = Xcodeproj::Config.new(File.join(PROJECT_ROOT_FOLDER, 'Config', 'GravatarApp.common.xcconfig'))
+ENTERPRISE_XCCONFIG = Xcodeproj::Config.new(File.join(PROJECT_ROOT_FOLDER, 'Config', 'GravatarApp.enterprise.xcconfig'))
 
 # Required for app_store_connect_api_key to generate the key information to pass down the call chain.
 ASC_API_KEY_ENV_VARS = %w[
@@ -32,6 +33,7 @@ ASC_API_KEY_ENV_VARS = %w[
 ].freeze
 
 require_relative 'lib/env_manager'
+require_relative 'lib/code_signing_helpers'
 
 before_all do
   # This is necessary for 'match' to work correctly in CI. When running
@@ -44,26 +46,48 @@ end
 default_platform :ios
 
 platform :ios do
+  # Download and configure code signing certificates and provisioning profiles for the App Store build.
+  #
+  # @param readonly [Boolean] If false, will generate new provisioning profiles if the ones available are missing or invalid.
+  #
   desc 'Download and configure code signing certificates and provisioning profiles for the App Store build.'
   lane :configure_code_signing_app_store do |readonly: true|
-    configure_code_signing(type: 'appstore', readonly: readonly)
+    configure_code_signing(app_identifier: app_bundle_identifier_app_store!, type: 'appstore', team_id: asc_team_id!, readonly: readonly)
+  end
+
+  # Download and configure code signing certificates and provisioning profiles for the Enterprise build (Prototype Build).
+  #
+  # @param readonly [Boolean] If false, will generate new provisioning profiles if the ones available are missing or invalid.
+  #
+  desc 'Download and configure code signing certificates and provisioning profiles for the Enterprise build (Prototype Build).'
+  lane :configure_code_signing_enterprise do |readonly: true|
+    configure_code_signing(app_identifier: app_bundle_identifier_enterprise!, type: 'enterprise', team_id: enterprise_team_id!, readonly: readonly)
   end
 end
 
-def configure_code_signing(type:, readonly:)
+def configure_code_signing(app_identifier:, type:, team_id:, readonly:)
   EnvManager.require_env_vars!(*CODE_SIGNING_ENV_VARS)
 
   unless readonly
-    # We need the API key instantiated only when making changes on ASC (readonly = false)
-    EnvManager.require_env_vars!(*ASC_API_KEY_ENV_VARS)
-    api_key = app_store_connect_api_key
+    case type
+    when 'appstore'
+      # When readonly = false and type = appstore, we need the API key instantiated to connect with App Store Connect.
+      EnvManager.require_env_vars!(*ASC_API_KEY_ENV_VARS)
+      api_key = app_store_connect_api_key
+    when 'enterprise'
+      # The Enterprise account APIs do not support authentication via API key.
+      # If we want to modify data (readonly = false) we need to authenticate manually.
+      prompt_user_for_app_store_connect_credentials
+    else
+      UI.user_error!("Unsupported code signing type: '#{type}'")
+    end
   end
 
   sync_code_signing(
     type: type,
-    team_id: asc_team_id!,
+    team_id: team_id,
     api_key: api_key,
-    app_identifier: app_bundle_identifier_app_store!,
+    app_identifier: app_identifier,
     readonly: readonly,
     **CODE_SIGNING_STORAGE_OPTIONS
   )
@@ -73,11 +97,19 @@ def asc_team_id!
   read_from_xcconfig!(key: 'DEVELOPMENT_TEAM', xcconfig: PROJECT_XCCONFIG)
 end
 
+def enterprise_team_id!
+  read_from_xcconfig!(key: 'DEVELOPMENT_TEAM', xcconfig: ENTERPRISE_XCCONFIG)
+end
+
 def app_bundle_identifier_app_store!
   read_from_xcconfig!(key: 'PRODUCT_BUNDLE_IDENTIFIER')
 end
 
-def read_from_xcconfig!(key:, xcconfig: APP_XCCONFIG)
+def app_bundle_identifier_enterprise!
+  read_from_xcconfig!(key: 'PRODUCT_BUNDLE_IDENTIFIER', xcconfig: ENTERPRISE_XCCONFIG)
+end
+
+def read_from_xcconfig!(key:, xcconfig: APP_STORE_XCCONFIG)
   configs = xcconfig.attributes
 
   UI.user_error!("Could not find value for #{key} in xcconfig!") unless configs.key?(key)
