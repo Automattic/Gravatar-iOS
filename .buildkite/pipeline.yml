@@ -33,8 +33,9 @@ steps:
 
   - label: Package Prototype Build
     command: |
-      bundle install
+      .buildkite/commands/setup_shared.sh
       bundle exec fastlane build_enterprise
+    plugins: [$CI_TOOLKIT]
     notify:
       - github_commit_status:
           context: Package Prototype Build
