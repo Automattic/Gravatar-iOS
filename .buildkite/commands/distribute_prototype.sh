@@ -7,4 +7,4 @@ buildkite-agent artifact download ".build/artifacts/*.ipa" . --step prototype_bu
 buildkite-agent artifact download ".build/artifacts/*.app.dSYM.zip" . --step prototype_build
 
 echo "--- :firebase: Distributing Prototype Build"
-bundle exec fastlane distribute_enterprise
+bundle exec fastlane distribute_prototype

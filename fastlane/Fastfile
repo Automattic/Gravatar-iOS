@@ -60,7 +60,7 @@ platform :ios do
   # @param build_number [String] The build number to use for the build. When in CI, defaults to the value of `BUILDKITE_BUILD_NUMBER` environment variable.
   # @param version [String] The version to use for the build. When in CI, defaults to the PR number, falling back to the branch name.
   #
-  lane :build_enterprise do |fetch_code_signing: true, build_number: build_number_from_ci, version: pr_number_or_branch_name_from_ci|
+  lane :build_prototype do |fetch_code_signing: true, build_number: build_number_from_ci, version: pr_number_or_branch_name_from_ci|
     if fetch_code_signing
       configure_code_signing_enterprise
     else
@@ -87,7 +87,7 @@ platform :ios do
 
   # Distributes the Prototype Build to Firebase App Distribution
   #
-  lane :distribute_enterprise do |ipa_path: File.join(ARTIFACTS_FOLDER, "#{PROTOTYPE_BUILD_NAME}.ipa")|
+  lane :distribute_prototype do |ipa_path: File.join(ARTIFACTS_FOLDER, "#{PROTOTYPE_BUILD_NAME}.ipa")|
     EnvManager.require_env_vars!('FIREBASE_APP_DISTRIBUTION_ACCOUNT_KEY')
 
     release_notes = <<~NOTES
