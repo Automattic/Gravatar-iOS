@@ -31,24 +31,23 @@ steps:
       - github_commit_status:
           context: "Unit tests"
 
-  - label: Package Prototype Build
-    key: prototype_build
-    command: |
-      .buildkite/commands/build_prototype.sh
-    plugins: [$CI_TOOLKIT]
-    artifact_paths:
-      - ".build/artifacts/*.ipa"
-      - ".build/artifacts/*.app.dSYM.zip"
-    notify:
-      - github_commit_status:
-          context: Package Prototype Build
+  - group: Prototype Build
+    steps:
+      - label: Package Prototype Build
+        key: prototype_build
+        command: .buildkite/commands/build_prototype.sh
+        plugins: [$CI_TOOLKIT]
+        artifact_paths:
+          - ".build/artifacts/*.ipa"
+          - ".build/artifacts/*.app.dSYM.zip"
+        notify:
+          - github_commit_status:
+              context: Package Prototype Build
 
-  - label: Distribute Prototype Build
-    depends_on: prototype_build
-    # notice the command only installs gems, we don't need the full shared setup with the Swift packages
-    command: |
-      .buildkite/commands/distribute_prototype.sh
-    plugins: [$CI_TOOLKIT]
-    notify:
-      - github_commit_status:
-          context: Distribute Prototype Build
+      - label: Distribute Prototype Build
+        depends_on: prototype_build
+        command: .buildkite/commands/distribute_prototype.sh
+        plugins: [$CI_TOOLKIT]
+        notify:
+          - github_commit_status:
+              context: Distribute Prototype Build
