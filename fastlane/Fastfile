@@ -30,6 +30,9 @@ ARTIFACTS_FOLDER = File.join(PROJECT_ROOT_FOLDER, '.build', 'artifacts')
 
 PROTOTYPE_BUILD_NAME = 'GravatarApp-Prototype'
 
+FIREBASE_APP_ID = '1:108380595987:ios:b9b894ee6d0d9eb79a5ce6'
+FIREBASE_TESTERS_GROUP = 'gravatar-ios---prototype-builds'
+
 # Required for app_store_connect_api_key to generate the key information to pass down the call chain.
 ASC_API_KEY_ENV_VARS = %w[
   APP_STORE_CONNECT_API_KEY_KEY_ID
@@ -79,6 +82,38 @@ platform :ios do
         method: 'enterprise',
         manageAppVersionAndBuildNumber: false
       }
+    )
+  end
+
+  # Distributes the Prototype Build to Firebase App Distribution
+  #
+  lane :distribute_enterprise do |ipa_path: File.join(ARTIFACTS_FOLDER, "#{PROTOTYPE_BUILD_NAME}.ipa")|
+    EnvManager.require_env_vars!('FIREBASE_APP_DISTRIBUTION_ACCOUNT_KEY')
+
+    release_notes = <<~NOTES
+      Pull Request: ##{pull_request_number || 'N/A'}
+      Branch: `#{branch_name_from_ci? || 'N/A'}`
+      Commit: `#{commit_hash_from_ci? || 'N/A'}[0...7]`
+    NOTES
+
+    firebase_app_distribution(
+      app: FIREBASE_APP_ID,
+      ipa_path: ipa_path,
+      service_credentials_json_data: EnvManager.get_required_env!('FIREBASE_APP_DISTRIBUTION_ACCOUNT_KEY'),
+      release_notes: release_notes,
+      groups: FIREBASE_TESTERS_GROUP
+    )
+
+    next if pull_request_number.nil?
+
+    comment_on_pr(
+      project: GITHUB_REPO,
+      pr_number: pull_request_number,
+      reuse_identifier: 'prototype-build-link',
+      body: prototype_build_details_comment(
+        app_display_name: 'Gravatar Prototype Build',
+        fold: true
+      )
     )
   end
 
@@ -158,7 +193,15 @@ def build_number_from_ci
 end
 
 def pr_number_or_branch_name_from_ci
-  pull_request_number&.then { |num| "PR ##{num}" } || ENV.fetch('BUILDKITE_BRANCH', git_branch)
+  pull_request_number&.then { |num| "PR ##{num}" } || branch_name_from_ci? || git_branch
+end
+
+def branch_name_from_ci?
+  ENV.fetch('BUILDKITE_BRANCH', nil)
+end
+
+def commit_hash_from_ci?
+  ENV.fetch('BUILDKITE_COMMIT', nil)
 end
 
 def pull_request_number
