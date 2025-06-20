@@ -23,7 +23,12 @@ CODE_SIGNING_ENV_VARS = %w[
 
 PROJECT_XCCONFIG = Xcodeproj::Config.new(File.join(PROJECT_ROOT_FOLDER, 'Config', 'Project.xcconfig'))
 APP_STORE_XCCONFIG = Xcodeproj::Config.new(File.join(PROJECT_ROOT_FOLDER, 'Config', 'GravatarApp.common.xcconfig'))
-ENTERPRISE_XCCONFIG = Xcodeproj::Config.new(File.join(PROJECT_ROOT_FOLDER, 'Config', 'GravatarApp.enterprise.xcconfig'))
+ENTERPRISE_XCCONFIG_PATH = File.join(PROJECT_ROOT_FOLDER, 'Config', 'GravatarApp.enterprise.xcconfig')
+ENTERPRISE_XCCONFIG = Xcodeproj::Config.new(ENTERPRISE_XCCONFIG_PATH)
+
+ARTIFACTS_FOLDER = File.join(PROJECT_ROOT_FOLDER, '.build', 'artifacts')
+
+PROTOTYPE_BUILD_NAME = 'GravatarApp-Prototype'
 
 # Required for app_store_connect_api_key to generate the key information to pass down the call chain.
 ASC_API_KEY_ENV_VARS = %w[
@@ -46,6 +51,37 @@ end
 default_platform :ios
 
 platform :ios do
+  # Builds the app binary for Enterprise distribution (Prototype Build)
+  #
+  # @param fetch_code_signing [Boolean] If true, will call `configure_code_signing_enterprise` before building. Recommended on CI.
+  # @param build_number [String] The build number to use for the build. When in CI, defaults to the value of `BUILDKITE_BUILD_NUMBER` environment variable.
+  # @param version [String] The version to use for the build. When in CI, defaults to the PR number, falling back to the branch name.
+  #
+  lane :build_enterprise do |fetch_code_signing: true, build_number: build_number_from_ci, version: pr_number_or_branch_name_from_ci|
+    if fetch_code_signing
+      configure_code_signing_enterprise
+    else
+      UI.message('Skipping fetching certificates and provisioning profiles as requested.')
+    end
+
+    build_app(
+      scheme: 'GravatarApp',
+      configuration: 'Enterprise',
+      # Explicitly set iOS destination to avoid xcodebuild accidentallypicking up tvOS
+      destination: 'generic/platform=iOS',
+      include_bitcode: false,
+      include_symbols: true,
+      clean: true,
+      xcargs: { MARKETING_VERSION: version, CURRENT_PROJECT_VERSION: build_number },
+      output_directory: ARTIFACTS_FOLDER,
+      output_name: PROTOTYPE_BUILD_NAME,
+      export_options: {
+        method: 'enterprise',
+        manageAppVersionAndBuildNumber: false
+      }
+    )
+  end
+
   # Download and configure code signing certificates and provisioning profiles for the App Store build.
   #
   # @param readonly [Boolean] If false, will generate new provisioning profiles if the ones available are missing or invalid.
@@ -115,4 +151,18 @@ def read_from_xcconfig!(key:, xcconfig: APP_STORE_XCCONFIG)
   UI.user_error!("Could not find value for #{key} in xcconfig!") unless configs.key?(key)
 
   configs[key]
+end
+
+def build_number_from_ci
+  ENV.fetch('BUILDKITE_BUILD_NUMBER', '0')
+end
+
+def pr_number_or_branch_name_from_ci
+  pull_request_number&.then { |num| "PR ##{num}" } || ENV.fetch('BUILDKITE_BRANCH', git_branch)
+end
+
+def pull_request_number
+  # Buildkite sets this env var to the PR number if on a PR, but to 'false' (and not nil) if not on a PR
+  pr_num = ENV.fetch('BUILDKITE_PULL_REQUEST', 'false')
+  pr_num == 'false' ? nil : Integer(pr_num)
 end

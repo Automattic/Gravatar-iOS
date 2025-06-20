@@ -1,8 +1,13 @@
-#include "Gravatar.common.xcconfig"
+#include "GravatarApp.common.xcconfig"
 
 DEVELOPMENT_TEAM = 99KV9Z6BKV
 
 PRODUCT_BUNDLE_IDENTIFIER = com.gravatar.GravatarApp.prototype
 
+// Manual code signing to use the credentials fetched via Fastlane match.
+// Those are set via PROVISIONING_PROFILE_SPECIFIER and CODE_SIGN_IDENTITY in the build-configuration-specific xcconfig.
+//
+// The build system actually doesn't need this explicit once the other settings are specified, but we leave this here for consistency.
+CODE_SIGN_STYLE = Manual
 CODE_SIGN_IDENTITY = Apple Distribution
-PROVISIONING_PROFILE_SPECIFIER = match AppStore ${PRODUCT_BUNDLE_IDENTIFIER}
+PROVISIONING_PROFILE_SPECIFIER = match InHouse ${PRODUCT_BUNDLE_IDENTIFIER}
