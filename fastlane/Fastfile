@@ -34,6 +34,8 @@ FIREBASE_APP_ID = '1:124902176124:ios:7bffd4c3c7143e3a1620f9'
 # For convenience, this is the same tester group as the SDK demo app.
 FIREBASE_TESTERS_GROUP = 'gravatarsdk-ios---prototype-builds'
 
+GITHUB_REPO = 'Automattic/Gravatar-iOS'
+
 # Required for app_store_connect_api_key to generate the key information to pass down the call chain.
 ASC_API_KEY_ENV_VARS = %w[
   APP_STORE_CONNECT_API_KEY_KEY_ID
