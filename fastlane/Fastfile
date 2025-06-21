@@ -95,8 +95,8 @@ platform :ios do
 
     release_notes = <<~NOTES
       Pull Request: ##{pull_request_number || 'N/A'}
-      Branch: `#{branch_name_from_ci? || 'N/A'}`
-      Commit: `#{commit_hash_from_ci? || 'N/A'}[0...7]`
+      Branch: `#{branch_name_from_ci || 'N/A'}`
+      Commit: `#{commit_hash_from_ci || 'N/A'}[0...7]`
     NOTES
 
     firebase_app_distribution(
@@ -196,14 +196,14 @@ def build_number_from_ci
 end
 
 def pr_number_or_branch_name_from_ci
-  pull_request_number&.then { |num| "PR ##{num}" } || branch_name_from_ci? || git_branch
+  pull_request_number&.then { |num| "PR ##{num}" } || branch_name_from_ci || git_branch
 end
 
-def branch_name_from_ci?
+def branch_name_from_ci
   ENV.fetch('BUILDKITE_BRANCH', nil)
 end
 
-def commit_hash_from_ci?
+def commit_hash_from_ci
   ENV.fetch('BUILDKITE_COMMIT', nil)
 end
 
