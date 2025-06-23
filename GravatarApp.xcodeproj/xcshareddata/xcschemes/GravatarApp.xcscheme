@@ -30,7 +30,7 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:GravatarApp.xctestplan"
+            reference = "container:Config/GravatarApp.xctestplan"
             default = "YES">
          </TestPlanReference>
       </TestPlans>
