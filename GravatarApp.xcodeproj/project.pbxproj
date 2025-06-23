@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		07EB67D92E01C22300C3F133 /* GravatarApp.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = 07EB67D82E01C22300C3F133 /* GravatarApp.xctestplan */; };
 		1E0B559C2E004C62005D8777 /* OAuth in Resources */ = {isa = PBXBuildFile; fileRef = 1E0B559B2E004C62005D8777 /* OAuth */; };
 		1E79E4D12E019CD8008D2640 /* OAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 1E79E4D02E019CD8008D2640 /* OAuth */; };
 		1E99F8A72DFBE7B500F892CD /* Analytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1E99F8A62DFBE7B500F892CD /* Analytics */; };
@@ -24,8 +23,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		07EB67D82E01C22300C3F133 /* GravatarApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = GravatarApp.xctestplan; sourceTree = "<group>"; };
-		07EB67DA2E01C28400C3F133 /* GravatarApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = GravatarApp.xctestplan; sourceTree = "<group>"; };
 		1E0B559B2E004C62005D8777 /* OAuth */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = OAuth; path = Packages/OAuth; sourceTree = "<group>"; };
 		1E99F8A42DFBE72900F892CD /* Analytics */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Analytics; path = Packages/Analytics; sourceTree = "<group>"; };
 		1EDD7F902DF9B94300E5F1B6 /* GravatarApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GravatarApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -41,6 +38,11 @@
 		1EDD7FA12DF9B94500E5F1B6 /* GravatarAppTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = GravatarAppTests;
+			sourceTree = "<group>";
+		};
+		3FAB63BD2E039BBB00511E19 /* Config */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Config;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -68,8 +70,7 @@
 		1EDD7F872DF9B94300E5F1B6 = {
 			isa = PBXGroup;
 			children = (
-				07EB67DA2E01C28400C3F133 /* GravatarApp.xctestplan */,
-				07EB67D82E01C22300C3F133 /* GravatarApp.xctestplan */,
+				3FAB63BD2E039BBB00511E19 /* Config */,
 				1EDD7F922DF9B94300E5F1B6 /* GravatarApp */,
 				1EDD7FA12DF9B94500E5F1B6 /* GravatarAppTests */,
 				1E0B559B2E004C62005D8777 /* OAuth */,
@@ -187,7 +188,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				1E0B559C2E004C62005D8777 /* OAuth in Resources */,
-				07EB67D92E01C22300C3F133 /* GravatarApp.xctestplan in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -251,6 +251,8 @@
 /* Begin XCBuildConfiguration section */
 		1EDD7FB02DF9B94500E5F1B6 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 3FAB63BD2E039BBB00511E19 /* Config */;
+			baseConfigurationReferenceRelativePath = Project.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -312,6 +314,8 @@
 		};
 		1EDD7FB12DF9B94500E5F1B6 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 3FAB63BD2E039BBB00511E19 /* Config */;
+			baseConfigurationReferenceRelativePath = Project.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -365,11 +369,12 @@
 		};
 		1EDD7FB32DF9B94500E5F1B6 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 3FAB63BD2E039BBB00511E19 /* Config */;
+			baseConfigurationReferenceRelativePath = GravatarApp.debug.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = GravatarApp/GravatarApp.entitlements;
-				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
@@ -391,12 +396,10 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.gravatar.GravatarApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_STRICT_MEMORY_SAFETY = NO;
 				SWIFT_VERSION = 6.0;
@@ -408,11 +411,12 @@
 		};
 		1EDD7FB42DF9B94500E5F1B6 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 3FAB63BD2E039BBB00511E19 /* Config */;
+			baseConfigurationReferenceRelativePath = GravatarApp.release.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = GravatarApp/GravatarApp.entitlements;
-				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
@@ -434,12 +438,10 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.gravatar.GravatarApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_STRICT_MEMORY_SAFETY = NO;
 				SWIFT_VERSION = 6.0;
@@ -462,7 +464,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.gravatar.GravatarAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
@@ -484,7 +485,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.gravatar.GravatarAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
