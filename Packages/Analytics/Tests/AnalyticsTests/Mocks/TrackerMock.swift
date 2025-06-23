@@ -6,7 +6,7 @@ final class TrackerMock: Tracker {
     var propertiesTracked: [String: AnyHashable]? = nil
     var configureCalled = false
     var userProperties: [String: AnyHashable] = [:]
-    var userID: String? = nil
+    var userName: String? = nil
 
     func track(_ name: String, withCustomProperties: [String: AnyHashable]) {
         eventTracked = name
@@ -21,9 +21,9 @@ final class TrackerMock: Tracker {
         configureCalled = true
     }
 
-    func setUserID(_ userID: String?, userUUIDStorage: UserUUIDStorage) {
-        self.userID = userID
-        if userID == nil {
+    func setUserName(_ userName: String?, userUUIDStorage: UserUUIDStorage) {
+        self.userName = userName
+        if userName == nil {
             userUUIDStorage.set(UUID().uuidString)
         }
     }

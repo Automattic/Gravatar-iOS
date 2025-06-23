@@ -23,32 +23,32 @@ struct AnalyticsTests {
     func userLoggedIn() async throws {
         let tracker = TrackerMock()
         let analytics = Analytics(tracker: tracker, userUUIDStorage: userUUIDStorage)
-        analytics.setUserID("user")
+        analytics.setUserName("user")
 
         #expect(tracker.userProperties["user_is_logged_in"] as? Bool == true)
-        #expect(tracker.userID == "user")
+        #expect(tracker.userName == "user")
     }
 
     @Test("Test user is logged out after being logged in")
     func userSetToLoggedOut() async throws {
         let tracker = TrackerMock()
         let analytics = Analytics(tracker: tracker, userUUIDStorage: userUUIDStorage)
-        analytics.setUserID("user")
+        analytics.setUserName("user")
 
         #expect(tracker.userProperties["user_is_logged_in"] as? Bool == true)
-        #expect(tracker.userID == "user")
+        #expect(tracker.userName == "user")
 
-        analytics.setUserID(nil)
+        analytics.setUserName(nil)
 
         #expect(tracker.userProperties["user_is_logged_in"] as? Bool == false)
-        #expect(tracker.userID == nil)
+        #expect(tracker.userName == nil)
     }
 
     @Test("Test user UUD is created and persisted")
     func userUUID() async throws {
         let tracker = TrackerMock()
         let analytics = Analytics(tracker: tracker, userUUIDStorage: userUUIDStorage)
-        analytics.setUserID("user")
+        analytics.setUserName("user")
 
         #expect(tracker.userProperties["user_is_logged_in"] as? Bool == true)
     }

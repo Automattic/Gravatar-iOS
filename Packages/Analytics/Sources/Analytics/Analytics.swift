@@ -13,7 +13,7 @@ public class Analytics {
         self.tracker = tracker ?? TracksService(contextManager: TracksContextManager())
         self.userUUIDStorage = userUUIDStorage
         self.tracker.configure()
-        self.tracker.setUserID(nil, userUUIDStorage: userUUIDStorage)
+        self.tracker.setUserName(nil, userUUIDStorage: userUUIDStorage)
 
         updateUserProperties()
         TracksLogging.delegate = LoggingDelegate()
@@ -27,9 +27,9 @@ public class Analytics {
         #endif
     }
 
-    public func setUserID(_ userID: String?) {
-        loggedInUserId = userID
-        tracker.setUserID(userID, userUUIDStorage: userUUIDStorage)
+    public func setUserName(_ userName: String?) {
+        loggedInUserId = userName
+        tracker.setUserName(userName, userUUIDStorage: userUUIDStorage)
 
         updateUserProperties()
     }

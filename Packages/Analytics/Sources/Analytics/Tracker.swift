@@ -3,14 +3,15 @@ import AutomatticTracksEvents
 public protocol Tracker {
     func track(_ name: String, withCustomProperties: [String: AnyHashable])
     func setUserProperty(_ value: AnyHashable, for key: String)
-    func setUserID(_ userID: String?, userUUIDStorage: UserUUIDStorage)
+    func setUserName(_ userName: String?, userUUIDStorage: UserUUIDStorage)
     func configure()
 }
 
 extension TracksService: Tracker {
-    public func setUserID(_ userID: String?, userUUIDStorage: UserUUIDStorage) {
-        if let userID {
-            switchToAuthenticatedUser(withUsername: nil, userID: userID, skipAliasEventCreation: true)
+    public func setUserName(_ userName: String?, userUUIDStorage: UserUUIDStorage) {
+        if let userName {
+            // Tracks backend will figure out WPCom userID from the userName.
+            switchToAuthenticatedUser(withUsername: userName, userID: nil, skipAliasEventCreation: true)
         } else {
             switchToAnonymousUser(withAnonymousID: UserUUID(storage: userUUIDStorage).uuidString)
         }

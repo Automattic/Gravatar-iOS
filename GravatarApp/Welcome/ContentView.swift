@@ -36,7 +36,7 @@ struct ContentView: View {
             do {
                 let profile = try await service.fetch(with: .email(email))
                 // TODO: This should be updated with profile.id, which will be added in the future
-                analytics.setUserID(profile.hash)
+                analytics.setUserName(profile.hash)
                 analytics.track(WelcomeScreenEvent.authSuccess)
                 displayName = profile.displayName
             } catch {
