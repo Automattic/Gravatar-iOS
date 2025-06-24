@@ -15,17 +15,11 @@ let package = Package(
             targets: ["OAuth"]
         ),
     ],
-    dependencies: [
-        .package(url: "https://github.com/Automattic/Gravatar-SDK-iOS", from: "3.3.0"),
-    ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "OAuth",
-            dependencies: [
-                .product(name: "Gravatar", package: "Gravatar-SDK-iOS"),
-            ]
+            name: "OAuth"
         ),
         .testTarget(
             name: "OAuthTests",

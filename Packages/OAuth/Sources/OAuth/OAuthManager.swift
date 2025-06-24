@@ -1,5 +1,4 @@
 import AuthenticationServices
-import Gravatar
 
 public struct OAuthManager: Sendable {
     public static let shared = OAuthManager()

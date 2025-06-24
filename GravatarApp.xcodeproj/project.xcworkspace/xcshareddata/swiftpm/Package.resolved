@@ -1,5 +1,5 @@
 {
-  "originHash" : "36b7d89931723ff85f0c7632764032a51f78c9fb9d687eddb7e071ec37d62584",
+  "originHash" : "d4145283f13b2da5c7e6bf44272cdb2d2e8d26e9892aec4b1512da7abe0dd130",
   "pins" : [
     {
       "identity" : "automattic-tracks-ios",
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Automattic/Gravatar-SDK-iOS.git",
       "state" : {
-        "revision" : "dd58fcdeaa145191eb9870d8b19f26659393219f",
-        "version" : "3.3.0"
+        "revision" : "10ea47af09875f830adf63bc72bf5fb686bffc05",
+        "version" : "3.4.0"
       }
     },
     {

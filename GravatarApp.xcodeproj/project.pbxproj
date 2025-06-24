@@ -10,6 +10,7 @@
 		1E0B559C2E004C62005D8777 /* OAuth in Resources */ = {isa = PBXBuildFile; fileRef = 1E0B559B2E004C62005D8777 /* OAuth */; };
 		1E79E4D12E019CD8008D2640 /* OAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 1E79E4D02E019CD8008D2640 /* OAuth */; };
 		1E99F8A72DFBE7B500F892CD /* Analytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1E99F8A62DFBE7B500F892CD /* Analytics */; };
+		1EA068002E0A993A00D1C900 /* Gravatar in Frameworks */ = {isa = PBXBuildFile; productRef = 1EA067FF2E0A993A00D1C900 /* Gravatar */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +55,7 @@
 			files = (
 				1E79E4D12E019CD8008D2640 /* OAuth in Frameworks */,
 				1E99F8A72DFBE7B500F892CD /* Analytics in Frameworks */,
+				1EA068002E0A993A00D1C900 /* Gravatar in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -111,6 +113,7 @@
 			packageProductDependencies = (
 				1E99F8A62DFBE7B500F892CD /* Analytics */,
 				1E79E4D02E019CD8008D2640 /* OAuth */,
+				1EA067FF2E0A993A00D1C900 /* Gravatar */,
 			);
 			productName = GravatarApp;
 			productReference = 1EDD7F902DF9B94300E5F1B6 /* GravatarApp.app */;
@@ -170,6 +173,7 @@
 			packageReferences = (
 				1E99F8A52DFBE7B500F892CD /* XCLocalSwiftPackageReference "Packages/Analytics" */,
 				1E79E4CF2E019CD8008D2640 /* XCLocalSwiftPackageReference "Packages/OAuth" */,
+				1EA067FE2E0A993A00D1C900 /* XCRemoteSwiftPackageReference "Gravatar-SDK-iOS" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1EDD7F912DF9B94300E5F1B6 /* Products */;
@@ -541,6 +545,17 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		1EA067FE2E0A993A00D1C900 /* XCRemoteSwiftPackageReference "Gravatar-SDK-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Automattic/Gravatar-SDK-iOS.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.4.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		1E79E4D02E019CD8008D2640 /* OAuth */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -549,6 +564,11 @@
 		1E99F8A62DFBE7B500F892CD /* Analytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Analytics;
+		};
+		1EA067FF2E0A993A00D1C900 /* Gravatar */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1EA067FE2E0A993A00D1C900 /* XCRemoteSwiftPackageReference "Gravatar-SDK-iOS" */;
+			productName = Gravatar;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -1,4 +1,3 @@
-import Gravatar
 @testable import OAuth
 
 import SwiftUI
