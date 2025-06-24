@@ -7,8 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1E0B559C2E004C62005D8777 /* OAuth in Resources */ = {isa = PBXBuildFile; fileRef = 1E0B559B2E004C62005D8777 /* OAuth */; };
+		1E79E4D12E019CD8008D2640 /* OAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 1E79E4D02E019CD8008D2640 /* OAuth */; };
 		1E99F8A72DFBE7B500F892CD /* Analytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1E99F8A62DFBE7B500F892CD /* Analytics */; };
-		1EDD7FD32DF9BD6A00E5F1B6 /* Gravatar in Frameworks */ = {isa = PBXBuildFile; productRef = 1EDD7FD22DF9BD6A00E5F1B6 /* Gravatar */; };
+		1EA068002E0A993A00D1C900 /* Gravatar in Frameworks */ = {isa = PBXBuildFile; productRef = 1EA067FF2E0A993A00D1C900 /* Gravatar */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -22,6 +24,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1E0B559B2E004C62005D8777 /* OAuth */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = OAuth; path = Packages/OAuth; sourceTree = "<group>"; };
 		1E99F8A42DFBE72900F892CD /* Analytics */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Analytics; path = Packages/Analytics; sourceTree = "<group>"; };
 		1EDD7F902DF9B94300E5F1B6 /* GravatarApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GravatarApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EDD7F9E2DF9B94500E5F1B6 /* GravatarAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GravatarAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -50,8 +53,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E79E4D12E019CD8008D2640 /* OAuth in Frameworks */,
 				1E99F8A72DFBE7B500F892CD /* Analytics in Frameworks */,
-				1EDD7FD32DF9BD6A00E5F1B6 /* Gravatar in Frameworks */,
+				1EA068002E0A993A00D1C900 /* Gravatar in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +75,7 @@
 				3FAB63BD2E039BBB00511E19 /* Config */,
 				1EDD7F922DF9B94300E5F1B6 /* GravatarApp */,
 				1EDD7FA12DF9B94500E5F1B6 /* GravatarAppTests */,
+				1E0B559B2E004C62005D8777 /* OAuth */,
 				1E99F8A42DFBE72900F892CD /* Analytics */,
 				1EDD7F912DF9B94300E5F1B6 /* Products */,
 			);
@@ -105,8 +110,9 @@
 			);
 			name = GravatarApp;
 			packageProductDependencies = (
-				1EDD7FD22DF9BD6A00E5F1B6 /* Gravatar */,
 				1E99F8A62DFBE7B500F892CD /* Analytics */,
+				1E79E4D02E019CD8008D2640 /* OAuth */,
+				1EA067FF2E0A993A00D1C900 /* Gravatar */,
 			);
 			productName = GravatarApp;
 			productReference = 1EDD7F902DF9B94300E5F1B6 /* GravatarApp.app */;
@@ -164,8 +170,9 @@
 			mainGroup = 1EDD7F872DF9B94300E5F1B6;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				1EDD7FD12DF9BD6A00E5F1B6 /* XCRemoteSwiftPackageReference "Gravatar-SDK-iOS" */,
 				1E99F8A52DFBE7B500F892CD /* XCLocalSwiftPackageReference "Packages/Analytics" */,
+				1E79E4CF2E019CD8008D2640 /* XCLocalSwiftPackageReference "Packages/OAuth" */,
+				1EA067FE2E0A993A00D1C900 /* XCRemoteSwiftPackageReference "Gravatar-SDK-iOS" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1EDD7F912DF9B94300E5F1B6 /* Products */;
@@ -183,6 +190,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E0B559C2E004C62005D8777 /* OAuth in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -348,8 +356,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = GravatarApp/GravatarApp.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = PZYM8XX95Q;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INCLUDED_SOURCE_FILE_NAMES = "";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -366,12 +378,15 @@
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Gravatar iOS Development";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_STRICT_MEMORY_SAFETY = NO;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TREAT_MISSING_SCRIPT_PHASE_OUTPUTS_AS_ERRORS = NO;
 				XROS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Debug;
@@ -384,9 +399,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = GravatarApp/GravatarApp.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = PZYM8XX95Q;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INCLUDED_SOURCE_FILE_NAMES = "";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -403,12 +423,15 @@
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Gravatar iOS Development";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_STRICT_MEMORY_SAFETY = NO;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TREAT_MISSING_SCRIPT_PHASE_OUTPUTS_AS_ERRORS = NO;
 				XROS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Release;
@@ -488,6 +511,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
+		1E79E4CF2E019CD8008D2640 /* XCLocalSwiftPackageReference "Packages/OAuth" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/OAuth;
+		};
 		1E99F8A52DFBE7B500F892CD /* XCLocalSwiftPackageReference "Packages/Analytics" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/Analytics;
@@ -495,24 +522,28 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		1EDD7FD12DF9BD6A00E5F1B6 /* XCRemoteSwiftPackageReference "Gravatar-SDK-iOS" */ = {
+		1EA067FE2E0A993A00D1C900 /* XCRemoteSwiftPackageReference "Gravatar-SDK-iOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Automattic/Gravatar-SDK-iOS.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 3.3.0;
+				minimumVersion = 3.4.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		1E79E4D02E019CD8008D2640 /* OAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OAuth;
+		};
 		1E99F8A62DFBE7B500F892CD /* Analytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Analytics;
 		};
-		1EDD7FD22DF9BD6A00E5F1B6 /* Gravatar */ = {
+		1EA067FF2E0A993A00D1C900 /* Gravatar */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 1EDD7FD12DF9BD6A00E5F1B6 /* XCRemoteSwiftPackageReference "Gravatar-SDK-iOS" */;
+			package = 1EA067FE2E0A993A00D1C900 /* XCRemoteSwiftPackageReference "Gravatar-SDK-iOS" */;
 			productName = Gravatar;
 		};
 /* End XCSwiftPackageProductDependency section */
