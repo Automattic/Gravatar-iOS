@@ -1,4 +1,4 @@
-struct Secrets {
+enum Secrets {
     static let apiKey: String? = nil
     static let clientID: String = ""
     static let clientSecret: String = ""

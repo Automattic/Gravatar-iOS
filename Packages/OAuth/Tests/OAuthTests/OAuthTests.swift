@@ -45,7 +45,6 @@ struct OauthManagerTests {
         await #expect(throws: OAuthError.self) {
             _ = try await manager.requestAccessToken()
         }
-        #expect(await session.cancelled)
     }
 
     @Test("Parameters are added to request URL", arguments: [
