@@ -13,12 +13,12 @@ struct CodeCallbackParser: CallbackParser {
         self.urlSession = urlSession
     }
 
-    func parse(from callbackURL: URL) async -> AccessToken? {
+    func parse(from callbackURL: URL) async throws(OAuthError) -> AccessToken {
         guard let code = parseCode(from: callbackURL) else {
-            return nil
+            throw OAuthError.couldNotParseAccessCode(callbackURL.absoluteString)
         }
 
-        return try? await requestAccessToken(with: code)
+        return try await requestAccessToken(with: code)
     }
 
     func parseCode(from callbackURL: URL) -> String? {
