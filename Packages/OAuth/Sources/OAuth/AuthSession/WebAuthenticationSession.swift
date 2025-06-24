@@ -6,23 +6,11 @@ final class WebAuthenticationSession: NSObject, Sendable {
 
     func authenticate(using url: URL, callbackURLComponents: URLComponents) async throws -> URL {
         try await withCheckedThrowingContinuation { continuation in
-            let session: ASWebAuthenticationSession
-            let completionHandler = authSessionCompletionHandler(with: continuation)
-
-            if #available(iOS 17.4, *) {
-                let callback = authSessionCallback(with: callbackURLComponents)
-                session = ASWebAuthenticationSession(
-                    url: url,
-                    callback: callback,
-                    completionHandler: completionHandler
-                )
-            } else {
-                session = ASWebAuthenticationSession(
-                    url: url,
-                    callbackURLScheme: callbackURLComponents.scheme,
-                    completionHandler: completionHandler
-                )
-            }
+            let session = ASWebAuthenticationSession(
+                url: url,
+                callback: authSessionCallback(with: callbackURLComponents),
+                completionHandler: authSessionCompletionHandler(with: continuation)
+            )
 
             Task { @MainActor in
                 await sessionStorage.save(session)
