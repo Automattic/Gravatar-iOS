@@ -31,8 +31,7 @@ ARTIFACTS_FOLDER = File.join(PROJECT_ROOT_FOLDER, '.build', 'artifacts')
 PROTOTYPE_BUILD_NAME = 'GravatarApp-Prototype'
 
 FIREBASE_APP_ID = '1:124902176124:ios:7bffd4c3c7143e3a1620f9'
-# For convenience, this is the same tester group as the SDK demo app.
-FIREBASE_TESTERS_GROUP = 'gravatarsdk-ios---prototype-builds'
+FIREBASE_TESTERS_GROUP = 'gravatar-ios---prototype-builds'
 
 GITHUB_REPO = 'Automattic/Gravatar-iOS'
 
