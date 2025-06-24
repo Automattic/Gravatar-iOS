@@ -1,12 +1,12 @@
 import Foundation
 
-protocol SecureToken {
+public protocol SecureToken {
     var token: String { get }
     var data: Data? { get }
 }
 
 extension SecureToken {
-    var data: Data? {
+    public var data: Data? {
         token.data(using: .utf8)
     }
 }

@@ -4,129 +4,98 @@ import Gravatar
 public struct OAuthManager: Sendable {
     public static let shared = OAuthManager()
 
-    private var sessionData = SessionData()
     private let storage: SecureStorage
     private let authenticationSession: AuthenticationSession
-    private let snakeCaseDecoder: JSONDecoder = {
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        return decoder
-    }()
+
+    private let callbackParser: CallbackParser = TokenCallbackParser()
 
     init(authenticationSession: AuthenticationSession = WebAuthenticationSession(), storage: SecureStorage = Keychain()) {
         self.authenticationSession = authenticationSession
         self.storage = storage
     }
 
-    public func hasSession(with email: Email) -> Bool {
-        (try? storage.secret(with: email.rawValue) ?? nil) != nil
+    // MARK: Keychain helpers
+
+    public func hasSession(with key: String) -> Bool {
+        (try? storage.secret(with: key) ?? nil) != nil
     }
 
-    func overrideToken(_ token: SecureToken, for email: Email) {
-        deleteSession(with: email)
-        try? storage.setSecret(token, for: email.rawValue)
+    public func saveToken(_ token: SecureToken, withKey key: String) {
+        try? storage.setSecret(token, for: key)
     }
 
-    public func deleteSession(with email: Email) {
-        try? storage.deleteSecret(with: email.rawValue)
+    public func deleteToken(with key: String) {
+        try? storage.deleteSecret(with: key)
     }
 
-    func sessionToken(with email: Email) -> SecureToken? {
-        try? storage.secret(with: email.rawValue)
+    public func sessionToken(with key: String) -> SecureToken? {
+        try? storage.secret(with: key)
     }
 
-    public func requestSession(with email: Email) async throws(OAuthError) {
+    // MARK: Token request
+
+    public func requestAccessToken() async throws(OAuthError) -> AccessToken {
         guard let secrets = await Configuration.shared.secrets, let components = secrets.callbackURLComponents else {
             assertionFailure("Trying to retrieve access token without configuring oauth secrets.")
             throw OAuthError.notConfigured
         }
 
-        await sessionData.save(email)
         do {
-            let url = try oauthURL(with: email, secrets: secrets)
+            let url = try oauthURL(with: secrets)
             let callbackURL = try await authenticationSession.authenticate(
                 using: url,
                 callbackURLComponents: components
             )
-            _ = await handleCallback(callbackURL)
+            return try await handleCallback(callbackURL)
         } catch {
             throw OAuthError.from(error: error)
         }
     }
 
-    func handleCallback(_ callbackURL: URL) async -> Bool {
-        guard let email = await sessionData.restore() else { return false }
-
+    func handleCallback(_ callbackURL: URL) async throws -> AccessToken {
         do {
-            let newToken = try tokenResponse(from: callbackURL)
+            let newToken = try await tokenResponse(from: callbackURL)
 
-            overrideToken(newToken, for: email)
             await authenticationSession.cancel()
-            Self.postNotification(.authorizationFinished)
-            return true
-        } catch OAuthError.couldNotParseAccessCode {
-            await authenticationSession.cancel()
-            Self.postNotification(.authorizationFinished)
-            return false // The URL was not a Gravatar callback URL with a token.
+            return newToken
         } catch {
             await authenticationSession.cancel()
-            Self.postNotification(.authorizationError, error: error)
-            return true
+            throw error
         }
     }
 
-    private static func postNotification(_ name: Notification.Name, error: Error? = nil) {
-        Task { @MainActor in
-            NotificationCenter.default.post(name: name, object: error)
-        }
-    }
-
-    private func tokenResponse(from callbackURL: URL) throws(OAuthError) -> AccessToken {
-        guard let accessToken = AccessToken(from: callbackURL) else {
+    private func tokenResponse(from callbackURL: URL) async throws(OAuthError) -> AccessToken {
+        guard let token = await callbackParser.parse(from: callbackURL) else {
             throw OAuthError.couldNotParseAccessCode(callbackURL.absoluteString)
         }
 
-        return accessToken
+        return token
     }
 
-    private func oauthURL(with email: Email, secrets: Configuration.Secrets) throws(OAuthError) -> URL {
-        let params = OAuthURLParams(email: email, secrets: secrets)
+    private func oauthURL(with secrets: Configuration.Secrets) throws(OAuthError) -> URL {
+        let params = OAuthURLParams(secrets: secrets)
         var urlComponents = URLComponents(string: "https://public-api.wordpress.com/oauth2/authorize")!
         do {
             urlComponents = try urlComponents.settingQueryItems(params.queryItems, shouldEncodePlusChar: true)
             guard let finalURL = urlComponents.url else {
                 assertionFailure("Error encoding oauth secrets")
-                throw OAuthError.couldNotCreateOAuthURLWithGivenSecrets
+                throw OAuthError.configurationError
             }
             return finalURL
         } catch {
             assertionFailure("Error encoding oauth secrets")
-            throw OAuthError.couldNotCreateOAuthURLWithGivenSecrets
+            throw OAuthError.configurationError
         }
     }
 }
 
 // MARK: - Private helpers
 
-private struct AccessTokenRequestParams: Encodable {
-    let clientID: String
-    let redirectURI: String
-    let grantType: String = "authorization_code"
-    let code: String
-
-    init(secrets: Configuration.Secrets, code: String) {
-        clientID = secrets.clientID
-        redirectURI = secrets.redirectURI
-        self.code = code
-    }
-}
-
 private struct OAuthURLParams: Encodable {
     let clientID: String
     let responseType: String
     let blogID: String
     let redirectURI: String
-    let userEmail: String
     var scope1: String
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
@@ -134,25 +103,30 @@ private struct OAuthURLParams: Encodable {
         case responseType
         case blogID
         case redirectURI
-        case userEmail
         case scope1 = "scope[1]"
     }
 
-    init(email: Email, secrets: Configuration.Secrets) {
+    init(secrets: Configuration.Secrets) {
         self.clientID = secrets.clientID
-        self.responseType = "code"
+        self.responseType = "token"
         self.blogID = "0"
         self.redirectURI = secrets.redirectURI
-        self.userEmail = email.rawValue
         self.scope1 = "global"
+    }
+}
+
+extension JSONEncoder {
+    static var snakeCaseEncoder: JSONEncoder {
+        let encoder = JSONEncoder()
+        encoder.keyEncodingStrategy = .convertToSnakeCase
+        return encoder
     }
 }
 
 extension OAuthURLParams {
     var queryItems: [URLQueryItem] {
         get throws {
-            let encoder = JSONEncoder()
-            encoder.keyEncodingStrategy = .convertToSnakeCase
+            let encoder = JSONEncoder.snakeCaseEncoder
             let data = try encoder.encode(self)
             let dictionary = try JSONSerialization.jsonObject(with: data) as? [String: String]
             return dictionary?.map {
@@ -162,34 +136,10 @@ extension OAuthURLParams {
     }
 }
 
-private struct RemoteOAuthError: Decodable {
-    let error: String
-    let errorDescription: String
-}
-
 extension [URLQueryItem] {
     fileprivate var string: String? {
         var components = URLComponents()
         components.queryItems = self
         return components.query
     }
-}
-
-// Stores the email used for the current OAuth flow
-private actor SessionData {
-    private var current: Email?
-
-    func save(_ email: Email) {
-        current = email
-    }
-
-    func restore() -> Email? {
-        let currentEmail = current
-        return currentEmail
-    }
-}
-
-extension Notification.Name {
-    static let authorizationFinished = Notification.Name("com.GravatarSDK.AuthorizationFinished")
-    static let authorizationError = Notification.Name("com.GravatarSDK.AuthorizationFinishedWithError")
 }

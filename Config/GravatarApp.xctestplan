@@ -18,6 +18,13 @@
   "testTargets" : [
     {
       "target" : {
+        "containerPath" : "container:Packages\/OAuth",
+        "identifier" : "OAuthTests",
+        "name" : "OAuthTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:Packages\/Analytics",
         "identifier" : "AnalyticsTests",
         "name" : "AnalyticsTests"

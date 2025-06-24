@@ -6,33 +6,25 @@ import Testing
 
 private let redirectURI = "https://gravatar.com/callback"
 private let clientID = "clientID"
+private let clientSecret = "secret"
 
 struct OauthManagerTests {
     let callbackURI = URL(string: "https://gravatar.com/#access_token=YOUR_API_TOKEN&expires_in=64800&token_type=bearer&site_id=01")!
-    let email = Email("some@email.com")
 
     init() async throws {
         await Configuration.shared.setSecrets(.init(
             clientID: clientID,
+            clientSecret: clientSecret,
             redirectURI: redirectURI
         ))
     }
 
-    @Test("Calling requestSession successfully will save a session")
-    func oauthHasSession() async throws {
+    @Test("Calling requestSession successfully returns a token")
+    func oauthReturnsToken() async throws {
         let manager = getManager()
-        try await manager.requestSession(with: .init("some@email.com"))
+        let token = try await manager.requestAccessToken()
 
-        #expect(manager.hasSession(with: email))
-    }
-
-    @Test("Calling requestSession successfully will parce and store the token")
-    func oauthParceToken() async throws {
-        let manager = getManager()
-        try await manager.requestSession(with: .init("some@email.com"))
-        let token = manager.sessionToken(with: email)
-
-        #expect(token?.token == "YOUR_API_TOKEN")
+        #expect(token.token == "YOUR_API_TOKEN")
     }
 
     @Test("Calling requestSession with error should throw")
@@ -41,7 +33,7 @@ struct OauthManagerTests {
         let manager = getManager(error: error)
 
         await #expect(throws: OAuthError.self) {
-            try await manager.requestSession(with: email)
+            try await manager.requestAccessToken()
         }
     }
 
@@ -51,12 +43,14 @@ struct OauthManagerTests {
             callbackURI: URL(string: "gravatar.com/not_a_token")!
         )
         let manager = getManager(session: session)
-        try await manager.requestSession(with: email)
+        await #expect(throws: OAuthError.self) {
+            _ = try await manager.requestAccessToken()
+        }
         #expect(await session.cancelled)
     }
 
     @Test("Parameters are added to request URL", arguments: [
-        URLQueryItem(name: "response_type", value: "code"),
+        URLQueryItem(name: "response_type", value: "token"),
         URLQueryItem(name: "scope[1]", value: "global"),
         URLQueryItem(name: "client_id", value: clientID),
         URLQueryItem(name: "redirect_uri", value: redirectURI),
@@ -64,7 +58,7 @@ struct OauthManagerTests {
     func requestURLWithParams(queryItem: URLQueryItem) async throws {
         let session = AuthenticationSessionMock(callbackURI: callbackURI)
         let manager = getManager(session: session)
-        try await manager.requestSession(with: email)
+        _ = try await manager.requestAccessToken()
 
         let components = await URLComponents(string: session.requestURL?.absoluteString ?? "")
 

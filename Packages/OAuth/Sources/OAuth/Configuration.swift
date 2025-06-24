@@ -4,6 +4,7 @@ import SwiftUI
 actor Configuration {
     struct Secrets: Sendable {
         let clientID: String
+        let clientSecret: String
         let redirectURI: String
         var callbackScheme: String {
             callbackURLComponents?.scheme ?? ""
@@ -13,9 +14,10 @@ actor Configuration {
             URLComponents(string: redirectURI)
         }
 
-        init(clientID: String, redirectURI: String) {
+        init(clientID: String, clientSecret: String, redirectURI: String) {
             self.clientID = clientID
             self.redirectURI = redirectURI
+            self.clientSecret = clientSecret
         }
     }
 
@@ -28,20 +30,21 @@ actor Configuration {
 }
 
 extension View {
-    public func configureOAuth(clientID: String, redirectURI: String) -> some View {
-        self.modifier(OAuthConfigurationModifier(clientID: clientID, redirectURI: redirectURI))
+    public func configureOAuth(clientID: String, clientSecret: String, redirectURI: String) -> some View {
+        self.modifier(OAuthConfigurationModifier(clientID: clientID, clientSecret: clientSecret, redirectURI: redirectURI))
     }
 }
 
 struct OAuthConfigurationModifier: ViewModifier {
     let clientID: String
+    let clientSecret: String
     let redirectURI: String
 
     func body(content: Self.Content) -> some View {
         content.onAppear {
             Task {
                 await OAuth.Configuration.shared.setSecrets(
-                    .init(clientID: clientID, redirectURI: redirectURI)
+                    .init(clientID: clientID, clientSecret: clientSecret, redirectURI: redirectURI)
                 )
             }
         }

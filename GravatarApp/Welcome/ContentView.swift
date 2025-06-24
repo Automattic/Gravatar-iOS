@@ -3,49 +3,30 @@ import Gravatar
 import SwiftUI
 
 struct ContentView: View {
-    @Environment(\.analytics) var analytics
+    @State private var profile: Profile
 
-    @State private var displayName: String = ""
-    @State private var email: String = ""
+    let onLogout: () -> Void
+
+    init(profile: Profile, onLogout: @escaping () -> Void) {
+        self._profile = State(initialValue: profile)
+        self.onLogout = onLogout
+    }
 
     var body: some View {
         VStack {
-            VStack(alignment: .leading) {
-                Text("Gravatar email address:")
-                TextField("Email", text: $email)
-                    .textFieldStyle(.roundedBorder)
-                    .textContentType(.emailAddress)
-                    .textInputAutocapitalization(.never)
+            profileView(with: profile)
+            Button("Logout") {
+                onLogout()
             }
-
-            Button("Fetch profile") {
-                fetchProfile()
-                analytics.track(WelcomeScreenEvent.authButtonPressed)
-            }
-            .buttonStyle(.borderedProminent)
-            Text("Display Name:")
-                .padding(.top)
-            Text(displayName)
         }
         .padding()
     }
 
-    func fetchProfile() {
-        let service = ProfileService()
-        Task {
-            do {
-                let profile = try await service.fetch(with: .email(email))
-                analytics.setUserId(email)
-                analytics.track(WelcomeScreenEvent.authSuccess)
-                displayName = profile.displayName
-            } catch {
-                displayName = error.localizedDescription
-                analytics.track(WelcomeScreenEvent.authFailed(with: error.localizedDescription))
-            }
-        }
+    func profileView(with profile: Profile) -> some View {
+        Text(profile.displayName)
     }
 }
 
-#Preview {
-    ContentView()
-}
+// #Preview {
+//    ContentView(model: .constant(.init(profile: .init(get: { Profile() }, set: <#T##(Profile) -> Void#>), token: "")))
+// }
