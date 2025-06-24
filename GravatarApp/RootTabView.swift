@@ -42,7 +42,7 @@ struct ProfileTab: View {
             ContentView(profile: profile, onLogout: onLogout)
         }
         .tabItem {
-            Label("Profile", systemImage: "brain.head.profile")
+            Label("Profile", systemImage: "brain.filled.head.profile")
         }
     }
 }
