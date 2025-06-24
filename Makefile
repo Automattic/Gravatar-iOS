@@ -27,9 +27,11 @@ dev: setup # Open the package in xcode
 setup: # Setup secrets
 	@TEMPLATE_PATH="${CURRENT_MAKEFILE_DIR}/.secrets/Secrets.tpl"; \
 	SECRETS_PATH="${CURRENT_MAKEFILE_DIR}/GravatarApp/Secrets/Secrets.swift"; \
+	DIR_PATH=$$(dirname "$${SECRETS_PATH}"); \
 	if [ ! -f "$${SECRETS_PATH}" ]; then \
-		echo "Secrets file created"; \
+		mkdir -p "$${DIR_PATH}"; \
 		cp "$${TEMPLATE_PATH}" "$${SECRETS_PATH}"; \
+		echo "Secrets file created at $${SECRETS_PATH}"; \
 	fi
 
 swiftformat: check-docker # Automatically find and fixes lint issues
