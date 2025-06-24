@@ -22,8 +22,10 @@ struct CodeCallbackParser: CallbackParser {
     }
 
     func parseCode(from callbackURL: URL) -> String? {
-        guard let components = URLComponents(string: callbackURL.absoluteString),
-              let queryItems = components.queryItems else { return nil }
+        guard
+            let components = URLComponents(string: callbackURL.absoluteString),
+            let queryItems = components.queryItems
+        else { return nil }
 
         let parameters = queryItems.reduce(into: [String: String]()) { result, item in
             result[item.name] = item.value
