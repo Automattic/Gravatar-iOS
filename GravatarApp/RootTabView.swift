@@ -8,12 +8,15 @@ struct RootTabView: View {
     var body: some View {
         TabView {
             // MARK: - First tab
+
             GravatarTab(profile: profile, onLogout: onLogout)
 
             // MARK: - Second tab
+
             ProfileTab(profile: profile, onLogout: onLogout)
 
             // MARK: - Third tab
+
             ShareTab()
         }
     }
@@ -79,8 +82,6 @@ struct BackgroundColorView<Content>: View where Content: View {
     }
 }
 
-
-
- #Preview {
-     RootTabView(profile: Profile.testProfile, onLogout: {})
- }
+#Preview {
+    RootTabView(profile: Profile.testProfile, onLogout: {})
+}
