@@ -17,7 +17,9 @@ extension OAuthError {
             return error
         case let error as DecodingError:
             assertionFailure("Unable to decode the response. Error: \(error.localizedDescription)")
-            return OAuthError.decodingError(error.localizedDescription)
+            return .decodingError(error.localizedDescription)
+        case let error as URLError:
+            return .tokenRequestError(error)
         case let error as NSError:
             if error.domain == ASWebAuthenticationSessionErrorDomain {
                 return .oauthResponseError(error.localizedDescription, ASWebAuthenticationSessionError.Code(rawValue: error.code))

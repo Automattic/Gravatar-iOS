@@ -64,14 +64,8 @@ struct CodeCallbackParser: CallbackParser {
             }
 
             return AccessToken(token: token)
-        } catch let oauthError as OAuthError {
-            throw oauthError
-        } catch let error as URLError {
-            throw .tokenRequestError(error)
-        } catch let error as DecodingError {
-            throw .decodingError(error.localizedDescription)
         } catch {
-            throw .unknown(error)
+            throw OAuthError.from(error: error)
         }
     }
 }
