@@ -25,6 +25,7 @@ steps:
   - label: "🧪 Tests"
     key: tests
     command: |
+      make setup
       xcodebuild test -project GravatarApp.xcodeproj -scheme GravatarApp -destination 'platform=iOS Simulator,name=iPhone 16,arch=arm64'
     notify:
       - github_commit_status:

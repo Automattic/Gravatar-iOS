@@ -97,7 +97,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1EDD7FB22DF9B94500E5F1B6 /* Build configuration list for PBXNativeTarget "GravatarApp" */;
 			buildPhases = (
-				1E79E4FC2E02C373008D2640 /* Generate Secrets */,
 				1EDD7F8C2DF9B94300E5F1B6 /* Sources */,
 				1EDD7F8D2DF9B94300E5F1B6 /* Frameworks */,
 				1EDD7F8E2DF9B94300E5F1B6 /* Resources */,
@@ -203,29 +202,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		1E79E4FC2E02C373008D2640 /* Generate Secrets */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/.secrets/Secrets.tpl",
-			);
-			name = "Generate Secrets";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(SRCROOT)/GravatarApp/Secrets/Secrets.swift",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "TEMPLATE_PATH=\"${SRCROOT}/.secrets/Secrets.tpl\"\nSECRETS_PATH=\"${SRCROOT}/GravatarApp/Secrets/Secrets.swift\"\n\nif [ ! -f \"${SECRETS_PATH}\" ]; then\n    echo \"${SRCROOT}\"\n    cp \"${TEMPLATE_PATH}\" \"${SECRETS_PATH}\"\nfi\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		1EDD7F8C2DF9B94300E5F1B6 /* Sources */ = {
