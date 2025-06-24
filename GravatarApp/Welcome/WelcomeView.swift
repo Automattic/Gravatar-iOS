@@ -48,7 +48,10 @@ struct WelcomeView: View {
 
     @ViewBuilder
     func errorView(with error: Error) -> some View {
-        Text(String(describing: error))
+        Text(String(describing: error)).onAppear {
+            // Temporary for dev purposes
+            print("Error: \(error)")
+        }
         Spacer()
     }
 
