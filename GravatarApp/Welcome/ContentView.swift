@@ -26,7 +26,3 @@ struct ContentView: View {
         Text(profile.displayName)
     }
 }
-
-// #Preview {
-//    ContentView(model: .constant(.init(profile: .init(get: { Profile() }, set: <#T##(Profile) -> Void#>), token: "")))
-// }

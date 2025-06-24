@@ -1,9 +1,9 @@
-import Testing
 import Foundation
 @testable import OAuth
+import Testing
 
-@Test
-func testCodeParser() async throws {
+@Test("Test CodeParser can parse the code and request the token")
+func codeParser() async throws {
     await Configuration.shared.setSecrets(.init(clientID: "", clientSecret: "", redirectURI: ""))
     let response = ["access_token": "ACCESS_TOKEN"]
     let parser = CodeCallbackParser(urlSession: URLSessionMock(returnBody: response))
@@ -13,7 +13,7 @@ func testCodeParser() async throws {
 }
 
 struct URLSessionMock: URLSessionProtocol, @unchecked Sendable {
-    let returnBody: Dictionary<String, Any>
+    let returnBody: [String: Any]
 
     func data(for request: URLRequest, delegate: (any URLSessionTaskDelegate)?) async throws -> (Data, URLResponse) {
         (
