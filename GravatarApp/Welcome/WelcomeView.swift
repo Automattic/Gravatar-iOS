@@ -48,7 +48,7 @@ struct WelcomeView: View {
 
     @ViewBuilder
     func errorView(with error: Error) -> some View {
-        Text(error.localizedDescription)
+        Text(String(describing: error))
         Spacer()
     }
 
