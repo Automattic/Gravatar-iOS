@@ -73,7 +73,7 @@ platform :ios do
     build_app(
       scheme: 'GravatarApp',
       configuration: 'Enterprise',
-      # Explicitly set iOS destination to avoid xcodebuild accidentallypicking up tvOS
+      # Explicitly set iOS destination to avoid xcodebuild accidentally picking up tvOS
       destination: 'generic/platform=iOS',
       include_bitcode: false,
       include_symbols: true,
