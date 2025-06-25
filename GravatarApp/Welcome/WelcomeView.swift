@@ -84,10 +84,12 @@ struct WelcomeView: View {
     }
 
     func requestOAuthToken() async {
+        analytics.track(WelcomeScreenEvent.authButtonPressed)
         error = nil
         do {
             let accessToken = try await oauthManager.requestAccessToken()
             let profile = try await requestProfile(with: accessToken.token)
+            analytics.track(WelcomeScreenEvent.authSuccess)
             oauthManager.saveToken(accessToken, withKey: profile.hash)
         } catch {
             self.error = error
@@ -96,6 +98,7 @@ struct WelcomeView: View {
 
     func requestProfile(with token: String) async throws(APIError) -> Profile {
         let profile = try await profileService.fetchProfile(with: token)
+        analytics.setUserName(profile.userLogin)
         setProfile(to: profile)
         return profile
     }

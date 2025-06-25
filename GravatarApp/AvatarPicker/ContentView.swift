@@ -14,27 +14,11 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
-            profileView(with: profile)
+            Text(profile.displayName)
             Button("Logout") {
                 onLogout()
             }
         }
         .padding()
-    }
-
-    func fetchProfile() {
-        let service = ProfileService()
-        Task {
-            do {
-                let profile = try await service.fetch(with: .email(email))
-                // TODO: This should be updated with profile.id, which will be added in the future
-                analytics.setUserName(profile.hash)
-                analytics.track(WelcomeScreenEvent.authSuccess)
-                displayName = profile.displayName
-            } catch {
-                displayName = error.localizedDescription
-                analytics.track(WelcomeScreenEvent.authFailed(with: error.localizedDescription))
-            }
-        }
     }
 }
