@@ -46,9 +46,9 @@ class CollapsableHeaderView: UIView {
         self.minHeight = minHeight
         addSubview(contentView)
         setupContent()
-        contentView.updateUI(for: .fullHeight)
+        /*contentView.updateUI(for: .fullHeight)
         self.contentView.setNeedsLayout()
-        self.contentView.layoutIfNeeded()
+        self.contentView.layoutIfNeeded()*/
         self.lastSnappoint = .fullHeight
     }
 
@@ -169,7 +169,7 @@ class CollapsableHeaderView: UIView {
         guard let animator else {
             return
         }
-        if animator.state != .stopped {
+        if animator.state != .stopped && animator.isInterruptible {
             animator.stopAnimation(false)
             animator.addCompletion { [weak self] _ in
                 guard let self else { return }
