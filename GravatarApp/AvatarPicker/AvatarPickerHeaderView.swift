@@ -69,9 +69,11 @@ struct AvatarPickerHeaderView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     AvatarPickerHeaderView(profile: .constant(.testProfile))
 }
+#endif
 
 // MARK: - Constants
 

@@ -16,7 +16,7 @@ struct ContentView: View {
         AvatarPickerHeaderView(profile: $profile)
         VStack(alignment: .center) {
             Spacer()
-            profileView(with: profile)
+            Text("Profile View")
             Button("Logout") {
                 onLogout()
             }
@@ -26,6 +26,8 @@ struct ContentView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     ContentView(profile: .testProfile, onLogout: {})
 }
+#endif
