@@ -42,11 +42,21 @@ struct ProfileTab: View {
 
     var body: some View {
         BackgroundColorView(color: .secondarySystemBackground) {
-            ContentView(profile: profile, onLogout: onLogout)
+            Self.content(with: profile, onLogout: onLogout)
         }
         .tabItem {
             Label("Profile", systemImage: "brain.filled.head.profile")
         }
+    }
+
+    static func content(with profile: Profile, onLogout: @escaping () -> Void) -> CollapsableHeaderScrollView<TestProfileContent> {
+        let profileView = TestProfileContent(profile: profile, onLogout: onLogout)
+        return CollapsableHeaderScrollView<TestProfileContent>(
+            headerContentView: ProfileHeaderContentView(),
+            scrollableContent: .swiftUI(profileView),
+            headerMaxHeight: 250,
+            headerMinHeight: 100
+        )
     }
 }
 
