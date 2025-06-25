@@ -16,7 +16,7 @@ struct WelcomeView: View {
             if profileService.isLoading {
                 ProgressView()
             } else if let profile {
-                ContentView(profile: profile) {
+                RootTabView(profile: profile) {
                     logout()
                 }
                 .transition(.opacity)

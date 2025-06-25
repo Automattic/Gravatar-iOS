@@ -11,6 +11,11 @@ struct GravatarAppApp: App {
                     clientSecret: Secrets.clientSecret,
                     redirectURI: Secrets.redirectURI
                 )
+                .onAppear {
+                    let appearance = UITabBarAppearance()
+                    appearance.configureWithDefaultBackground()
+                    UITabBar.appearance().scrollEdgeAppearance = appearance
+                }
         }
     }
 }
