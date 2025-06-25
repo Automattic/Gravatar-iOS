@@ -16,7 +16,7 @@ struct WelcomeView: View {
             if profileService.isLoading {
                 ProgressView()
             } else if let profile {
-                ContentView(profile: profile) {
+                RootTabView(profile: profile) {
                     logout()
                 }
                 .transition(.opacity)
@@ -48,7 +48,10 @@ struct WelcomeView: View {
 
     @ViewBuilder
     func errorView(with error: Error) -> some View {
-        Text(error.localizedDescription)
+        Text(String(describing: error)).onAppear {
+            // Temporary for dev purposes
+            print("Error: \(error)")
+        }
         Spacer()
     }
 

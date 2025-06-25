@@ -52,10 +52,7 @@ public struct OAuthManager: Sendable {
     }
 
     func handleCallback(_ callbackURL: URL) async throws(OAuthError) -> AccessToken {
-        guard let token = await callbackParser.parse(from: callbackURL) else {
-            throw OAuthError.couldNotParseAccessCode(callbackURL.absoluteString)
-        }
-
+        let token = try await callbackParser.parse(from: callbackURL)
         await authenticationSession.cancel()
         return token
     }
