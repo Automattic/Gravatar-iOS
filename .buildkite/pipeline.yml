@@ -25,7 +25,29 @@ steps:
   - label: "🧪 Tests"
     key: tests
     command: |
+      make setup
       xcodebuild test -project GravatarApp.xcodeproj -scheme GravatarApp -destination 'platform=iOS Simulator,name=iPhone 16,arch=arm64'
     notify:
       - github_commit_status:
           context: "Unit tests"
+
+  - group: Prototype Build
+    steps:
+      - label: Package Prototype Build
+        key: prototype_build
+        command: .buildkite/commands/build_prototype.sh
+        plugins: [$CI_TOOLKIT]
+        artifact_paths:
+          - ".build/artifacts/*.ipa"
+          - ".build/artifacts/*.app.dSYM.zip"
+        notify:
+          - github_commit_status:
+              context: Package Prototype Build
+
+      - label: Distribute Prototype Build
+        depends_on: prototype_build
+        command: .buildkite/commands/distribute_prototype.sh
+        plugins: [$CI_TOOLKIT]
+        notify:
+          - github_commit_status:
+              context: Distribute Prototype Build

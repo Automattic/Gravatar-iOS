@@ -3,29 +3,21 @@ import Gravatar
 import SwiftUI
 
 struct ContentView: View {
-    @Environment(\.analytics) var analytics
+    @State private var profile: Profile
 
-    @State private var displayName: String = ""
-    @State private var email: String = ""
+    let onLogout: () -> Void
+
+    init(profile: Profile, onLogout: @escaping () -> Void) {
+        self._profile = State(initialValue: profile)
+        self.onLogout = onLogout
+    }
 
     var body: some View {
         VStack {
-            VStack(alignment: .leading) {
-                Text("Gravatar email address:")
-                TextField("Email", text: $email)
-                    .textFieldStyle(.roundedBorder)
-                    .textContentType(.emailAddress)
-                    .textInputAutocapitalization(.never)
+            profileView(with: profile)
+            Button("Logout") {
+                onLogout()
             }
-
-            Button("Fetch profile") {
-                fetchProfile()
-                analytics.track(WelcomeScreenEvent.authButtonPressed)
-            }
-            .buttonStyle(.borderedProminent)
-            Text("Display Name:")
-                .padding(.top)
-            Text(displayName)
         }
         .padding()
     }
@@ -45,8 +37,4 @@ struct ContentView: View {
             }
         }
     }
-}
-
-#Preview {
-    ContentView()
 }

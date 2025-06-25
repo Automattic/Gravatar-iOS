@@ -21,8 +21,18 @@ help:  # Display this help.
 	@-+echo
 	@-+grep -Eh "^[a-z-]+:.*#" $(CURRENT_MAKEFILE_PATH) | sed -E 's/^(.*:)(.*#+)(.*)/  \1 @@@ \3 /' | column -t -s "@@@"
 
-dev: # Open the package in xcode
+dev: setup # Open the package in xcode
 	xed .
+
+setup: # Setup secrets
+	@TEMPLATE_PATH="${CURRENT_MAKEFILE_DIR}/.secrets/Secrets.tpl"; \
+	SECRETS_PATH="${CURRENT_MAKEFILE_DIR}/GravatarApp/Secrets/Secrets.swift"; \
+	DIR_PATH=$$(dirname "$${SECRETS_PATH}"); \
+	if [ ! -f "$${SECRETS_PATH}" ]; then \
+		mkdir -p "$${DIR_PATH}"; \
+		cp "$${TEMPLATE_PATH}" "$${SECRETS_PATH}"; \
+		echo "Secrets file created at $${SECRETS_PATH}"; \
+	fi
 
 swiftformat: check-docker # Automatically find and fixes lint issues
 	@docker run --rm -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/nicklockwood/swiftformat:$(SWIFTFORMAT_VERSION) GravatarApp GravatarAppTests Packages

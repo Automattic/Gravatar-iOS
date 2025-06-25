@@ -22,7 +22,18 @@ CODE_SIGNING_ENV_VARS = %w[
 ].freeze
 
 PROJECT_XCCONFIG = Xcodeproj::Config.new(File.join(PROJECT_ROOT_FOLDER, 'Config', 'Project.xcconfig'))
-APP_XCCONFIG = Xcodeproj::Config.new(File.join(PROJECT_ROOT_FOLDER, 'Config', 'GravatarApp.common.xcconfig'))
+APP_STORE_XCCONFIG = Xcodeproj::Config.new(File.join(PROJECT_ROOT_FOLDER, 'Config', 'GravatarApp.common.xcconfig'))
+ENTERPRISE_XCCONFIG_PATH = File.join(PROJECT_ROOT_FOLDER, 'Config', 'GravatarApp.enterprise.xcconfig')
+ENTERPRISE_XCCONFIG = Xcodeproj::Config.new(ENTERPRISE_XCCONFIG_PATH)
+
+ARTIFACTS_FOLDER = File.join(PROJECT_ROOT_FOLDER, '.build', 'artifacts')
+
+PROTOTYPE_BUILD_NAME = 'GravatarApp-Prototype'
+
+FIREBASE_APP_ID = '1:124902176124:ios:7bffd4c3c7143e3a1620f9'
+FIREBASE_TESTERS_GROUP = 'gravatar-ios---prototype-builds'
+
+GITHUB_REPO = 'Automattic/Gravatar-iOS'
 
 # Required for app_store_connect_api_key to generate the key information to pass down the call chain.
 ASC_API_KEY_ENV_VARS = %w[
@@ -32,6 +43,7 @@ ASC_API_KEY_ENV_VARS = %w[
 ].freeze
 
 require_relative 'lib/env_manager'
+require_relative 'lib/code_signing_helpers'
 
 before_all do
   # This is necessary for 'match' to work correctly in CI. When running
@@ -44,26 +56,111 @@ end
 default_platform :ios
 
 platform :ios do
+  # Builds the app binary for Enterprise distribution (Prototype Build)
+  #
+  # @param fetch_code_signing [Boolean] If true, will call `configure_code_signing_enterprise` before building. Recommended on CI.
+  # @param build_number [String] The build number to use for the build. When in CI, defaults to the value of `BUILDKITE_BUILD_NUMBER` environment variable.
+  # @param version [String] The version to use for the build. When in CI, defaults to the PR number, falling back to the branch name.
+  #
+  lane :build_prototype do |fetch_code_signing: true, build_number: build_number_from_ci, version: pr_number_or_branch_name_from_ci|
+    if fetch_code_signing
+      configure_code_signing_enterprise
+    else
+      UI.message('Skipping fetching certificates and provisioning profiles as requested.')
+    end
+
+    build_app(
+      scheme: 'GravatarApp',
+      configuration: 'Enterprise',
+      # Explicitly set iOS destination to avoid xcodebuild accidentally picking up tvOS
+      destination: 'generic/platform=iOS',
+      include_bitcode: false,
+      include_symbols: true,
+      clean: true,
+      xcargs: { MARKETING_VERSION: version, CURRENT_PROJECT_VERSION: build_number },
+      output_directory: ARTIFACTS_FOLDER,
+      output_name: PROTOTYPE_BUILD_NAME,
+      export_options: {
+        method: 'enterprise',
+        manageAppVersionAndBuildNumber: false
+      }
+    )
+  end
+
+  # Distributes the Prototype Build to Firebase App Distribution
+  #
+  lane :distribute_prototype do |ipa_path: File.join(ARTIFACTS_FOLDER, "#{PROTOTYPE_BUILD_NAME}.ipa")|
+    EnvManager.require_env_vars!('FIREBASE_APP_DISTRIBUTION_ACCOUNT_KEY')
+
+    release_notes = <<~NOTES
+      Pull Request: ##{pull_request_number || 'N/A'}
+      Branch: `#{branch_name_from_ci || 'N/A'}`
+      Commit: `#{commit_hash_from_ci || 'N/A'}[0...7]`
+    NOTES
+
+    firebase_app_distribution(
+      app: FIREBASE_APP_ID,
+      ipa_path: ipa_path,
+      service_credentials_json_data: EnvManager.get_required_env!('FIREBASE_APP_DISTRIBUTION_ACCOUNT_KEY'),
+      release_notes: release_notes,
+      groups: FIREBASE_TESTERS_GROUP
+    )
+
+    next if pull_request_number.nil?
+
+    comment_on_pr(
+      project: GITHUB_REPO,
+      pr_number: pull_request_number,
+      reuse_identifier: 'prototype-build-link',
+      body: prototype_build_details_comment(
+        app_display_name: 'Gravatar Prototype Build',
+        fold: true
+      )
+    )
+  end
+
+  # Download and configure code signing certificates and provisioning profiles for the App Store build.
+  #
+  # @param readonly [Boolean] If false, will generate new provisioning profiles if the ones available are missing or invalid.
+  #
   desc 'Download and configure code signing certificates and provisioning profiles for the App Store build.'
   lane :configure_code_signing_app_store do |readonly: true|
-    configure_code_signing(type: 'appstore', readonly: readonly)
+    configure_code_signing(app_identifier: app_bundle_identifier_app_store!, type: 'appstore', team_id: asc_team_id!, readonly: readonly)
+  end
+
+  # Download and configure code signing certificates and provisioning profiles for the Enterprise build (Prototype Build).
+  #
+  # @param readonly [Boolean] If false, will generate new provisioning profiles if the ones available are missing or invalid.
+  #
+  desc 'Download and configure code signing certificates and provisioning profiles for the Enterprise build (Prototype Build).'
+  lane :configure_code_signing_enterprise do |readonly: true|
+    configure_code_signing(app_identifier: app_bundle_identifier_enterprise!, type: 'enterprise', team_id: enterprise_team_id!, readonly: readonly)
   end
 end
 
-def configure_code_signing(type:, readonly:)
+def configure_code_signing(app_identifier:, type:, team_id:, readonly:)
   EnvManager.require_env_vars!(*CODE_SIGNING_ENV_VARS)
 
   unless readonly
-    # We need the API key instantiated only when making changes on ASC (readonly = false)
-    EnvManager.require_env_vars!(*ASC_API_KEY_ENV_VARS)
-    api_key = app_store_connect_api_key
+    case type
+    when 'appstore'
+      # When readonly = false and type = appstore, we need the API key instantiated to connect with App Store Connect.
+      EnvManager.require_env_vars!(*ASC_API_KEY_ENV_VARS)
+      api_key = app_store_connect_api_key
+    when 'enterprise'
+      # The Enterprise account APIs do not support authentication via API key.
+      # If we want to modify data (readonly = false) we need to authenticate manually.
+      prompt_user_for_app_store_connect_credentials
+    else
+      UI.user_error!("Unsupported code signing type: '#{type}'")
+    end
   end
 
   sync_code_signing(
     type: type,
-    team_id: asc_team_id!,
+    team_id: team_id,
     api_key: api_key,
-    app_identifier: app_bundle_identifier_app_store!,
+    app_identifier: app_identifier,
     readonly: readonly,
     **CODE_SIGNING_STORAGE_OPTIONS
   )
@@ -73,14 +170,44 @@ def asc_team_id!
   read_from_xcconfig!(key: 'DEVELOPMENT_TEAM', xcconfig: PROJECT_XCCONFIG)
 end
 
+def enterprise_team_id!
+  read_from_xcconfig!(key: 'DEVELOPMENT_TEAM', xcconfig: ENTERPRISE_XCCONFIG)
+end
+
 def app_bundle_identifier_app_store!
   read_from_xcconfig!(key: 'PRODUCT_BUNDLE_IDENTIFIER')
 end
 
-def read_from_xcconfig!(key:, xcconfig: APP_XCCONFIG)
+def app_bundle_identifier_enterprise!
+  read_from_xcconfig!(key: 'PRODUCT_BUNDLE_IDENTIFIER', xcconfig: ENTERPRISE_XCCONFIG)
+end
+
+def read_from_xcconfig!(key:, xcconfig: APP_STORE_XCCONFIG)
   configs = xcconfig.attributes
 
   UI.user_error!("Could not find value for #{key} in xcconfig!") unless configs.key?(key)
 
   configs[key]
+end
+
+def build_number_from_ci
+  ENV.fetch('BUILDKITE_BUILD_NUMBER', '0')
+end
+
+def pr_number_or_branch_name_from_ci
+  pull_request_number&.then { |num| "PR ##{num}" } || branch_name_from_ci || git_branch
+end
+
+def branch_name_from_ci
+  ENV.fetch('BUILDKITE_BRANCH', nil)
+end
+
+def commit_hash_from_ci
+  ENV.fetch('BUILDKITE_COMMIT', nil)
+end
+
+def pull_request_number
+  # Buildkite sets this env var to the PR number if on a PR, but to 'false' (and not nil) if not on a PR
+  pr_num = ENV.fetch('BUILDKITE_PULL_REQUEST', 'false')
+  pr_num == 'false' ? nil : Integer(pr_num)
 end
