@@ -13,12 +13,21 @@ struct ContentView: View {
     }
 
     var body: some View {
-        VStack {
-            Text(profile.displayName)
+        AvatarPickerHeaderView(profile: $profile)
+        VStack(alignment: .center) {
+            Spacer()
+            Text("Profile View")
             Button("Logout") {
                 onLogout()
             }
+            Spacer()
         }
         .padding()
     }
 }
+
+#if DEBUG
+#Preview {
+    ContentView(profile: .testProfile, onLogout: {})
+}
+#endif
