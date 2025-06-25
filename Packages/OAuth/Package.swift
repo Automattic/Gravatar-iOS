@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "OAuth",
     platforms: [
-        .iOS(.v16), .macOS(.v12), .visionOS(.v1),
+        .iOS("17.4"), .macOS(.v12), .visionOS(.v1),
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
