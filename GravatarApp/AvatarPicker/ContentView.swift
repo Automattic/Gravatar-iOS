@@ -14,15 +14,11 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
-            profileView(with: profile)
+            Text(profile.displayName)
             Button("Logout") {
                 onLogout()
             }
         }
         .padding()
-    }
-
-    func profileView(with profile: Profile) -> some View {
-        Text(profile.displayName)
     }
 }

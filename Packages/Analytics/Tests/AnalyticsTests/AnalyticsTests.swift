@@ -1,51 +1,74 @@
 @testable import Analytics
+import Foundation
 import Testing
 
-@MainActor
-@Test("Test analytics init configuration is called")
-func configurationCalled() async throws {
+struct AnalyticsTests {
+    let userUUIDStorage = UserUUIDStorageMock()
     let tracker = TrackerMock()
-    _ = Analytics(tracker: tracker)
-    #expect(tracker.configureCalled == true)
-}
+    let analytics: Analytics
 
-@MainActor
-@Test("Test user is logged out on init")
-func userLoggedOut() async throws {
-    let tracker = TrackerMock()
-    _ = Analytics(tracker: tracker)
-    #expect(tracker.userProperties["user_is_logged_in"] as? Bool == false)
-}
+    init() {
+        self.analytics = Analytics(tracker: tracker, userUUIDStorage: userUUIDStorage)
+    }
 
-@MainActor
-@Test("Test user is logged in")
-func userLoggedIn() async throws {
-    let tracker = TrackerMock()
-    let analytics = Analytics(tracker: tracker)
-    analytics.setUserId("user")
+    @Test("Test analytics init configuration is called")
+    func configurationCalled() async throws {
+        #expect(tracker.configureCalled == true)
+    }
 
-    #expect(tracker.userProperties["user_is_logged_in"] as? Bool == true)
-}
+    @Test("Test user is logged in")
+    func userLoggedIn() async throws {
+        await analytics.setUserName("user")
 
-@MainActor
-@Test("Test event is tracked")
-func eventIsTracked() async throws {
-    let tracker = TrackerMock()
-    let analytics = Analytics(tracker: tracker)
-    analytics.track(TestEvent())
+        #expect(tracker.userProperties["user_is_logged_in"] as? Bool == true)
+        #expect(tracker.userName == "user")
+    }
 
-    #expect(tracker.eventTracked == TestEvent().name)
-}
+    @Test("Test user is logged out after being logged in")
+    func userSetToLoggedOut() async throws {
+        await analytics.setUserName("user")
 
-@MainActor
-@Test("Test event property is tracked with snake_case")
-func eventIsTrackedProperties() async throws {
-    let tracker = TrackerMock()
-    let analytics = Analytics(tracker: tracker)
-    analytics.track(TestEventWithProperties())
+        #expect(tracker.userProperties["user_is_logged_in"] as? Bool == true)
+        #expect(tracker.userName == "user")
 
-    #expect(tracker.eventTracked == TestEventWithProperties().name)
-    #expect(tracker.propertiesTracked?["test_property_key"] as? String == "property_value")
+        await analytics.setUserName(nil)
+
+        #expect(tracker.userProperties["user_is_logged_in"] as? Bool == false)
+        #expect(tracker.userName == nil)
+    }
+
+    @Test("Test user UUD is created and persisted")
+    func userUUID() async throws {
+        await analytics.setUserName("user")
+
+        #expect(tracker.userProperties["user_is_logged_in"] as? Bool == true)
+    }
+
+    @Test("Test event is tracked")
+    func eventIsTracked() async throws {
+        analytics.track(TestEvent())
+
+        #expect(tracker.eventTracked == TestEvent().name)
+    }
+
+    @Test("Test event property is tracked with snake_case")
+    func eventIsTrackedProperties() async throws {
+        analytics.track(TestEventWithProperties())
+
+        #expect(tracker.eventTracked == TestEventWithProperties().name)
+        #expect(tracker.propertiesTracked?["test_property_key"] as? String == "property_value")
+    }
+
+    @Test("User UUID is created for anonymous users")
+    func userUUIDForAnonymousUsers() async throws {
+        let userUUIDStorage = UserUUIDStorageMock()
+        let tracker = TrackerMock()
+        #expect(userUUIDStorage.uuid == nil)
+
+        _ = Analytics(tracker: tracker, userUUIDStorage: userUUIDStorage)
+
+        #expect(userUUIDStorage.uuid != nil)
+    }
 }
 
 struct TestEvent: AnalyticsEvent {
