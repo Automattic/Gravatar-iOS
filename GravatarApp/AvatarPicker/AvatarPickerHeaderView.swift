@@ -3,6 +3,9 @@ import SwiftUI
 
 struct AvatarPickerHeaderView: View {
     @Binding var profile: Profile
+    @Binding var forceRefresh: Bool
+
+    let onActionPressed: () -> Void
 
     private var imageURL: URL? {
         AvatarURL(
@@ -28,7 +31,7 @@ struct AvatarPickerHeaderView: View {
 
                     HStack {
                         Spacer()
-                        EllipsisButton(action: {})
+                        ellipsisMenu()
                     }
                 }
                 .padding(.horizontal, .hPadding)
@@ -46,7 +49,7 @@ struct AvatarPickerHeaderView: View {
     }
 
     private func smallImageView() -> some View {
-        HeaderAvatarView(imageURL: imageURL, showLoading: true) {
+        HeaderAvatarView(imageURL: imageURL, showLoading: true, forceRefresh: $forceRefresh) {
             Image(systemName: "person.circle")
                 .font(.system(size: .circlesSize, weight: .thin))
                 .circleElementSize()
@@ -60,7 +63,7 @@ struct AvatarPickerHeaderView: View {
     }
 
     private func backgroundImageView(with: CGFloat) -> some View {
-        HeaderAvatarView(imageURL: imageURL, showLoading: false) {
+        HeaderAvatarView(imageURL: imageURL, showLoading: false, forceRefresh: $forceRefresh) {
             Color.clear
         }
         .scaledToFill()
@@ -69,11 +72,30 @@ struct AvatarPickerHeaderView: View {
         .clipped()
         .opacity(0.8)
     }
+
+    private func ellipsisMenu() -> some View {
+        Menu {
+            Button(
+                "Logout",
+                systemImage: "iphone.and.arrow.forward.outward",
+                role: .destructive
+            ) {
+                onActionPressed()
+            }
+        } label: {
+            EllipsisButton(action: {})
+        }
+    }
 }
 
 #if DEBUG
 #Preview {
-    AvatarPickerHeaderView(profile: .constant(.testProfile))
+    AvatarPickerHeaderView(
+        profile: .constant(.testProfile),
+        forceRefresh: .constant(false),
+        onActionPressed: {}
+    )
+    Spacer()
 }
 #endif
 
@@ -97,6 +119,8 @@ extension View {
 private struct HeaderAvatarView<Placeholder>: View where Placeholder: View {
     let imageURL: URL?
     let showLoading: Bool
+    @Binding var forceRefresh: Bool
+
     let placeholderView: () -> Placeholder
 
     var body: some View {
@@ -105,8 +129,7 @@ private struct HeaderAvatarView<Placeholder>: View where Placeholder: View {
             placeholderView: {
                 placeholderView()
             },
-            // TODO: Temporarely force refresh to try different avatars
-            forceRefresh: .constant(true),
+            oneTimeForceRefresh: $forceRefresh,
             loadingView: {
                 showLoading ?
                     AnyView(ProgressView().progressViewStyle(.circular))

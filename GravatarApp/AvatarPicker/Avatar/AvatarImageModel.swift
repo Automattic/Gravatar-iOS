@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import Gravatar
 
 struct AvatarImageModel: Hashable, Identifiable, Sendable {
     enum Source: Hashable {
@@ -64,6 +65,17 @@ struct AvatarImageModel: Hashable, Identifiable, Sendable {
             ),
             altText
         )
+    }
+}
+
+extension AvatarImageModel {
+    init(with avatar: AvatarDetails) {
+        id = avatar.imageID
+        let avatarGridItemSize = Int(.maxAvatarWidth * UITraitCollection.current.displayScale)
+        source = .remote(url: avatar.url(withSize: String(avatarGridItemSize)))
+        state = .loaded
+        isSelected = avatar.isSelected
+        altText = avatar.altText
     }
 }
 

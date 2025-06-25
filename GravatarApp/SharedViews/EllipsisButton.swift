@@ -8,7 +8,7 @@ struct EllipsisButton: View {
             action()
         }) {
             Image(systemName: "ellipsis")
-                .foregroundColor(Color(uiColor: .systemBackground))
+                .foregroundColor(Color.white)
                 .frame(width: 24, height: 24)
                 .padding()
         }

@@ -3,9 +3,9 @@ import Gravatar
 import SwiftUI
 
 struct AvatarPickerView: View {
-
     let onLogout: () -> Void
     @StateObject var avatarPickerModel: AvatarPickerViewModel
+    @State var forceRefreshHeader: Bool = false
 
     init(avatarPickerModel: AvatarPickerViewModel, onLogout: @escaping () -> Void) {
         self._avatarPickerModel = StateObject(wrappedValue: avatarPickerModel)
@@ -14,15 +14,26 @@ struct AvatarPickerView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            AvatarPickerHeaderView(profile: $avatarPickerModel.profile)
+            AvatarPickerHeaderView(
+                profile: $avatarPickerModel.profile,
+                forceRefresh: $forceRefreshHeader,
+                onActionPressed: { onLogout() }
+            )
             ScrollView {
-                VStack(spacing: 0) {
-                    AvatarGrid(grid: avatarPickerModel.grid) { avatar in
-
-                    } onAvatarActionTap: { avatar, action in
-
-                    } onFailedUploadTapped: { error in
-
+                VStack(alignment: .leading) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text("Previous avatars")
+                            .font(.headline)
+                        Text("Tap for options")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    AvatarGrid(grid: avatarPickerModel.grid) { avatar, _ in
+                        Task {
+                            _ = await avatarPickerModel.selectAvatar(with: avatar.id)
+                            forceRefreshHeader = true
+                        }
+                    } onFailedUploadTapped: { _ in
                     }
                 }
                 .padding()
@@ -36,6 +47,11 @@ struct AvatarPickerView: View {
     }
 }
 
-//#Preview {
-//    AvatarPickerView(profile: .testProfile, onLogout: {})
-//}
+#if DEBUG
+ #Preview {
+     AvatarPickerView(avatarPickerModel: .preview_init(avatars: [
+        .init(id: "1", source: .remote(url: ""), state: .loaded, isSelected: false, altText: ""),
+        .init(id: "2", source: .remote(url: ""), state: .loaded, isSelected: true, altText: "")
+     ]), onLogout: {})
+ }
+#endif

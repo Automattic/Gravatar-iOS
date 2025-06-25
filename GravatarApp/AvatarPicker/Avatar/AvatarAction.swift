@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 
 enum AvatarAction: Identifiable {
+    case select
     case share
     case delete
     case playground
@@ -9,6 +10,7 @@ enum AvatarAction: Identifiable {
 
     var id: String {
         switch self {
+        case .select: "select"
         case .share: "share"
         case .delete: "delete"
         case .playground: "playground"
@@ -18,6 +20,8 @@ enum AvatarAction: Identifiable {
 
     var icon: Image {
         switch self {
+        case .select:
+            Image(systemName: "checkmark.circle")
         case .delete:
             Image(systemName: "trash")
         case .share:
@@ -31,6 +35,12 @@ enum AvatarAction: Identifiable {
 
     var localizedTitle: String {
         switch self {
+        case .select:
+            NSLocalizedString(
+                "AvatarPicker.AvatarAction.select",
+                value: "Select",
+                comment: "An option in the avatar menu that selects the avatar"
+            )
         case .delete:
             NSLocalizedString(
                 "AvatarPicker.AvatarAction.delete",
@@ -62,7 +72,7 @@ enum AvatarAction: Identifiable {
         switch self {
         case .delete:
             .destructive
-        case .share, .playground, .altText:
+        case .share, .playground, .altText, .select:
             nil
         }
     }

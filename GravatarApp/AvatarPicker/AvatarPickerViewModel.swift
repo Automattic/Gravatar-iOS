@@ -5,7 +5,6 @@ import SwiftUI
 
 @MainActor
 class AvatarPickerViewModel: ObservableObject {
-
     private let profileService: Gravatar.ProfileService
     private let avatarService: AvatarService
     private let imageDownloader: ImageDownloader
@@ -31,11 +30,9 @@ class AvatarPickerViewModel: ObservableObject {
     @Published var avatarIdentifier: AvatarIdentifier?
     @Published var forceRefreshAvatar: Bool = false
 
-
     @Published var shouldDisplayNoSelectedAvatarWarning: Bool = false
 
     private var cancellables = Set<AnyCancellable>()
-
 
     init(
         profile: Profile,
@@ -53,6 +50,14 @@ class AvatarPickerViewModel: ObservableObject {
 
         setupCombine()
     }
+
+    #if DEBUG
+    static func preview_init(avatars: [AvatarImageModel] = []) -> AvatarPickerViewModel {
+        let model = AvatarPickerViewModel(profile: .testProfile, authToken: "")
+        model.grid = .init(avatars: avatars, selectedAvatar: avatars.first(where: { $0.isSelected }))
+        return model
+    }
+    #endif
 
     private func setupCombine() {
         grid.$avatars
@@ -111,7 +116,7 @@ class AvatarPickerViewModel: ObservableObject {
         do {
             isAvatarsLoading = true
             let images = try await profileService.fetchAvatars(profileID: .hashID(profile.hash), token: authToken)
-            withAnimation {
+            withAnimation(.smooth) {
                 grid.setAvatars(images.map(AvatarImageModel.init))
             }
             if let selectedAvatar = grid.selectedAvatar {
@@ -166,9 +171,7 @@ class AvatarPickerViewModel: ObservableObject {
             handleError(message: Localized.avatarAltTextError)
         }
 
-        func handleError(message: String) {
-
-        }
+        func handleError(message: String) {}
 
         return false
     }
@@ -315,16 +318,7 @@ extension CGFloat {
     }
 }
 
-extension AvatarImageModel {
-    init(with avatar: AvatarDetails) {
-        id = avatar.imageID
-        let avatarGridItemSize = Int(AvatarGridConstants.maxAvatarWidth * UITraitCollection.current.displayScale)
-        source = .remote(url: avatar.url(withSize: String(avatarGridItemSize)))
-        state = .loaded
-        isSelected = avatar.isSelected
-        altText = avatar.altText
-    }
-}
+
 
 extension Result {
     func value() -> Success? {
