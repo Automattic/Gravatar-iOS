@@ -56,6 +56,7 @@ struct WelcomeView: View {
     }
 
     func setProfile(to profile: Profile?) {
+        analytics.setUserName(profile?.userLogin)
         withAnimation {
             self.profile = profile
         }
@@ -98,7 +99,6 @@ struct WelcomeView: View {
 
     func requestProfile(with token: String) async throws(APIError) -> Profile {
         let profile = try await profileService.fetchProfile(with: token)
-        analytics.setUserName(profile.userLogin)
         setProfile(to: profile)
         return profile
     }
