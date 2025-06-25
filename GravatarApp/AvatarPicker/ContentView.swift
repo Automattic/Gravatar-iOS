@@ -13,11 +13,14 @@ struct ContentView: View {
     }
 
     var body: some View {
-        VStack {
+        AvatarPickerHeaderView(profile: $profile)
+        VStack(alignment: .center) {
+            Spacer()
             profileView(with: profile)
             Button("Logout") {
                 onLogout()
             }
+            Spacer()
         }
         .padding()
     }
@@ -25,4 +28,8 @@ struct ContentView: View {
     func profileView(with profile: Profile) -> some View {
         Text(profile.displayName)
     }
+}
+
+#Preview {
+    ContentView(profile: .testProfile, onLogout: {})
 }
