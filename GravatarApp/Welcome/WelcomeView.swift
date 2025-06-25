@@ -17,7 +17,9 @@ struct WelcomeView: View {
                 ProgressView()
             } else if let profile {
                 RootTabView(profile: profile) {
-                    logout()
+                    Task {
+                        await logout()
+                    }
                 }
                 .transition(.opacity)
             } else {
@@ -55,8 +57,9 @@ struct WelcomeView: View {
         Spacer()
     }
 
-    func setProfile(to profile: Profile?) {
-        analytics.setUserName(profile?.userLogin)
+    func setProfile(to profile: Profile?) async {
+        await analytics.setUserName(profile?.userLogin)
+
         withAnimation {
             self.profile = profile
         }
@@ -78,10 +81,10 @@ struct WelcomeView: View {
         }
     }
 
-    func logout() {
+    func logout() async {
         guard let profile else { return }
         oauthManager.deleteToken(with: profile.hash)
-        setProfile(to: nil)
+        await setProfile(to: nil)
     }
 
     func requestOAuthToken() async {
@@ -99,7 +102,7 @@ struct WelcomeView: View {
 
     func requestProfile(with token: String) async throws(APIError) -> Profile {
         let profile = try await profileService.fetchProfile(with: token)
-        setProfile(to: profile)
+        await setProfile(to: profile)
         return profile
     }
 }

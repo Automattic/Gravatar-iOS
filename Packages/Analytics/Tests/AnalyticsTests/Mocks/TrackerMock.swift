@@ -1,7 +1,7 @@
 import Analytics
 import Foundation
 
-final class TrackerMock: Tracker {
+final class TrackerMock: Tracker, @unchecked Sendable {
     var eventTracked: String? = nil
     var propertiesTracked: [String: AnyHashable]? = nil
     var configureCalled = false

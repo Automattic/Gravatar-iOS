@@ -1,13 +1,13 @@
 import AutomatticTracksEvents
 
-public protocol Tracker {
+public protocol Tracker: Sendable {
     func track(_ name: String, withCustomProperties: [String: AnyHashable])
     func setUserProperty(_ value: AnyHashable, for key: String)
     func setUserName(_ userName: String?, userUUIDStorage: UserUUIDStorage)
     func configure()
 }
 
-extension TracksService: Tracker {
+extension TracksService: Tracker, @unchecked @retroactive Sendable {
     public func setUserName(_ userName: String?, userUUIDStorage: UserUUIDStorage) {
         if let userName {
             // Tracks backend will figure out WPCom userID from the userName.
