@@ -35,7 +35,9 @@ struct AvatarPickerHeaderView: View {
                 .padding(.bottom, .bottomPadding)
             }
             .frame(width: geometry.size.width, height: .headerHeight)
-        }.ignoresSafeArea()
+        }
+        .frame(height: .headerHeight)
+        .ignoresSafeArea()
     }
 
     private var overlayColor: Color {

@@ -8,6 +8,7 @@ struct WelcomeView: View {
 
     @State var error: Error?
     @State var profile: Profile?
+    @State var accessToken: String?
 
     let profileService = ProfileService()
 
@@ -15,8 +16,8 @@ struct WelcomeView: View {
         Group {
             if profileService.isLoading {
                 ProgressView()
-            } else if let profile {
-                RootTabView(profile: profile) {
+            } else if let profile, let accessToken {
+                RootTabView(avatarPickerModel: .init(profile: profile, authToken: accessToken)) {
                     Task {
                         await logout()
                     }
@@ -103,6 +104,7 @@ struct WelcomeView: View {
     func requestProfile(with token: String) async throws(APIError) -> Profile {
         let profile = try await profileService.fetchProfile(with: token)
         await setProfile(to: profile)
+        self.accessToken = token
         return profile
     }
 }
