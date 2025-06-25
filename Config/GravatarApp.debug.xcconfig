@@ -7,4 +7,3 @@
 CODE_SIGN_IDENTITY = Apple Development: Created via API (886NX39KP6)
 
 PROVISIONING_PROFILE_SPECIFIER = Gravatar iOS Development
-PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*] = Gravatar macOS Development
