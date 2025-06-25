@@ -24,10 +24,6 @@ struct ContentView: View {
         }
         .padding()
     }
-
-    func profileView(with profile: Profile) -> some View {
-        Text(profile.displayName)
-    }
 }
 
 #Preview {

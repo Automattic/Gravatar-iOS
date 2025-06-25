@@ -1,10 +1,12 @@
 import Analytics
+import Foundation
 
-final class TrackerMock: Tracker {
+final class TrackerMock: Tracker, @unchecked Sendable {
     var eventTracked: String? = nil
     var propertiesTracked: [String: AnyHashable]? = nil
     var configureCalled = false
     var userProperties: [String: AnyHashable] = [:]
+    var userName: String? = nil
 
     func track(_ name: String, withCustomProperties: [String: AnyHashable]) {
         eventTracked = name
@@ -17,5 +19,12 @@ final class TrackerMock: Tracker {
 
     func configure() {
         configureCalled = true
+    }
+
+    func setUserName(_ userName: String?, userUUIDStorage: UserUUIDStorage) {
+        self.userName = userName
+        if userName == nil {
+            userUUIDStorage.set(UUID().uuidString)
+        }
     }
 }

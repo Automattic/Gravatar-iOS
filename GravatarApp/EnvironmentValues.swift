@@ -5,5 +5,5 @@ import SwiftUI
 import Analytics
 
 extension EnvironmentValues {
-    @Entry var analytics: Analytics = .init()
+    @Entry var analytics: Analytics = .shared
 }

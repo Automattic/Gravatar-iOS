@@ -82,6 +82,8 @@ struct BackgroundColorView<Content>: View where Content: View {
     }
 }
 
+#if DEBUG // Needed when we use `Profile.testProfile on Previews`
 #Preview {
     RootTabView(profile: Profile.testProfile, onLogout: {})
 }
+#endif
