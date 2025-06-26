@@ -24,7 +24,7 @@ help:  # Display this help.
 dev: setup # Open the package in xcode
 	xed .
 
-setup: # Setup secrets
+setup: # Setup secrets file
 	@TEMPLATE_PATH="${CURRENT_MAKEFILE_DIR}/.secrets/Secrets.tpl"; \
 	SECRETS_PATH="${CURRENT_MAKEFILE_DIR}/GravatarApp/Secrets/Secrets.swift"; \
 	DIR_PATH=$$(dirname "$${SECRETS_PATH}"); \
@@ -33,6 +33,12 @@ setup: # Setup secrets
 		cp "$${TEMPLATE_PATH}" "$${SECRETS_PATH}"; \
 		echo "Secrets file created at $${SECRETS_PATH}"; \
 	fi
+
+bundle-install:
+	bundle install
+
+setup-internal: bundle-install
+	bundle exec fastlane run configure_apply
 
 swiftformat: check-docker # Automatically find and fixes lint issues
 	@docker run --rm -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/nicklockwood/swiftformat:$(SWIFTFORMAT_VERSION) GravatarApp GravatarAppTests Packages
