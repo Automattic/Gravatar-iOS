@@ -14,7 +14,7 @@ struct WelcomeView: View {
 
     var body: some View {
         Group {
-            if profileService.isLoading {
+            if (hasUser && profile == nil) || profileService.isLoading {
                 ProgressView()
             } else if let profile, let accessToken {
                 RootTabView(avatarPickerModel: .init(profile: profile, authToken: accessToken)) {
@@ -80,6 +80,13 @@ struct WelcomeView: View {
                 self.error = error
             }
         }
+    }
+
+    var hasUser: Bool {
+        guard
+            let currentUser = UserDefaults.standard.string(forKey: .Gravatar.currentUserKey)
+        else { return false }
+        return oauthManager.sessionToken(with: currentUser) != nil
     }
 
     func logout() async {
