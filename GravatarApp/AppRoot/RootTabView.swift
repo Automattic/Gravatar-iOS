@@ -47,11 +47,21 @@ struct GravatarTab: View {
 struct ProfileTab: View {
     var body: some View {
         BackgroundColorView(color: .secondarySystemBackground) {
-            ProfileEditorView()
+            Self.content()
         }
         .tabItem {
             Label("Profile", systemImage: "brain.filled.head.profile")
         }
+    }
+
+    static func content() -> CollapsableHeaderScrollView<TestProfileContent> {
+        let profileView = TestProfileContent()
+        return CollapsableHeaderScrollView<TestProfileContent>(
+            headerContentView: ProfileHeaderContentView(),
+            scrollableContent: .swiftUI(profileView),
+            headerMaxHeight: 250,
+            headerMinHeight: 100
+        )
     }
 }
 
