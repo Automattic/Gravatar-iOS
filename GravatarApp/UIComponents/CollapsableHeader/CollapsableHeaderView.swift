@@ -23,9 +23,9 @@ class CollapsableHeaderView: UIView {
         set {
             _progress = fmax(fmin(newValue, 1.0), 0.0)
             if _progress == 1.0 {
-                lastSnappoint = .fullHeight
-            } else if _progress == 0.0 {
                 lastSnappoint = .minHeight
+            } else if _progress == 0.0 {
+                lastSnappoint = .fullHeight
             }
         }
     }

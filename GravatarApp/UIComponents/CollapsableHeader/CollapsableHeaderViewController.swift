@@ -166,16 +166,16 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
         currentlySnapping = true
 
         if headerView.lastSnappoint == .fullHeight {
-            if headerView.progress > 0.8 {
+            if headerView.progress > 0.2 {
                 snap(to: 1)
             } else {
                 snap(to: 0)
             }
         } else if headerView.lastSnappoint == .minHeight {
-            if headerView.progress < 0.2 {
-                snap(to: 0)
-            } else {
+            if headerView.progress > 0.8 {
                 snap(to: 1)
+            } else {
+                snap(to: 0)
             }
         }
     }
