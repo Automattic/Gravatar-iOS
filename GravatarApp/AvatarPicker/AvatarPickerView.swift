@@ -19,6 +19,10 @@ struct AvatarPickerView: View {
                 forceRefresh: $forceRefreshHeader,
                 onActionPressed: { onLogout() }
             )
+            if let error = avatarPickerModel.gridResponseStatus?.error() {
+                // TODO: Temporally render error message for development puposes.
+                Text(String(describing: error))
+            }
             ScrollView {
                 VStack(alignment: .leading) {
                     VStack(alignment: .leading, spacing: 0) {
