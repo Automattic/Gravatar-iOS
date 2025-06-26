@@ -35,7 +35,9 @@ steps:
     steps:
       - label: Package Prototype Build
         key: prototype_build
-        command: .buildkite/commands/build_prototype.sh
+        command: |
+          make setup-internal
+          .buildkite/commands/build_prototype.sh
         plugins: [$CI_TOOLKIT]
         artifact_paths:
           - ".build/artifacts/*.ipa"
