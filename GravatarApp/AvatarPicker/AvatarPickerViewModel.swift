@@ -55,6 +55,7 @@ class AvatarPickerViewModel: ObservableObject {
     static func preview_init(avatars: [AvatarImageModel] = []) -> AvatarPickerViewModel {
         let model = AvatarPickerViewModel(profile: .testProfile, authToken: "")
         model.grid = .init(avatars: avatars, selectedAvatar: avatars.first(where: { $0.isSelected }))
+        model.setupCombine()
         return model
     }
     #endif
@@ -317,8 +318,6 @@ extension CGFloat {
         }
     }
 }
-
-
 
 extension Result {
     func value() -> Success? {

@@ -48,10 +48,10 @@ struct AvatarPickerView: View {
 }
 
 #if DEBUG
- #Preview {
-     AvatarPickerView(avatarPickerModel: .preview_init(avatars: [
+#Preview {
+    AvatarPickerView(avatarPickerModel: .preview_init(avatars: [
         .init(id: "1", source: .remote(url: ""), state: .loaded, isSelected: false, altText: ""),
-        .init(id: "2", source: .remote(url: ""), state: .loaded, isSelected: true, altText: "")
-     ]), onLogout: {})
- }
+        .init(id: "2", source: .remote(url: ""), state: .loaded, isSelected: true, altText: ""),
+    ]), onLogout: {})
+}
 #endif

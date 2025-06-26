@@ -75,7 +75,7 @@ struct AvatarGrid: View {
     }
 }
 
- #Preview {
+#Preview {
     let newAvatarModel: @Sendable (UIImage?) -> AvatarImageModel = { image in
         AvatarImageModel.preview_init(id: UUID().uuidString, source: .local(image: image ?? UIImage()))
     }
@@ -86,14 +86,13 @@ struct AvatarGrid: View {
     grid.selectAvatar(initialAvatarCell)
 
     return VStack {
-        AvatarGrid(grid: grid) { avatar, action  in
+        AvatarGrid(grid: grid) { avatar, _ in
             grid.selectAvatar(withID: avatar.id)
         } onFailedUploadTapped: { _ in
-
         }
         .padding()
         Button("Add avatar cell") {
-        grid.append(newAvatarModel(nil))
+            grid.append(newAvatarModel(nil))
         }
     }
- }
+}

@@ -1,6 +1,6 @@
+import Gravatar
 import SwiftUI
 import UIKit
-import Gravatar
 
 struct AvatarImageModel: Hashable, Identifiable, Sendable {
     enum Source: Hashable {
