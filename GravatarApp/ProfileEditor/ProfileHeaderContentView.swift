@@ -67,11 +67,7 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
     }
 
     func interpolate(with progress: CGFloat) {
-        self.backgroundColor = UIColor.interpolate(
-            from: Constants.backgroundColorExpanded,
-            to: Constants.backgroundColorCollapsed,
-            progress: progress
-        )
+        // no need
     }
 
     // MARK: Activate different states
@@ -119,24 +115,5 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
             organisationLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 4),
             organisationLabel.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, constant: 16),
         ]
-    }
-}
-
-extension UIColor {
-    fileprivate static func interpolate(from color1: UIColor, to color2: UIColor, progress: CGFloat) -> UIColor {
-        let clampedProgress = max(0.0, min(1.0, progress))
-
-        var r1: CGFloat = 0, g1: CGFloat = 0, b1: CGFloat = 0, a1: CGFloat = 0
-        var r2: CGFloat = 0, g2: CGFloat = 0, b2: CGFloat = 0, a2: CGFloat = 0
-
-        color1.getRed(&r2, green: &g2, blue: &b2, alpha: &a2)
-        color2.getRed(&r1, green: &g1, blue: &b1, alpha: &a1)
-
-        let r = r1 * clampedProgress + r2 * (1 - clampedProgress)
-        let g = g1 * clampedProgress + g2 * (1 - clampedProgress)
-        let b = b1 * clampedProgress + b2 * (1 - clampedProgress)
-        let a = a1 * clampedProgress + a2 * (1 - clampedProgress)
-
-        return UIColor(red: r, green: g, blue: b, alpha: a)
     }
 }

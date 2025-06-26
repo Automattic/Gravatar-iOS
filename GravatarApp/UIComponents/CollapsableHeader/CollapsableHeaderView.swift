@@ -179,18 +179,3 @@ class CollapsableHeaderView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 }
-
-extension UIViewAnimatingState {
-    var title: String {
-        switch self {
-        case .inactive:
-            return "Inactive"
-        case .active:
-            return "Active"
-        case .stopped:
-            return "Stopped"
-        @unknown default:
-            return "Unknown"
-        }
-    }
-}
