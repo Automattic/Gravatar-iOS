@@ -46,9 +46,6 @@ class CollapsableHeaderView: UIView {
         self.minHeight = minHeight
         addSubview(contentView)
         setupContent()
-        /*contentView.updateUI(for: .fullHeight)
-        self.contentView.setNeedsLayout()
-        self.contentView.layoutIfNeeded()*/
         self.lastSnappoint = .fullHeight
     }
 
@@ -63,9 +60,8 @@ class CollapsableHeaderView: UIView {
     }
 
     func initAnimator(with progress: CGFloat? = nil) {
-        print("initAnimator")
+        // reset the UI
         self.contentView.updateUI(for: .fullHeight)
-
         self.setNeedsLayout()
         self.contentView.setNeedsLayout()
         self.contentView.layoutIfNeeded()
@@ -83,6 +79,7 @@ class CollapsableHeaderView: UIView {
             }
             newAnimator.pauseAnimation()
             if let progress {
+                // set the progress if given
                 newAnimator.fractionComplete = progress
             }
             self.animator = newAnimator
@@ -102,12 +99,7 @@ class CollapsableHeaderView: UIView {
     }
 
     private func handleWidthChange() {
-        print("handleWidthChange")
-        DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
-
-            self.stopAndResetAnimator(with: self.progress)
-        }
+        self.stopAndResetAnimator(with: self.progress)
     }
 
     private func interpolate(from: CGFloat, to: CGFloat, progress: CGFloat) -> CGFloat {
@@ -135,7 +127,6 @@ class CollapsableHeaderView: UIView {
 
     func snap(with newProgress: CGFloat) {
         guard newProgress != progress else { return }
-        print("snap newProgress: \(newProgress)")
         UIView.animate(withDuration: Constants.snapAnimationDuration, animations: { [weak self] in
             guard let self else { return }
             self.heightConstraint?.constant = interpolate(from: maxHeight, to: minHeight, progress: newProgress)
@@ -158,7 +149,6 @@ class CollapsableHeaderView: UIView {
         )
         animator?.addCompletion { [weak self] _ in
             guard let self else { return }
-            print("animator completion!")
             DispatchQueue.main.async {
                 self.initAnimator(with: newProgress)
             }
@@ -173,7 +163,6 @@ class CollapsableHeaderView: UIView {
             animator.stopAnimation(false)
             animator.addCompletion { [weak self] _ in
                 guard let self else { return }
-                print("animator stop completion!")
                 self.initAnimator(with: progress)
             }
             animator.finishAnimation(at: .current)
@@ -181,7 +170,6 @@ class CollapsableHeaderView: UIView {
     }
 
     func cleanupAnimator() {
-        print("cleanupAnimator")
         self.animator?.stopAnimation(false)
         self.animator?.finishAnimation(at: .current)
     }

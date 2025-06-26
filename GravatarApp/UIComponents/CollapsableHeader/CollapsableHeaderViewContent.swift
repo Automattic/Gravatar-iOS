@@ -7,6 +7,9 @@ enum CollapsableHeaderSnappoint: CGFloat, Sendable {
 
 @MainActor
 protocol CollapsableHeaderViewContent {
+    /// Implement different UI states for each snappoint. Transition between these UI states will be animated by `UIViewPropertyAnimator`.
     func updateUI(for snappoint: CollapsableHeaderSnappoint)
+
+    /// Implement this method for any animations or interpolations not (properly) supported by `UIViewPropertyAnimator`.
     func interpolate(with progress: CGFloat)
 }

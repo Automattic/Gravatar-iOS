@@ -27,32 +27,6 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
         super.init(nibName: nil, bundle: nil)
     }
 
-    /*
-     init(headerContentView: CollapsableHeaderViewContentType,
-          swiftUIContentView: ScrollContent,
-          headerMaxHeight: CGFloat,
-          headerMinHeight: CGFloat
-     ) {
-         self.headerContentView = headerContentView
-         self.scrollableContent = .swiftUI(swiftUIContentView)
-         self.headerMaxHeight = headerMaxHeight
-         self.headerMinHeight = headerMinHeight
-         super.init(nibName: nil, bundle: nil)
-     }
-
-     init(
-         headerContentView: CollapsableHeaderViewContentType,
-         contentView: UIView,
-         headerMaxHeight: CGFloat,
-         headerMinHeight: CGFloat
-     ) {
-         self.headerContentView = headerContentView
-         self.scrollableContent = .uiView(contentView)
-         self.headerMaxHeight = headerMaxHeight
-         self.headerMinHeight = headerMinHeight
-         super.init(nibName: nil, bundle: nil)
-     }
-     */
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -133,12 +107,12 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
 
     // MARK: - Internal methods
 
-    func toBeChangedOffsetY(from scrollView: UIScrollView) -> CGFloat {
+    private func newOffsetY(from scrollView: UIScrollView) -> CGFloat {
         scrollView.contentOffset.y
     }
 
-    func toBeChangedProgress(from scrollView: UIScrollView) -> CGFloat {
-        toBeChangedOffsetY(from: scrollView) / (headerView.maxHeight - headerView.minHeight)
+    private func newProgress(from scrollView: UIScrollView) -> CGFloat {
+        newOffsetY(from: scrollView) / (headerView.maxHeight - headerView.minHeight)
     }
 
     func scrollViewDidEndDecelerating(_: UIScrollView) {
@@ -152,8 +126,7 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard !currentlySnapping else { return }
-        let progress = toBeChangedProgress(from: scrollView)
-        // print("scrollView.contentOffset.y: \(scrollView.contentOffset.y), progress: \(progress)")
+        let progress = newProgress(from: scrollView)
         headerView.setProgress(progress)
         headerView.setNeedsLayout()
     }
@@ -164,7 +137,6 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
         guard !currentlySnapping && headerView.progress >= 0 else { return }
 
         currentlySnapping = true
-
         if headerView.lastSnappoint == .fullHeight {
             if headerView.progress > 0.2 {
                 snap(to: 1)
