@@ -13,23 +13,23 @@ struct AvatarGrid: View {
     let onFailedUploadTapped: (FailedUploadInfo) -> Void
 
     var body: some View {
-            let columns: [GridItem] = [GridItem(
-                .adaptive(
-                    minimum: .minAvatarWidth,
-                    maximum: .maxAvatarWidth
-                ),
-                spacing: .avatarSpacing
-            )]
+        let columns: [GridItem] = [GridItem(
+            .adaptive(
+                minimum: .minAvatarWidth,
+                maximum: .maxAvatarWidth
+            ),
+            spacing: .avatarSpacing
+        )]
 
-            LazyVGrid(columns: columns, spacing: .avatarSpacing) {
-                ForEach(grid.avatars) { avatar in
-                    Menu {
-                        menuItems(for: avatar)
-                    } label: {
-                        avatarView(for: avatar, maxSize: .maxAvatarWidth, minSize: .minAvatarWidth)
-                    }
+        LazyVGrid(columns: columns, spacing: .avatarSpacing) {
+            ForEach(grid.avatars) { avatar in
+                Menu {
+                    menuItems(for: avatar)
+                } label: {
+                    avatarView(for: avatar, maxSize: .maxAvatarWidth, minSize: .minAvatarWidth)
                 }
             }
+        }
     }
 
     // MARK: - Views
