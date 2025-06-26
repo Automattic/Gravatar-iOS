@@ -36,9 +36,10 @@ struct AvatarGrid: View {
 
     // MARK: - Views
 
-    fileprivate func avatarView(for avatar: AvatarImageModel, size: CGFloat) -> AvatarPickerAvatarView {
+    fileprivate func avatarView(for avatar: AvatarImageModel, size: CGFloat) -> some View {
         AvatarPickerAvatarView(
             avatar: avatar,
+            size: size,
             shouldSelect: {
                 grid.selectedAvatar?.id == avatar.id
             },
