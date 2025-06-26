@@ -2,33 +2,41 @@ import Gravatar
 import SwiftUI
 
 struct RootTabView: View {
-    let profile: Profile
+    @ObservedObject var avatarPickerModel: AvatarPickerViewModel
+
     let onLogout: () -> Void
 
     var body: some View {
         TabView {
             // MARK: - First tab
 
-            GravatarTab(profile: profile, onLogout: onLogout)
+            GravatarTab(avatarPickerModel: avatarPickerModel, onLogout: onLogout)
 
             // MARK: - Second tab
 
-            ProfileTab(profile: profile, onLogout: onLogout)
+            ProfileTab()
 
             // MARK: - Third tab
 
             ShareTab()
         }
+        .onAppear {
+            Task {
+                await avatarPickerModel.fetchAvatars()
+            }
+        }
+        .transition(.opacity)
     }
 }
 
 struct GravatarTab: View {
-    let profile: Profile
+    @StateObject var avatarPickerModel: AvatarPickerViewModel
+
     let onLogout: () -> Void
 
     var body: some View {
         BackgroundColorView(color: .secondarySystemBackground) {
-            ContentView(profile: profile, onLogout: onLogout)
+            AvatarPickerView(avatarPickerModel: avatarPickerModel, onLogout: onLogout)
         }
         .tabItem {
             Label("Gravatar", image: "gravatar-logo")
@@ -37,20 +45,17 @@ struct GravatarTab: View {
 }
 
 struct ProfileTab: View {
-    let profile: Profile
-    let onLogout: () -> Void
-
     var body: some View {
         BackgroundColorView(color: .secondarySystemBackground) {
-            Self.content(with: profile, onLogout: onLogout)
+            Self.content()
         }
         .tabItem {
             Label("Profile", systemImage: "brain.filled.head.profile")
         }
     }
 
-    static func content(with profile: Profile, onLogout: @escaping () -> Void) -> CollapsableHeaderScrollView<TestProfileContent> {
-        let profileView = TestProfileContent(profile: profile, onLogout: onLogout)
+    static func content() -> CollapsableHeaderScrollView<TestProfileContent> {
+        let profileView = TestProfileContent()
         return CollapsableHeaderScrollView<TestProfileContent>(
             headerContentView: ProfileHeaderContentView(),
             scrollableContent: .swiftUI(profileView),
@@ -94,6 +99,19 @@ struct BackgroundColorView<Content>: View where Content: View {
 
 #if DEBUG // Needed when we use `Profile.testProfile on Previews`
 #Preview {
-    RootTabView(profile: .testProfile, onLogout: {})
+    RootTabView(
+        avatarPickerModel: .preview_init(
+            avatars: [
+                .init(
+                    id: "1",
+                    source: .local(image: .init(systemName: "person")!),
+                    state: .loaded,
+                    isSelected: true,
+                    altText: ""
+                ),
+            ]
+        ),
+        onLogout: {}
+    )
 }
 #endif

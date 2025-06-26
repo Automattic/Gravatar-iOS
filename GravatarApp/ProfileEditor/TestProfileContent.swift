@@ -3,22 +3,9 @@ import Gravatar
 import SwiftUI
 
 struct TestProfileContent: View {
-    @State private var profile: Profile
-
-    let onLogout: () -> Void
-
-    init(profile: Profile, onLogout: @escaping () -> Void) {
-        self._profile = State(initialValue: profile)
-        self.onLogout = onLogout
-    }
-
     var body: some View {
         VStack {
-            profileView(with: profile)
-            Button("Logout") {
-                onLogout()
-            }
-            .padding(.bottom)
+            Text("Profile Editor!")
 
             // Add some content to make it scroll
             ForEach(1 ... 50, id: \.self) { i in
@@ -27,9 +14,5 @@ struct TestProfileContent: View {
             }
         }
         .padding()
-    }
-
-    func profileView(with profile: Profile) -> some View {
-        Text(profile.displayName)
     }
 }
