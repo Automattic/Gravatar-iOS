@@ -49,11 +49,6 @@ class AvatarPickerViewModel: ObservableObject {
         self.imageDownloader = imageDownloader ?? ImageDownloadService()
 
         setupCombine()
-        Task {
-            if !authToken.isEmpty {
-                await fetchAvatars()
-            }
-        }
     }
 
     #if DEBUG
@@ -119,6 +114,7 @@ class AvatarPickerViewModel: ObservableObject {
     }
 
     func fetchAvatars() async {
+        guard self.authToken.isEmpty == false else { return }
         do {
             isAvatarsLoading = true
             let images = try await profileService.fetchAvatars(profileID: .hashID(profile.hash), token: authToken)

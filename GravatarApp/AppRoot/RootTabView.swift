@@ -20,6 +20,11 @@ struct RootTabView: View {
 
             ShareTab()
         }
+        .onAppear {
+            Task {
+                await avatarPickerModel.fetchAvatars()
+            }
+        }
     }
 }
 
