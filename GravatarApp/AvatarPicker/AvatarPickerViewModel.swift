@@ -114,6 +114,11 @@ class AvatarPickerViewModel: ObservableObject {
     }
 
     func fetchAvatars() async {
+        defer {
+            withAnimation(.smooth) {
+                isAvatarsLoading = false
+            }
+        }
         guard self.authToken.isEmpty == false else { return }
         do {
             isAvatarsLoading = true
@@ -125,11 +130,9 @@ class AvatarPickerViewModel: ObservableObject {
                 selectedAvatarURL = selectedAvatar.url
                 selectedAvatarResult = .success(selectedAvatar.id)
             }
-            isAvatarsLoading = false
             gridResponseStatus = .success(())
         } catch {
             gridResponseStatus = .failure(error)
-            isAvatarsLoading = false
         }
     }
 

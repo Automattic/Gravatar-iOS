@@ -58,11 +58,12 @@ struct WelcomeView: View {
         Spacer()
     }
 
-    func setProfile(to profile: Profile?) async {
+    func setProfile(to profile: Profile?, token: String?) async {
         await analytics.setUserName(profile?.userLogin)
 
         withAnimation {
             self.profile = profile
+            self.accessToken = token
         }
     }
 
@@ -92,7 +93,8 @@ struct WelcomeView: View {
     func logout() async {
         guard let profile else { return }
         oauthManager.deleteToken(with: profile.hash)
-        await setProfile(to: nil)
+        accessToken = nil
+        await setProfile(to: nil, token: nil)
     }
 
     func requestOAuthToken() async {
@@ -110,8 +112,7 @@ struct WelcomeView: View {
 
     func requestProfile(with token: String) async throws(APIError) -> Profile {
         let profile = try await profileService.fetchProfile(with: token)
-        await setProfile(to: profile)
-        self.accessToken = token
+        await setProfile(to: profile, token: token)
         return profile
     }
 }

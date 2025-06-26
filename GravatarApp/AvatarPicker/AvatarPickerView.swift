@@ -20,31 +20,38 @@ struct AvatarPickerView: View {
                 // TODO: Temporally render error message for development puposes.
                 Text(String(describing: error))
             }
-            ScrollView {
-                VStack(alignment: .leading) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        Text("Previous avatars")
-                            .font(.headline)
-                        Text("Tap for options")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                    AvatarGrid(grid: avatarPickerModel.grid) { avatar, _ in
-                        Task {
-                            _ = await avatarPickerModel.selectAvatar(with: avatar.id)
-                            forceRefreshHeader = true
-                        }
-                    } onFailedUploadTapped: { _ in
-                    }
-                }
-                .padding()
+            if avatarPickerModel.isAvatarsLoading {
+                ProgressView()
+                    .padding()
+                Spacer()
+            } else {
+                gridView()
+                    .transition(.opacity)
             }
         }
         .ignoresSafeArea(.container, edges: .top)
     }
 
-    func profileView(with profile: Profile) -> some View {
-        Text(profile.displayName)
+    func gridView() -> some View {
+        ScrollView {
+            VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("Previous avatars")
+                        .font(.headline)
+                    Text("Tap for options")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                AvatarGrid(grid: avatarPickerModel.grid) { avatar, _ in
+                    Task {
+                        _ = await avatarPickerModel.selectAvatar(with: avatar.id)
+                        forceRefreshHeader = true
+                    }
+                } onFailedUploadTapped: { _ in
+                }
+            }
+            .padding()
+        }
     }
 }
 

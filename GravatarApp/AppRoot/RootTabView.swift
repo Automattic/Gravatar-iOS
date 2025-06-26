@@ -25,6 +25,7 @@ struct RootTabView: View {
                 await avatarPickerModel.fetchAvatars()
             }
         }
+        .transition(.opacity)
     }
 }
 
