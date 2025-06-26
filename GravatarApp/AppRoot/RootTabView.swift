@@ -82,8 +82,8 @@ struct BackgroundColorView<Content>: View where Content: View {
 }
 
 #if DEBUG // Needed when we use `Profile.testProfile on Previews`
- #Preview {
-     RootTabView(
+#Preview {
+    RootTabView(
         avatarPickerModel: .preview_init(
             avatars: [
                 .init(
@@ -92,10 +92,10 @@ struct BackgroundColorView<Content>: View where Content: View {
                     state: .loaded,
                     isSelected: true,
                     altText: ""
-                )
+                ),
             ]
         ),
         onLogout: {}
-     )
- }
+    )
+}
 #endif

@@ -1,9 +1,9 @@
-import Gravatar
 import Foundation
+import Gravatar
 
 extension AvatarDetails {
     func url(withSize size: String) -> String {
-        let components =  URLComponents(string: imageURL)
+        let components = URLComponents(string: imageURL)
         if let newURL = components?.replacingQueryItem(name: "size", value: size).string {
             return newURL
         }
