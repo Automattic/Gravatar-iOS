@@ -1,7 +1,6 @@
 import SwiftUI
 
 private enum Constants {
-    static let bluishColor = UIColor(red: 0.11, green: 0.31, blue: 0.77, alpha: 1.00)
     static let circleSize: CGFloat = 33
     static let checkmarkImageSize: CGFloat = 20
 }
@@ -12,10 +11,7 @@ struct CheckmarkCircleView: View {
     var body: some View {
         ZStack {
             Circle()
-                .fill(Color(
-                    uiColor: Constants.bluishColor
-                )
-                )
+                .fill(Color.DS.bluishColor)
                 .frame(width: Constants.circleSize, height: Constants.circleSize)
                 .overlay(
                     Circle()

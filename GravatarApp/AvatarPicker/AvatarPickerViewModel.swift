@@ -49,6 +49,11 @@ class AvatarPickerViewModel: ObservableObject {
         self.imageDownloader = imageDownloader ?? ImageDownloadService()
 
         setupCombine()
+        Task {
+            if !authToken.isEmpty {
+                await fetchAvatars()
+            }
+        }
     }
 
     #if DEBUG
@@ -294,83 +299,3 @@ extension AvatarPickerViewModel {
     }
 }
 
-extension Result<[AvatarImageModel], Error> {
-    func isEmpty() -> Bool {
-        switch self {
-        case .success(let models):
-            models.isEmpty
-        default:
-            false
-        }
-    }
-}
-
-extension CGFloat {
-    enum DS {
-        enum Padding {
-            public static let half: CGFloat = 4
-            public static let single: CGFloat = 8
-            public static let split: CGFloat = 12
-            public static let double: CGFloat = 16
-            public static let medium: CGFloat = 24
-            public static let large: CGFloat = 32
-            public static let max: CGFloat = 48
-        }
-    }
-}
-
-extension Result {
-    func value() -> Success? {
-        switch self {
-        case .success(let value):
-            value
-        default:
-            nil
-        }
-    }
-}
-
-extension Result {
-    func error() -> Error? {
-        switch self {
-        case .failure(let error):
-            error
-        default:
-            nil
-        }
-    }
-}
-
-extension AvatarDetails {
-    func url(withSize size: String) -> String {
-        if let newURL = URLComponents(string: imageURL)?.replacingQueryItem(name: "size", value: size).string {
-            return newURL
-        }
-        return imageURL
-    }
-
-    var isSelected: Bool {
-        selected ?? false
-    }
-}
-
-extension URLComponents {
-    /// Replaces the query item if it exists, otherwise adds a new one.
-    func replacingQueryItem(name: String, value: String?) -> URLComponents {
-        var copy = self
-        let newItem = URLQueryItem(name: name, value: value)
-
-        if var queryItems = self.queryItems,
-           let sizeItemIndex = queryItems.firstIndex(where: { $0.name == name })
-        {
-            // Replace the query item
-            queryItems[sizeItemIndex] = newItem
-            copy.queryItems = queryItems
-        } else {
-            // Add the query item if it doesn't exist
-            copy.queryItems = (self.queryItems ?? []) + [newItem]
-        }
-
-        return copy
-    }
-}

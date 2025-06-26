@@ -2,7 +2,7 @@ import Gravatar
 import SwiftUI
 
 struct RootTabView: View {
-    @StateObject var avatarPickerModel: AvatarPickerViewModel
+    @ObservedObject var avatarPickerModel: AvatarPickerViewModel
 
     let onLogout: () -> Void
 
@@ -19,11 +19,6 @@ struct RootTabView: View {
             // MARK: - Third tab
 
             ShareTab()
-        }
-        .onAppear {
-            Task {
-                await avatarPickerModel.refresh()
-            }
         }
     }
 }
@@ -87,7 +82,20 @@ struct BackgroundColorView<Content>: View where Content: View {
 }
 
 #if DEBUG // Needed when we use `Profile.testProfile on Previews`
-// #Preview {
-//     RootTabView(profile: .testProfile, onLogout: {})
-// }
+ #Preview {
+     RootTabView(
+        avatarPickerModel: .preview_init(
+            avatars: [
+                .init(
+                    id: "1",
+                    source: .local(image: .init(systemName: "person")!),
+                    state: .loaded,
+                    isSelected: true,
+                    altText: ""
+                )
+            ]
+        ),
+        onLogout: {}
+     )
+ }
 #endif

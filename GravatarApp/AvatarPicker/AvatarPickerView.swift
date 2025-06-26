@@ -3,14 +3,11 @@ import Gravatar
 import SwiftUI
 
 struct AvatarPickerView: View {
+    @ObservedObject
+    var avatarPickerModel: AvatarPickerViewModel
     let onLogout: () -> Void
-    @StateObject var avatarPickerModel: AvatarPickerViewModel
-    @State var forceRefreshHeader: Bool = false
 
-    init(avatarPickerModel: AvatarPickerViewModel, onLogout: @escaping () -> Void) {
-        self._avatarPickerModel = StateObject(wrappedValue: avatarPickerModel)
-        self.onLogout = onLogout
-    }
+    @State var forceRefreshHeader: Bool = false
 
     var body: some View {
         VStack(spacing: 0) {
