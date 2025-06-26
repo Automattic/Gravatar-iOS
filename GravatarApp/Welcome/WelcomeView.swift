@@ -8,15 +8,16 @@ struct WelcomeView: View {
 
     @State var error: Error?
     @State var profile: Profile?
+    @State var accessToken: String?
 
     let profileService = ProfileService()
 
     var body: some View {
         Group {
-            if profileService.isLoading {
+            if (hasUser && profile == nil) || profileService.isLoading {
                 ProgressView()
-            } else if let profile {
-                RootTabView(profile: profile) {
+            } else if let profile, let accessToken {
+                RootTabView(avatarPickerModel: .init(profile: profile, authToken: accessToken)) {
                     Task {
                         await logout()
                     }
@@ -57,11 +58,12 @@ struct WelcomeView: View {
         Spacer()
     }
 
-    func setProfile(to profile: Profile?) async {
+    func setProfile(to profile: Profile?, token: String?) async {
         await analytics.setUserName(profile?.userLogin)
 
         withAnimation {
             self.profile = profile
+            self.accessToken = token
         }
     }
 
@@ -81,10 +83,18 @@ struct WelcomeView: View {
         }
     }
 
+    var hasUser: Bool {
+        guard
+            let currentUser = UserDefaults.standard.string(forKey: .Gravatar.currentUserKey)
+        else { return false }
+        return oauthManager.sessionToken(with: currentUser) != nil
+    }
+
     func logout() async {
         guard let profile else { return }
         oauthManager.deleteToken(with: profile.hash)
-        await setProfile(to: nil)
+        accessToken = nil
+        await setProfile(to: nil, token: nil)
     }
 
     func requestOAuthToken() async {
@@ -102,7 +112,7 @@ struct WelcomeView: View {
 
     func requestProfile(with token: String) async throws(APIError) -> Profile {
         let profile = try await profileService.fetchProfile(with: token)
-        await setProfile(to: profile)
+        await setProfile(to: profile, token: token)
         return profile
     }
 }
