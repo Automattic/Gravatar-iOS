@@ -1,0 +1,13 @@
+{
+  "project_name": "Gravatar-iOS",
+  "branch": "trunk",
+  "pinned_hash": "f729f0f5f6dd4ebf3c44562f74dbe23510a1bb3d",
+  "files_to_copy": [
+    {
+      "file": "iOS/Gravatar/Secrets.swift",
+      "destination": "GravatarApp/Secrets/Secrets.swift",
+      "encrypt": true
+    }
+  ],
+  "file_dependencies": []
+}
