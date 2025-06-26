@@ -15,7 +15,8 @@ extension CGFloat {
 
 struct AvatarPickerAvatarView: View {
     let avatar: AvatarImageModel
-    let size: CGFloat
+    let maxSize: CGFloat
+    let minSize: CGFloat
     let shouldSelect: () -> Bool
     let onFailedUploadTapped: (FailedUploadInfo) -> Void
     let onActionTap: (AvatarAction) -> Void
@@ -34,7 +35,7 @@ struct AvatarPickerAvatarView: View {
                 transaction: .init(animation: .smooth)
             )
             .scaledToFill()
-            .frame(width: size, height: size)
+            .frame(minWidth: minSize, maxWidth: maxSize, minHeight: minSize, maxHeight: maxSize)
             .background(Color(UIColor.secondarySystemBackground))
             .aspectRatio(1, contentMode: .fill)
             .shape(
@@ -87,7 +88,7 @@ struct AvatarPickerAvatarView: View {
         id: "1",
         source: .remote(url: "https://gravatar.com/userimage/110207384/aa5f129a2ec75162cee9a1f0c472356a.jpeg?size=256")
     )
-    AvatarPickerAvatarView(avatar: avatar, size: 80) {
+    AvatarPickerAvatarView(avatar: avatar, maxSize: 90, minSize: 80) {
         false
     } onFailedUploadTapped: { _ in
     } onActionTap: { _ in

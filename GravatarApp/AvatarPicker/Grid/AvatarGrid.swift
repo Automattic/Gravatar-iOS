@@ -1,7 +1,8 @@
 import SwiftUI
 
 extension CGFloat {
-    static let maxAvatarWidth: CGFloat = 90
+    static let maxAvatarWidth: CGFloat = 100
+    fileprivate static let minAvatarWidth: CGFloat = 80
     fileprivate static let avatarSpacing: CGFloat = 2
 }
 
@@ -12,34 +13,32 @@ struct AvatarGrid: View {
     let onFailedUploadTapped: (FailedUploadInfo) -> Void
 
     var body: some View {
-        GeometryReader { geometry in
-            let totalWidth = geometry.size.width
-            let columnsCount = columsCount(for: totalWidth)
-            let itemSize = itemSize(for: totalWidth, columnsCount: columnsCount)
-
-            let columns = Array(
-                repeating: GridItem(.fixed(itemSize), spacing: .avatarSpacing),
-                count: columnsCount
-            )
+            let columns: [GridItem] = [GridItem(
+                .adaptive(
+                    minimum: .minAvatarWidth,
+                    maximum: .maxAvatarWidth
+                ),
+                spacing: .avatarSpacing
+            )]
 
             LazyVGrid(columns: columns, spacing: .avatarSpacing) {
                 ForEach(grid.avatars) { avatar in
                     Menu {
                         menuItems(for: avatar)
                     } label: {
-                        avatarView(for: avatar, size: itemSize)
+                        avatarView(for: avatar, maxSize: .maxAvatarWidth, minSize: .minAvatarWidth)
                     }
                 }
             }
-        }
     }
 
     // MARK: - Views
 
-    fileprivate func avatarView(for avatar: AvatarImageModel, size: CGFloat) -> some View {
+    fileprivate func avatarView(for avatar: AvatarImageModel, maxSize: CGFloat, minSize: CGFloat) -> some View {
         AvatarPickerAvatarView(
             avatar: avatar,
-            size: size,
+            maxSize: maxSize,
+            minSize: minSize,
             shouldSelect: {
                 grid.selectedAvatar?.id == avatar.id
             },
