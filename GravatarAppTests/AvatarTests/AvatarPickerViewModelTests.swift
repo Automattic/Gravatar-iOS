@@ -61,7 +61,6 @@ final class AvatarPickerViewModelTests {
         let model = AvatarPickerViewModel.preview_init(avatars: [
             .init(id: "123", source: .remote(url: "https://example.com"), state: .loaded, isSelected: false, altText: ""),
         ])
-        model.selectedAvatarURL = nil
         #expect(model.shouldDisplayNoSelectedAvatarWarning == true)
     }
 
