@@ -62,9 +62,9 @@ class CollapsableHeaderView: UIView {
     func initAnimator(with progress: CGFloat? = nil) {
         // reset the UI
         self.contentView.updateUI(for: .fullHeight)
-        self.setNeedsLayout()
         self.contentView.setNeedsLayout()
         self.contentView.layoutIfNeeded()
+        self.setNeedsLayout()
         self.layoutIfNeeded()
 
         // init the animator in the next run loop so UI state starts from .fullHeight
@@ -99,7 +99,10 @@ class CollapsableHeaderView: UIView {
     }
 
     private func handleWidthChange() {
-        self.stopAndResetAnimator(with: self.progress)
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            self.stopAndResetAnimator(with: self.progress)
+        }
     }
 
     private func interpolate(from: CGFloat, to: CGFloat, progress: CGFloat) -> CGFloat {
