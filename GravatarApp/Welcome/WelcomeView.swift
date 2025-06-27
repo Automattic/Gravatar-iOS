@@ -3,14 +3,15 @@ import OAuth
 import SwiftUI
 
 struct WelcomeView: View {
-    @StateObject private var viewModel: WelcomeViewModel = WelcomeViewModel()
+    @StateObject private var viewModel: WelcomeViewModel = .init()
 
     var body: some View {
         Group {
             if (viewModel.hasUser && viewModel.profileResult == nil) || viewModel.profileViewModel.isLoading == true {
                 ProgressView()
             } else if let profileResult = viewModel.profileResult,
-                      let accessToken = viewModel.accessToken {
+                      let accessToken = viewModel.accessToken
+            {
                 switch profileResult {
                 case .success(let profile):
                     RootTabView(
@@ -33,7 +34,7 @@ struct WelcomeView: View {
             viewModel.softLogin()
         }
     }
-    
+
     var loginView: some View {
         VStack {
             Spacer()
@@ -51,7 +52,7 @@ struct WelcomeView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     func errorView(with error: Error) -> some View {
         Text(String(describing: error)).onAppear {

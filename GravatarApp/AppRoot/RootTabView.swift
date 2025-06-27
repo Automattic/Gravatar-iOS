@@ -2,13 +2,12 @@ import Gravatar
 import SwiftUI
 
 struct RootTabView: View {
-    
     @StateObject private var avatarPickerViewModel: AvatarPickerViewModel
     @StateObject private var editProfileViewModel: EditProfileViewModel
     let onLogout: () -> Void
 
     init(authToken: String, profile: Profile, onLogout: @escaping () -> Void) {
-        _avatarPickerViewModel = StateObject(wrappedValue: AvatarPickerViewModel(profile: profile, authToken: authToken) )
+        _avatarPickerViewModel = StateObject(wrappedValue: AvatarPickerViewModel(profile: profile, authToken: authToken))
         _editProfileViewModel = StateObject(wrappedValue: EditProfileViewModel(profile: profile, authToken: authToken))
         self.onLogout = onLogout
     }

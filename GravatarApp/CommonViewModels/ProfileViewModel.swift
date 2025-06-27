@@ -8,8 +8,10 @@ class ProfileViewModel: ObservableObject {
     private let profileService: ProfileServiceProtocol
     private let userDefaults: UserDefaults
 
-    init(userDefaults: UserDefaults = .standard,
-         profileService: ProfileServiceProtocol = Gravatar.ProfileService()) {
+    init(
+        userDefaults: UserDefaults = .standard,
+        profileService: ProfileServiceProtocol = Gravatar.ProfileService()
+    ) {
         self.userDefaults = userDefaults
         self.profileService = profileService
     }

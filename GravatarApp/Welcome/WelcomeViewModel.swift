@@ -1,13 +1,12 @@
+import Analytics
 import Combine
 import Foundation
 import Gravatar
 import OAuth
-import Analytics
 import SwiftUI
 
 @MainActor
 class WelcomeViewModel: ObservableObject {
-
     @Published var oauthError: Error?
     @Published var profileFetchingError: APIError?
     @Published var accessToken: String?
@@ -18,21 +17,23 @@ class WelcomeViewModel: ObservableObject {
     private let analytics: Analytics
     private let userDefaults: UserDefaults
 
-    init(oauthManager: OAuthManager = .shared,
-         userDefaults: UserDefaults = .standard,
-         analytics: Analytics = .shared,
-         profileService: ProfileServiceProtocol = Gravatar.ProfileService()) {
+    init(
+        oauthManager: OAuthManager = .shared,
+        userDefaults: UserDefaults = .standard,
+        analytics: Analytics = .shared,
+        profileService: ProfileServiceProtocol = Gravatar.ProfileService()
+    ) {
         self.oauthManager = oauthManager
         self.analytics = analytics
         self.userDefaults = userDefaults
         self.profileViewModel = .init(userDefaults: userDefaults, profileService: profileService)
-        
+
         initCombine()
     }
 
     private func initCombine() {
         $accessToken
-            .compactMap { $0 }  // ignore nil
+            .compactMap(\.self) // ignore nil
             .removeDuplicates()
             .sink { [weak self] newToken in
                 guard let self else { return }
@@ -50,7 +51,7 @@ class WelcomeViewModel: ObservableObject {
                 }
                 return (accessToken, profileResult)
             }
-            .sink { [weak self] (newToken, profileResult) in
+            .sink { [weak self] newToken, profileResult in
                 guard let self, let profile = profileResult.value() else { return }
                 self.oauthManager.saveToken(AccessToken(token: newToken), withKey: profile.hash)
                 Task {
@@ -59,7 +60,7 @@ class WelcomeViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
-    
+
     private func setProfile(to profileResult: Result<Profile, APIError>?) async {
         await analytics.setUserName(profileResult?.value()?.userLogin)
 
