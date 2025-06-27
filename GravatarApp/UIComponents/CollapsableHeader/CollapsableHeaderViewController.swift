@@ -70,7 +70,6 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
         super.viewDidLayoutSubviews()
         if scrollView.contentInset.top == 0 {
             scrollView.contentInset = .init(top: headerView.bounds.height - view.safeAreaInsets.top, left: 0, bottom: 0, right: 0)
-
         }
     }
 
@@ -176,71 +175,7 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
             currentlySnapping = false
         }
 
-        let targetOffset  = progress * (headerView.maxHeight - headerView.minHeight) - (scrollView.contentInset.top + view.safeAreaInsets.top)
+        let targetOffset = progress * (headerView.maxHeight - headerView.minHeight) - (scrollView.contentInset.top + view.safeAreaInsets.top)
         offsetAnimator.animate(to: targetOffset, duration: 0.5)
-    }
-}
-
-@MainActor
-class ScrollViewOffsetAnimator {
-    private let scrollView: UIScrollView
-
-    private var displayLink: CADisplayLink?
-
-    private var startOffset: CGPoint = .zero
-    private var targetOffset: CGFloat = 0
-    private var animationStartTime: CFTimeInterval = 0
-    private var animationDuration: TimeInterval = 0
-    private var response: CGFloat = 0.4
-
-    init(scrollView: UIScrollView) {
-        self.scrollView = scrollView
-    }
-
-    func animate(to offset: CGFloat, duration: TimeInterval) {
-        startOffset = scrollView.contentOffset
-        targetOffset = offset
-        animationDuration = duration
-        animationStartTime = CACurrentMediaTime()
-
-        if startOffset.y > targetOffset {
-            let ratio = abs(1 - (targetOffset / startOffset.y))
-            response = min(0.1 * ratio, 0.05)
-        } else {
-            let ratio = abs(1 - (startOffset.y / targetOffset))
-            response = min(0.1 * ratio, 0.05)
-        }
-
-        displayLink?.invalidate()
-        displayLink = CADisplayLink(target: self, selector: #selector(updateAnimation))
-        displayLink?.add(to: .main, forMode: .common)
-    }
-
-    @objc private func updateAnimation() {
-        let elapsed = CACurrentMediaTime() - animationStartTime
-
-        let progress = criticallyDampedSpring(progress: elapsed, response: response)
-
-        let newX = startOffset.x
-        let newY = interpolate(from: startOffset.y, to: targetOffset, progress: progress)
-
-        scrollView.contentOffset = CGPoint(x: newX, y: newY)
-
-        if progress >= 1 {
-            displayLink?.invalidate()
-            displayLink = nil
-        }
-    }
-
-    private func interpolate(from: CGFloat, to: CGFloat, progress: Double) -> CGFloat {
-        return from + (to - from) * CGFloat(progress)
-    }
-
-    func criticallyDampedSpring(progress t: Double, response: Double = 0.05) -> Double {
-        let damping: Double = 1.0
-        let beta = damping / (2 * response)
-
-        let dampedValue = 1 - exp(-beta * t) * (1 + beta * t)
-        return dampedValue > 0.999 ? 1 : dampedValue
     }
 }
