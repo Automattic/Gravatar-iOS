@@ -3,6 +3,7 @@ import SwiftUI
 
 struct RootTabView: View {
     @ObservedObject var avatarPickerModel: AvatarPickerViewModel
+    let profile: Profile
 
     let onLogout: () -> Void
 
@@ -14,7 +15,7 @@ struct RootTabView: View {
 
             // MARK: - Second tab
 
-            ProfileTab()
+            ProfileTab(profile: profile)
 
             // MARK: - Third tab
 
@@ -45,22 +46,25 @@ struct GravatarTab: View {
 }
 
 struct ProfileTab: View {
+    let profile: Profile
+
     var body: some View {
         BackgroundColorView(color: .secondarySystemBackground) {
-            Self.content()
+            Self.content(profile: profile)
+                .ignoresSafeArea(.container, edges: .top)
         }
         .tabItem {
             Label("Profile", systemImage: "brain.filled.head.profile")
         }
     }
 
-    static func content() -> CollapsableHeaderScrollView<TestProfileContent> {
+    static func content(profile: Profile) -> CollapsableHeaderScrollView<TestProfileContent> {
         let profileView = TestProfileContent()
         return CollapsableHeaderScrollView<TestProfileContent>(
-            headerContentView: ProfileHeaderContentView(),
+            headerContentView: ProfileHeaderContentView(profile: profile),
             scrollableContent: .swiftUI(profileView),
-            headerMaxHeight: 250,
-            headerMinHeight: 100
+            headerMaxHeight: 318,
+            headerMinHeight: 120
         )
     }
 }
@@ -111,6 +115,7 @@ struct BackgroundColorView<Content>: View where Content: View {
                 ),
             ]
         ),
+        profile: .testProfile,
         onLogout: {}
     )
 }

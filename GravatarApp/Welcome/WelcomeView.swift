@@ -17,7 +17,10 @@ struct WelcomeView: View {
             if (hasUser && profile == nil) || profileService.isLoading {
                 ProgressView()
             } else if let profile, let accessToken {
-                RootTabView(avatarPickerModel: .init(profile: profile, authToken: accessToken)) {
+                RootTabView(
+                    avatarPickerModel: .init(profile: profile, authToken: accessToken),
+                    profile: profile
+                ) {
                     Task {
                         await logout()
                     }

@@ -46,12 +46,13 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.delegate = self
+        scrollView.backgroundColor = .clear
         return scrollView
     }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .clear
         setupViews()
     }
 
@@ -82,12 +83,12 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
             scrollView.addSubview(view)
         }
         contentView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.backgroundColor = .clear
         scrollView.addSubview(contentView)
 
         headerHeightConstraint = headerView.heightAnchor.constraint(equalToConstant: headerMaxHeight)
-
         NSLayoutConstraint.activate([
-            headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            headerView.topAnchor.constraint(equalTo: view.topAnchor),
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             headerHeightConstraint,
