@@ -1,5 +1,5 @@
-import UIKit
 import GravatarUI
+import UIKit
 
 class CircularAvatarImageView: UIView {
     let imageView: UIImageView = {
@@ -41,6 +41,7 @@ class CircularAvatarImageView: UIView {
         ])
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -78,6 +79,7 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
         label.font = .preferredFont(forTextStyle: .title3).with(weight: .semibold)
         label.textColor = .label
         label.textAlignment = .center
+        label.adjustsFontForContentSizeCategory = true
         return label
     }()
 
@@ -87,6 +89,8 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
         label.font = .preferredFont(forTextStyle: .headline)
         label.textColor = .secondaryLabel
         label.textAlignment = .center
+        label.adjustsFontForContentSizeCategory = true
+
         return label
     }()
 
@@ -96,6 +100,8 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
         label.font = .preferredFont(forTextStyle: .headline)
         label.textColor = .secondaryLabel
         label.textAlignment = .center
+        label.adjustsFontForContentSizeCategory = true
+
         return label
     }()
 
@@ -107,6 +113,7 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
         config.imagePadding = 4
         config.baseForegroundColor = .systemBlue
         config.cornerStyle = .capsule
+
         let button = UIButton(configuration: config, primaryAction: nil)
 
         return button
@@ -115,7 +122,7 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
     private lazy var rootStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [
             animatedStackView,
-            profileButton
+            profileButton,
         ])
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
@@ -140,7 +147,7 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
         let stackView = UIStackView(arrangedSubviews: [
             nameLabel,
             organisationLabel,
-            locationLabel
+            locationLabel,
         ])
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
@@ -193,6 +200,7 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
         labelsStackView.alignment = .center
         rootStackView.alignment = .center
         locationLabel.isHidden = false
+        profileButton.isHidden = false
         locationLabel.alpha = 1
         profileButton.alpha = 1
         avatarView.shadowView.layer.shadowColor = UIColor.black.cgColor
@@ -208,8 +216,9 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
         animatedStackView.alignment = .top
         labelsStackView.alignment = .leading
         rootStackView.alignment = .leading
-        
+
         locationLabel.isHidden = true
+        profileButton.isHidden = true
         locationLabel.alpha = 0
         profileButton.alpha = 0
         avatarView.shadowView.layer.shadowColor = UIColor.clear.cgColor
@@ -237,7 +246,8 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
         NSLayoutConstraint.activate([
             rootStackView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
             rootStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            rootStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant:  -16),
+            rootStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            rootStackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -14),
         ])
         collapsedConstraints = [
             avatarView.heightAnchor.constraint(equalToConstant: Constants.avatarSizeMin),

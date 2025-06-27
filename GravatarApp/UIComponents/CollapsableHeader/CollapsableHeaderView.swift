@@ -35,15 +35,13 @@ class CollapsableHeaderView: UIView {
     private var _maxHeight: CGFloat = 0.0
     private var _minHeight: CGFloat = 0.0
     private var _progress: CGFloat = 0.0
-    private var heightConstraint: NSLayoutConstraint?
     private var animator: UIViewPropertyAnimator?
     private var lastWidth: CGFloat = 0
 
-    init(maxHeight: CGFloat, minHeight: CGFloat, contentView: CollapsableHeaderViewContentType) {
+    init(contentView: CollapsableHeaderViewContentType) {
         self.contentView = contentView
         super.init(frame: .zero)
-        self.maxHeight = maxHeight
-        self.minHeight = minHeight
+
         addSubview(contentView)
         setupContent()
         self.lastSnappoint = .fullHeight
@@ -98,6 +96,19 @@ class CollapsableHeaderView: UIView {
         }
     }
 
+    @objc
+    func calculateHeight() {
+        contentView.updateUI(for: .minHeight)
+        setNeedsLayout()
+        layoutIfNeeded()
+        _minHeight = frame.height
+
+        contentView.updateUI(for: .fullHeight)
+        setNeedsLayout()
+        layoutIfNeeded()
+        _maxHeight = frame.height
+    }
+
     private func handleWidthChange() {
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
@@ -110,24 +121,15 @@ class CollapsableHeaderView: UIView {
     }
 
     func setProgress(_ newProgress: CGFloat) {
-        guard let heightConstraint else {
-            assertionFailure("heightConstraint needs to be initialized before setting the progress")
-            return
-        }
         guard let animator else {
             return
         }
-        self.progress = fmax(newProgress, 0.0)
+        self.progress = fmin(fmax(newProgress, 0.0), 1.0)
         animator.fractionComplete = progress
-        heightConstraint.constant = interpolate(from: maxHeight, to: minHeight, progress: progress)
         self.contentView.interpolate(with: progress)
     }
 
-    func setHeightConstraint(_ newHeightConstraint: NSLayoutConstraint?) {
-        self.heightConstraint = newHeightConstraint
-    }
-
-    private func stopAndResetAnimator(with progress: CGFloat) {
+    func stopAndResetAnimator(with progress: CGFloat) {
         guard let animator else {
             return
         }

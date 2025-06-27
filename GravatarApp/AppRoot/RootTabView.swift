@@ -62,9 +62,7 @@ struct ProfileTab: View {
         let profileView = TestProfileContent()
         return CollapsableHeaderScrollView<TestProfileContent>(
             headerContentView: ProfileHeaderContentView(profile: profile),
-            scrollableContent: .swiftUI(profileView),
-            headerMaxHeight: 318,
-            headerMinHeight: 120
+            scrollableContent: .swiftUI(profileView)
         )
     }
 }
