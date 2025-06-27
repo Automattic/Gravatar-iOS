@@ -176,6 +176,6 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
         }
 
         let targetOffset = progress * (headerView.maxHeight - headerView.minHeight) - (scrollView.contentInset.top + view.safeAreaInsets.top)
-        offsetAnimator.animate(to: targetOffset, duration: 0.5)
+        offsetAnimator.animate(to: targetOffset)
     }
 }
