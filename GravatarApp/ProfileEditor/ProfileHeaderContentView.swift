@@ -189,6 +189,7 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
         NSLayoutConstraint.activate(expandedConstraints)
 
         animatedStackView.axis = .vertical
+        animatedStackView.alignment = .center
         labelsStackView.alignment = .center
         rootStackView.alignment = .center
         locationLabel.isHidden = false
@@ -204,8 +205,10 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
         NSLayoutConstraint.activate(collapsedConstraints)
 
         animatedStackView.axis = .horizontal
+        animatedStackView.alignment = .top
         labelsStackView.alignment = .leading
         rootStackView.alignment = .leading
+        
         locationLabel.isHidden = true
         locationLabel.alpha = 0
         profileButton.alpha = 0

@@ -66,9 +66,17 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
         headerView.cleanupAnimator()
     }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        if scrollView.contentInset.top == 0 {
+            scrollView.contentInset = .init(top: headerView.bounds.height - view.safeAreaInsets.top, left: 0, bottom: 0, right: 0)
+
+        }
+    }
+
     private func setupViews() {
-        view.addSubview(headerView)
         view.addSubview(scrollView)
+        view.addSubview(headerView)
 
         let contentView: UIView
         switch scrollableContent {
@@ -92,10 +100,14 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             headerHeightConstraint,
-            scrollView.topAnchor.constraint(equalTo: headerView.bottomAnchor),
+        ])
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+        NSLayoutConstraint.activate([
             contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
             contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.leadingAnchor),
@@ -108,12 +120,16 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
 
     // MARK: - Internal methods
 
-    private func newOffsetY(from scrollView: UIScrollView) -> CGFloat {
-        scrollView.contentOffset.y
+    private func newProgress(from scrollView: UIScrollView) -> CGFloat {
+        let offset = scrollView.contentOffset.y
+        return newProgress(offset: offset)
     }
 
-    private func newProgress(from scrollView: UIScrollView) -> CGFloat {
-        newOffsetY(from: scrollView) / (headerView.maxHeight - headerView.minHeight)
+    private func newProgress(offset: CGFloat) -> CGFloat {
+        let inset = scrollView.contentInset.top
+        let progress = (inset + view.safeAreaInsets.top + offset) / (headerView.maxHeight - headerView.minHeight)
+
+        return progress
     }
 
     func scrollViewDidEndDecelerating(_: UIScrollView) {

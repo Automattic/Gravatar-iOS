@@ -115,7 +115,6 @@ class CollapsableHeaderView: UIView {
             return
         }
         guard let animator else {
-            assertionFailure("animator needs to be initialized before setting the progress")
             return
         }
         self.progress = fmax(newProgress, 0.0)
@@ -130,7 +129,7 @@ class CollapsableHeaderView: UIView {
 
     func snap(with newProgress: CGFloat) {
         guard newProgress != progress else { return }
-        UIView.animate(withDuration: Constants.snapAnimationDuration, animations: { [weak self] in
+        UIView.animate(animations: { [weak self] in
             guard let self else { return }
             self.heightConstraint?.constant = interpolate(from: maxHeight, to: minHeight, progress: newProgress)
             self.progress = fmax(newProgress, 0.0)
@@ -145,6 +144,7 @@ class CollapsableHeaderView: UIView {
         self.progress = fmax(newProgress, 0.0)
 
         // Play the rest of the animation
+
         animator?.continueAnimation(
             withTimingParameters: nil,
             // Syncronize the duration with snap duration
