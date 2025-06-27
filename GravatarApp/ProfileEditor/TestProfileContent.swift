@@ -3,6 +3,8 @@ import Gravatar
 import SwiftUI
 
 struct TestProfileContent: View {
+    @ObservedObject var viewModel: EditProfileViewModel
+
     var body: some View {
         VStack {
             Text("Profile Editor!")

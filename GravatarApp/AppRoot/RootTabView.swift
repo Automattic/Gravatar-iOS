@@ -2,19 +2,26 @@ import Gravatar
 import SwiftUI
 
 struct RootTabView: View {
-    @ObservedObject var avatarPickerModel: AvatarPickerViewModel
-
+    
+    @StateObject private var avatarPickerViewModel: AvatarPickerViewModel
+    @StateObject private var editProfileViewModel: EditProfileViewModel
     let onLogout: () -> Void
+
+    init(authToken: String, profile: Profile, onLogout: @escaping () -> Void) {
+        _avatarPickerViewModel = StateObject(wrappedValue: AvatarPickerViewModel(profile: profile, authToken: authToken) )
+        _editProfileViewModel = StateObject(wrappedValue: EditProfileViewModel(profile: profile, authToken: authToken))
+        self.onLogout = onLogout
+    }
 
     var body: some View {
         TabView {
             // MARK: - First tab
 
-            GravatarTab(avatarPickerModel: avatarPickerModel, onLogout: onLogout)
+            GravatarTab(avatarPickerViewModel: avatarPickerViewModel, onLogout: onLogout)
 
             // MARK: - Second tab
 
-            ProfileTab()
+            ProfileTab(editProfileViewModel: editProfileViewModel)
 
             // MARK: - Third tab
 
@@ -22,7 +29,7 @@ struct RootTabView: View {
         }
         .onAppear {
             Task {
-                await avatarPickerModel.fetchAvatars()
+                await avatarPickerViewModel.fetchAvatars()
             }
         }
         .transition(.opacity)
@@ -30,13 +37,12 @@ struct RootTabView: View {
 }
 
 struct GravatarTab: View {
-    @StateObject var avatarPickerModel: AvatarPickerViewModel
-
+    @ObservedObject var avatarPickerViewModel: AvatarPickerViewModel
     let onLogout: () -> Void
 
     var body: some View {
         BackgroundColorView(color: .secondarySystemBackground) {
-            AvatarPickerView(avatarPickerModel: avatarPickerModel, onLogout: onLogout)
+            AvatarPickerView(avatarPickerModel: avatarPickerViewModel, onLogout: onLogout)
         }
         .tabItem {
             Label("Gravatar", image: "gravatar-logo")
@@ -45,17 +51,19 @@ struct GravatarTab: View {
 }
 
 struct ProfileTab: View {
+    @ObservedObject var editProfileViewModel: EditProfileViewModel
+
     var body: some View {
         BackgroundColorView(color: .secondarySystemBackground) {
-            Self.content()
+            Self.content(editProfileViewModel: editProfileViewModel)
         }
         .tabItem {
             Label("Profile", systemImage: "brain.filled.head.profile")
         }
     }
 
-    static func content() -> CollapsableHeaderScrollView<TestProfileContent> {
-        let profileView = TestProfileContent()
+    static func content(editProfileViewModel: EditProfileViewModel) -> CollapsableHeaderScrollView<TestProfileContent> {
+        let profileView = TestProfileContent(viewModel: editProfileViewModel)
         return CollapsableHeaderScrollView<TestProfileContent>(
             headerContentView: ProfileHeaderContentView(),
             scrollableContent: .swiftUI(profileView),
@@ -100,17 +108,8 @@ struct BackgroundColorView<Content>: View where Content: View {
 #if DEBUG // Needed when we use `Profile.testProfile on Previews`
 #Preview {
     RootTabView(
-        avatarPickerModel: .preview_init(
-            avatars: [
-                .init(
-                    id: "1",
-                    source: .local(image: .init(systemName: "person")!),
-                    state: .loaded,
-                    isSelected: true,
-                    altText: ""
-                ),
-            ]
-        ),
+        authToken: "",
+        profile: .testProfile,
         onLogout: {}
     )
 }
