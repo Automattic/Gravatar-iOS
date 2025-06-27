@@ -127,37 +127,6 @@ class CollapsableHeaderView: UIView {
         self.heightConstraint = newHeightConstraint
     }
 
-    func snap(with newProgress: CGFloat) {
-        guard newProgress != progress else { return }
-        UIView.animate(animations: { [weak self] in
-            guard let self else { return }
-            self.heightConstraint?.constant = interpolate(from: maxHeight, to: minHeight, progress: newProgress)
-            self.progress = fmax(newProgress, 0.0)
-            self.layoutIfNeeded()
-            self.superview?.layoutIfNeeded()
-        }, completion: { _ in
-        })
-
-        if newProgress == 0.0 {
-            animator?.isReversed = true
-        }
-        self.progress = fmax(newProgress, 0.0)
-
-        // Play the rest of the animation
-
-        animator?.continueAnimation(
-            withTimingParameters: nil,
-            // Syncronize the duration with snap duration
-            durationFactor: Constants.snapAnimationDuration / Constants.fullAnimationDuration
-        )
-        animator?.addCompletion { [weak self] _ in
-            guard let self else { return }
-            DispatchQueue.main.async {
-                self.initAnimator(with: newProgress)
-            }
-        }
-    }
-
     private func stopAndResetAnimator(with progress: CGFloat) {
         guard let animator else {
             return
