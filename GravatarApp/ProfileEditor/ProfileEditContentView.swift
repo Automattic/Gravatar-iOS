@@ -2,7 +2,7 @@ import Analytics
 import Gravatar
 import SwiftUI
 
-struct TestProfileContent: View {
+struct ProfileEditContentView: View {
     @ObservedObject var viewModel: EditProfileViewModel
 
     var body: some View {

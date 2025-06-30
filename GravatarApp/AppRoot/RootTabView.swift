@@ -61,9 +61,9 @@ struct ProfileTab: View {
         }
     }
 
-    static func content(editProfileViewModel: EditProfileViewModel) -> CollapsableHeaderScrollView<TestProfileContent> {
-        let profileView = TestProfileContent(viewModel: editProfileViewModel)
-        return CollapsableHeaderScrollView<TestProfileContent>(
+    static func content(editProfileViewModel: EditProfileViewModel) -> CollapsableHeaderScrollView<ProfileEditContentView> {
+        let profileView = ProfileEditContentView(viewModel: editProfileViewModel)
+        return CollapsableHeaderScrollView<ProfileEditContentView>(
             headerContentView: ProfileHeaderContentView(),
             scrollableContent: .swiftUI(profileView),
             headerMaxHeight: 250,
