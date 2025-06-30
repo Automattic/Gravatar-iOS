@@ -1,5 +1,5 @@
-import SwiftUI
 import Gravatar
+import SwiftUI
 
 class ProfileFieldsModel: ObservableObject {
     @Published var displayName: String = ""
@@ -16,7 +16,7 @@ class ProfileFieldsModel: ObservableObject {
 
     init() {}
 
-    init (profile: Profile) {
+    init(profile: Profile) {
         self.displayName = profile.displayName
         self.aboutMe = profile.description
         self.pronunciation = profile.pronunciation
