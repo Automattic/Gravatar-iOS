@@ -6,6 +6,7 @@ public enum OAuthError: Error {
     case couldNotParseAccessCode(String)
     case oauthResponseError(String, ASWebAuthenticationSessionError.Code?)
     case tokenRequestError(Error)
+    case tokenResponseError(String)
     case decodingError(String)
     case unknown(Error)
 }

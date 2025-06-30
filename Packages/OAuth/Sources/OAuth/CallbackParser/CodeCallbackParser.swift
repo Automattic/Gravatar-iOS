@@ -40,16 +40,11 @@ struct CodeCallbackParser: CallbackParser {
             throw OAuthError.notConfigured
         }
 
-        let parameters = AccessTokenRequestParams(
-            secrets: secrets,
-            code: code
-        )
-
-        return try await performTokenRequest(with: parameters)
+        return try await performTokenRequest(with: secrets, code: code)
     }
 
-    private func performTokenRequest(with parameters: AccessTokenRequestParams) async throws(OAuthError) -> AccessToken {
-        let tokenRequest = URLRequest.oauth2TokenRequest(with: parameters)
+    private func performTokenRequest(with secrets: Configuration.Secrets, code: String) async throws(OAuthError) -> AccessToken {
+        let tokenRequest = URLRequest.oauth2TokenRequest(with: secrets, code: code)
 
         do {
             let (data, _) = try await urlSession.data(for: tokenRequest, delegate: nil)
@@ -58,9 +53,9 @@ struct CodeCallbackParser: CallbackParser {
             decoder.keyDecodingStrategy = .convertFromSnakeCase
 
             guard let token = try? decoder.decode(Response.self, from: data).accessToken else {
-                // Check for error response
+                // Check for error in response
                 let error = try decoder.decode(RemoteOAuthError.self, from: data)
-                throw OAuthError.decodingError("\(error.error): \(error.errorDescription)")
+                throw OAuthError.tokenResponseError("\(error.error): \(error.errorDescription)")
             }
 
             return AccessToken(token: token)
@@ -71,32 +66,25 @@ struct CodeCallbackParser: CallbackParser {
 }
 
 extension URLRequest {
-    fileprivate static func oauth2TokenRequest(with parameters: AccessTokenRequestParams) -> URLRequest {
-        var request = URLRequest(url: URL(string: "https://public-api.wordpress.com/oauth2/token")!)
-        request.httpMethod = "POST"
-        request.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try? JSONEncoder.snakeCaseEncoder.encode(parameters)
-        return request
+    fileprivate static func oauth2TokenRequest(with secrets: Configuration.Secrets, code: String) -> URLRequest {
+        var tokenRequest = URLRequest(url: URL(string: "https://public-api.wordpress.com/oauth2/token")!)
+        tokenRequest.httpMethod = "POST"
+        var components = URLComponents()
+        components.queryItems = [
+            URLQueryItem(name: "client_id", value: secrets.clientID),
+            URLQueryItem(name: "client_secret", value: secrets.clientSecret),
+            URLQueryItem(name: "grant_type", value: "authorization_code"),
+            URLQueryItem(name: "code", value: code),
+            URLQueryItem(name: "redirect_uri", value: secrets.redirectURI),
+        ]
+        tokenRequest.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
+        tokenRequest.httpBody = components.query?.data(using: .utf8)
+        return tokenRequest
     }
 }
 
 private struct Response: Decodable {
     var accessToken: String
-}
-
-private struct AccessTokenRequestParams: Encodable {
-    let grantType = "authorization_code"
-    let clientID: String
-    let clientSecret: String
-    let redirectURI: String
-    let code: String
-
-    init(secrets: Configuration.Secrets, code: String) {
-        self.clientID = secrets.clientID
-        self.clientSecret = secrets.clientSecret
-        self.redirectURI = secrets.redirectURI
-        self.code = code
-    }
 }
 
 private struct RemoteOAuthError: Decodable {
