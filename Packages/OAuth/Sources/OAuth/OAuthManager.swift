@@ -79,24 +79,24 @@ public struct OAuthManager: Sendable {
 private struct OAuthURLParams: Encodable {
     let clientID: String
     let responseType: String
-    let blogID: String
     let redirectURI: String
-    var scope1: String
+    let scope0: String
+    let scope1: String
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case clientID
         case responseType
-        case blogID
         case redirectURI
+        case scope0 = "scope[0]"
         case scope1 = "scope[1]"
     }
 
     init(secrets: Configuration.Secrets) {
         self.clientID = secrets.clientID
-        self.responseType = "token"
-        self.blogID = "0"
+        self.responseType = "code"
         self.redirectURI = secrets.redirectURI
-        self.scope1 = "global"
+        self.scope0 = "auth"
+        self.scope1 = "gravatar-global"
     }
 }
 
