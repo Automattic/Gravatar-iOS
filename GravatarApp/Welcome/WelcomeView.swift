@@ -12,27 +12,36 @@ struct WelcomeView: View {
             } else if let profileResult = viewModel.profileResult,
                       let accessToken = viewModel.accessToken
             {
-                switch profileResult {
-                case .success(let profile):
-                    RootTabView(
-                        authToken: accessToken,
-                        profile: profile
-                    ) {
-                        Task {
-                            await viewModel.logout()
-                        }
-                    }
-                    .transition(.opacity)
-                case .failure(let error):
-                    Text("Error fetching the profile: \(error)")
-                        .padding()
-                }
+                rootView(accessToken: accessToken, profileResult: profileResult)
             } else {
                 loginView
             }
         }.onAppear {
             viewModel.softLogin()
         }
+    }
+
+    @ViewBuilder
+    private func rootView(accessToken: String, profileResult: Result<Profile, APIError>) -> some View {
+        switch profileResult {
+        case .success(let profile):
+            rootViewSuccess(accessToken: accessToken, profile: profile)
+        case .failure(let error):
+            Text("Error fetching the profile: \(error)")
+                .padding()
+        }
+    }
+
+    private func rootViewSuccess(accessToken: String, profile: Profile) -> some View {
+        RootTabView(
+            authToken: accessToken,
+            profile: profile
+        ) {
+            Task {
+                await viewModel.logout()
+            }
+        }
+        .transition(.opacity)
     }
 
     var loginView: some View {
