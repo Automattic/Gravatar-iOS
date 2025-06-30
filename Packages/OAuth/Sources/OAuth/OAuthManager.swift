@@ -6,11 +6,16 @@ public struct OAuthManager: Sendable {
     private let storage: SecureStorage
     private let authenticationSession: AuthenticationSession
 
-    private let callbackParser: CallbackParser = TokenCallbackParser()
+    private let callbackParser: CallbackParser
 
-    init(authenticationSession: AuthenticationSession = WebAuthenticationSession(), storage: SecureStorage = Keychain()) {
+    init(
+        authenticationSession: AuthenticationSession = WebAuthenticationSession(),
+        storage: SecureStorage = Keychain(),
+        callbackParser: CallbackParser = CodeCallbackParser()
+    ) {
         self.authenticationSession = authenticationSession
         self.storage = storage
+        self.callbackParser = callbackParser
     }
 
     // MARK: Keychain helpers
