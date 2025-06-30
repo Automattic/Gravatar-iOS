@@ -50,20 +50,24 @@ class WelcomeViewModel: ObservableObject {
                 return (accessToken, profileResult)
             }
             .sink { [weak self] newToken, profileResult in
-                guard let self, let profile = profileResult.value() else { return }
-                self.oauthManager.saveToken(AccessToken(token: newToken), withKey: profile.hash)
-                Task {
-                    await setProfile(to: profileResult)
-                }
+                guard let self else { return }
+                self.handleProfileFetch(accessToken: newToken, profileResult: profileResult)
             }
             .store(in: &cancellables)
     }
 
-    private func setProfile(to profileResult: Result<Profile, APIError>?) async {
-        await analytics.setUserName(profileResult?.value()?.userLogin)
-
+    private func handleProfileFetch(accessToken: String, profileResult newResult: Result<Profile, APIError>) {
+        switch newResult {
+        case .success(let profile):
+            self.oauthManager.saveToken(AccessToken(token: accessToken), withKey: profile.hash)
+            Task {
+                await analytics.setUserName(profile.userLogin)
+            }
+        case .failure:
+            break
+        }
         withAnimation {
-            self.profileResult = profileResult
+            self.profileResult = newResult
         }
     }
 
@@ -85,8 +89,11 @@ class WelcomeViewModel: ObservableObject {
     func logout() async {
         guard let profile = profileResult?.value() else { return }
         oauthManager.deleteToken(with: profile.hash)
-        accessToken = nil
-        await setProfile(to: nil)
+        await analytics.setUserName(nil)
+        withAnimation {
+            self.accessToken = nil
+            self.profileResult = nil
+        }
     }
 
     func requestOAuthToken() async {
