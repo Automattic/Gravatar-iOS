@@ -75,7 +75,7 @@ extension URLRequest {
             URLQueryItem(name: "client_secret", value: secrets.clientSecret),
             URLQueryItem(name: "grant_type", value: "authorization_code"),
             URLQueryItem(name: "code", value: code),
-            URLQueryItem(name: "redirect_uri", value: secrets.redirectURI)
+            URLQueryItem(name: "redirect_uri", value: secrets.redirectURI),
         ]
         tokenRequest.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
         tokenRequest.httpBody = components.query?.data(using: .utf8)
