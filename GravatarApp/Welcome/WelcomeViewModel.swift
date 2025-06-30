@@ -9,7 +9,16 @@ import SwiftUI
 class WelcomeViewModel: ObservableObject {
     @Published var oauthError: Error?
     @Published var profileFetchingError: APIError?
-    @Published var accessToken: String?
+    @Published var accessToken: String? {
+        didSet {
+            if let accessToken, accessToken != oldValue {
+                Task {
+                    await self.profileViewModel.fetchProfile(with: accessToken)
+                }
+            }
+        }
+    }
+
     @Published var profileViewModel: ProfileViewModel
     @Published var profileResult: Result<Profile, APIError>?
     private var cancellables = Set<AnyCancellable>()
@@ -32,17 +41,6 @@ class WelcomeViewModel: ObservableObject {
     }
 
     private func initCombine() {
-        $accessToken
-            .compactMap(\.self) // ignore nil
-            .removeDuplicates()
-            .sink { [weak self] newToken in
-                guard let self else { return }
-                Task {
-                    await self.profileViewModel.fetchProfile(with: newToken)
-                }
-            }
-            .store(in: &cancellables)
-
         $accessToken
             .combineLatest(profileViewModel.$profileResult)
             .compactMap { accessToken, profileResult -> (String, Result<Profile, APIError>)? in
