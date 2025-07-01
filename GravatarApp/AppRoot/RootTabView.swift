@@ -56,6 +56,7 @@ struct ProfileTab: View {
         BackgroundColorView(color: .secondarySystemBackground) {
             Self.content(editProfileViewModel: editProfileViewModel)
         }
+        .ignoresSafeArea()
         .tabItem {
             Label("Profile", systemImage: "brain.filled.head.profile")
         }
