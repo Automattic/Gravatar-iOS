@@ -3,8 +3,7 @@ import Gravatar
 import SwiftUI
 
 struct AvatarPickerView: View {
-    @ObservedObject
-    var avatarPickerModel: AvatarPickerViewModel
+    @ObservedObject var avatarPickerModel: AvatarPickerViewModel
     let onLogout: () -> Void
 
     @State var forceRefreshHeader: Bool = false

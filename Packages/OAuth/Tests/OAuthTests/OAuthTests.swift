@@ -8,7 +8,8 @@ private let clientID = "clientID"
 private let clientSecret = "secret"
 
 struct OauthManagerTests {
-    let callbackURI = URL(string: "https://gravatar.com/#access_token=YOUR_API_TOKEN&expires_in=64800&token_type=bearer&site_id=01")!
+    let callbackURLToken = URL(string: "https://gravatar.com/#access_token=YOUR_API_TOKEN&expires_in=64800&token_type=bearer&site_id=01")!
+    let callbackURLCode = URL(string: "https://developer.wordpress.com/?code=cw9hk1xG9k")!
 
     init() async throws {
         await Configuration.shared.setSecrets(.init(
@@ -18,9 +19,17 @@ struct OauthManagerTests {
         ))
     }
 
-    @Test("Calling requestSession successfully returns a token")
-    func oauthReturnsToken() async throws {
+    @Test("Calling requestSession with type CODE successfully returns a token")
+    func codeOAuthReturnsToken() async throws {
         let manager = getManager()
+        let token = try await manager.requestAccessToken()
+
+        #expect(token.token == "YOUR_API_TOKEN")
+    }
+
+    @Test("Calling requestSession with type TOKEN successfully returns a token")
+    func tokenOAuthReturnsToken() async throws {
+        let manager = getManager(callbackURI: callbackURLToken, parser: TokenCallbackParser())
         let token = try await manager.requestAccessToken()
 
         #expect(token.token == "YOUR_API_TOKEN")
@@ -48,13 +57,14 @@ struct OauthManagerTests {
     }
 
     @Test("Parameters are added to request URL", arguments: [
-        URLQueryItem(name: "response_type", value: "token"),
-        URLQueryItem(name: "scope[1]", value: "global"),
+        URLQueryItem(name: "response_type", value: "code"),
+        URLQueryItem(name: "scope[0]", value: "auth"),
+        URLQueryItem(name: "scope[1]", value: "gravatar-global"),
         URLQueryItem(name: "client_id", value: clientID),
         URLQueryItem(name: "redirect_uri", value: redirectURI),
     ])
     func requestURLWithParams(queryItem: URLQueryItem) async throws {
-        let session = AuthenticationSessionMock(callbackURI: callbackURI)
+        let session = AuthenticationSessionMock(callbackURI: callbackURLCode)
         let manager = getManager(session: session)
         _ = try await manager.requestAccessToken()
 
@@ -70,15 +80,32 @@ extension OauthManagerTests {
     private func getManager(
         session: AuthenticationSessionMock? = nil,
         callbackURI: URL? = nil,
+        parser: CallbackParser? = nil,
         error: Error? = nil
     ) -> OAuthManager {
         OAuthManager(
             authenticationSession: session ?? AuthenticationSessionMock(
-                callbackURI: callbackURI ?? self.callbackURI,
+                callbackURI: callbackURI ?? self.callbackURLCode,
                 error: error
             ),
-            storage: SecureStorageMock()
+            storage: SecureStorageMock(),
+            callbackParser: parser ?? CodeCallbackParser(urlSession: CodeCallbackURLSession())
         )
+    }
+}
+
+final class CodeCallbackURLSession: URLSessionProtocol {
+    func data(for request: URLRequest, delegate: (any URLSessionTaskDelegate)?) async throws -> (Data, URLResponse) {
+        let responseData = """
+        {
+        "access_token": "YOUR_API_TOKEN",
+        "blog_id": "blog ID",
+        "blog_url": "blog url",
+        "token_type": "bearer"
+        }
+        """.data(using: .utf8)!
+
+        return (responseData, HTTPURLResponse())
     }
 }
 
