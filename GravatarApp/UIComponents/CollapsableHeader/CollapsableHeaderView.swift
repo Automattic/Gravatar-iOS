@@ -60,8 +60,6 @@ class CollapsableHeaderView: UIView {
     func initAnimator(with progress: CGFloat? = nil) {
         // reset the UI
         self.contentView.updateUI(for: .fullHeight)
-        self.contentView.setNeedsLayout()
-        self.contentView.layoutIfNeeded()
         self.setNeedsLayout()
         self.layoutIfNeeded()
 
@@ -70,8 +68,9 @@ class CollapsableHeaderView: UIView {
             guard let self else { return }
             let newAnimator = UIViewPropertyAnimator(duration: Constants.fullAnimationDuration, curve: .linear) { [weak self] in
                 guard let self else { return }
+
                 self.contentView.updateUI(for: .minHeight)
-                self.contentView.layoutIfNeeded()
+                self.setNeedsLayout()
                 self.layoutIfNeeded()
                 self.superview?.layoutIfNeeded()
             }

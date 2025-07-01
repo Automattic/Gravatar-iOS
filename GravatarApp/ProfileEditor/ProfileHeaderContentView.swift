@@ -53,6 +53,12 @@ class CircularAvatarImageView: UIView {
     }
 }
 
+extension UIFont {
+    fileprivate static let nameLabelFont: UIFont = .preferredFont(forTextStyle: .title3).with(weight: .semibold)
+    fileprivate static let organisationLabelFont: UIFont = .preferredFont(forTextStyle: .headline)
+    fileprivate static let locationLabelFont: UIFont = .preferredFont(forTextStyle: .headline)
+}
+
 class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
     enum Constants {
         static let avatarSizeMin: CGFloat = 44
@@ -67,45 +73,21 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
         }
     }
 
-    private lazy var avatarView: CircularAvatarImageView = {
+    private let avatarView: CircularAvatarImageView = {
         let imageView = CircularAvatarImageView()
         imageView.contentMode = .scaleAspectFill
         return imageView
     }()
 
-    private lazy var nameLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .preferredFont(forTextStyle: .title3).with(weight: .semibold)
-        label.textColor = .label
-        label.textAlignment = .center
-        label.adjustsFontForContentSizeCategory = true
-        return label
-    }()
+    private let nameLabel: UILabel = makeLabel(with: .nameLabelFont)
+    private let nameLabelCollapsed: UILabel = makeLabel(with: .nameLabelFont)
 
-    private lazy var organisationLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .preferredFont(forTextStyle: .headline)
-        label.textColor = .secondaryLabel
-        label.textAlignment = .center
-        label.adjustsFontForContentSizeCategory = true
+    private let organisationLabel: UILabel = makeLabel(with: .organisationLabelFont, textColor: .secondaryLabel)
+    private let organisationLabelCollapsed: UILabel = makeLabel(with: .organisationLabelFont, textColor: .secondaryLabel)
 
-        return label
-    }()
+    private let locationLabel: UILabel = makeLabel(with: .locationLabelFont, textColor: .secondaryLabel)
 
-    private lazy var locationLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .preferredFont(forTextStyle: .headline)
-        label.textColor = .secondaryLabel
-        label.textAlignment = .center
-        label.adjustsFontForContentSizeCategory = true
-
-        return label
-    }()
-
-    private lazy var profileButton: UIButton = {
+    private let profileButton: UIButton = {
         var config = UIButton.Configuration.filled()
         config.baseBackgroundColor = .tertiarySystemFill
         config.image = UIImage(systemName: "safari")
@@ -115,45 +97,29 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
         config.cornerStyle = .capsule
 
         let button = UIButton(configuration: config, primaryAction: nil)
+        button.translatesAutoresizingMaskIntoConstraints = false
 
         return button
     }()
 
-    private lazy var rootStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [
-            animatedStackView,
-            profileButton,
-        ])
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.axis = .vertical
-        stackView.spacing = 16
-        stackView.alignment = .center
-        return stackView
-    }()
+    static func makeLabel(with font: UIFont, textColor: UIColor = .label) -> UILabel {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = font
+        label.textColor = textColor
+        label.adjustsFontForContentSizeCategory = true
+        return label
+    }
 
-    private lazy var animatedStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [
-            avatarView,
-            labelsStackView,
-        ])
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.axis = .vertical
-        stackView.spacing = 16
-        stackView.alignment = .center
-        return stackView
-    }()
-
-    private lazy var labelsStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [
-            nameLabel,
-            organisationLabel,
-            locationLabel,
-        ])
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.axis = .vertical
-        stackView.spacing = 0
-        return stackView
-    }()
+    lazy var allViews: [UIView] = [
+        avatarView,
+        nameLabel,
+        nameLabelCollapsed,
+        organisationLabel,
+        organisationLabelCollapsed,
+        locationLabel,
+        profileButton,
+    ]
 
     private var expandedConstraints: [NSLayoutConstraint] = []
     private var collapsedConstraints: [NSLayoutConstraint] = []
@@ -163,9 +129,12 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
 
         super.init(frame: .zero)
         self.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(rootStackView)
-        initConstraints()
 
+        for view in allViews {
+            addSubview(view)
+        }
+
+        initConstraints()
         updateProfileData()
     }
 
@@ -186,7 +155,9 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
     }
 
     func interpolate(with progress: CGFloat) {
-        // no need
+        // Make label and button disappear faster to avoid too much overlaping
+        locationLabel.alpha = 1 - progress * 2
+        profileButton.alpha = 1 - progress * 2
     }
 
     // MARK: Activate different states
@@ -195,40 +166,43 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
         NSLayoutConstraint.deactivate(collapsedConstraints)
         NSLayoutConstraint.activate(expandedConstraints)
 
-        animatedStackView.axis = .vertical
-        animatedStackView.alignment = .center
-        labelsStackView.alignment = .center
-        rootStackView.alignment = .center
-        locationLabel.isHidden = false
-        profileButton.isHidden = false
-        locationLabel.alpha = 1
-        profileButton.alpha = 1
-        avatarView.shadowView.layer.shadowColor = UIColor.black.cgColor
+        setAlphas(collapsed: false)
+        setLabelsNeedDisplay()
 
-        self.backgroundColor = Constants.backgroundColorExpanded
+        avatarView.shadowView.layer.shadowColor = UIColor.black.cgColor
+        backgroundColor = Constants.backgroundColorExpanded
     }
 
     private func activateCollapsedState() {
         NSLayoutConstraint.deactivate(expandedConstraints)
         NSLayoutConstraint.activate(collapsedConstraints)
 
-        animatedStackView.axis = .horizontal
-        animatedStackView.alignment = .top
-        labelsStackView.alignment = .leading
-        rootStackView.alignment = .leading
+        setAlphas(collapsed: true)
+        setLabelsNeedDisplay()
 
-        locationLabel.isHidden = true
-        profileButton.isHidden = true
-        locationLabel.alpha = 0
-        profileButton.alpha = 0
         avatarView.shadowView.layer.shadowColor = UIColor.clear.cgColor
+        backgroundColor = Constants.backgroundColorCollapsed
+    }
 
-        self.backgroundColor = Constants.backgroundColorCollapsed
+    private func setLabelsNeedDisplay() {
+        organisationLabelCollapsed.setNeedsDisplay()
+        organisationLabel.setNeedsDisplay()
+        nameLabelCollapsed.setNeedsDisplay()
+        nameLabel.setNeedsDisplay()
+    }
+
+    private func setAlphas(collapsed: Bool) {
+        organisationLabelCollapsed.alpha = collapsed ? 1 : 0
+        organisationLabel.alpha = collapsed ? 0 : 1
+        nameLabelCollapsed.alpha = collapsed ? 1 : 0
+        nameLabel.alpha = collapsed ? 0 : 1
     }
 
     private func updateProfileData() {
         nameLabel.text = profile.displayName
+        nameLabelCollapsed.text = profile.displayName
         organisationLabel.text = "\(profile.jobTitle), \(profile.company)"
+        organisationLabelCollapsed.text = "\(profile.jobTitle), \(profile.company)"
         locationLabel.text = profile.location
 
         var config = profileButton.configuration
@@ -243,19 +217,66 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
     // MARK: Define layout constraints
 
     private func initConstraints() {
-        NSLayoutConstraint.activate([
-            rootStackView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
-            rootStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            rootStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            rootStackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -14),
-        ])
         collapsedConstraints = [
             avatarView.heightAnchor.constraint(equalToConstant: Constants.avatarSizeMin),
             avatarView.widthAnchor.constraint(equalToConstant: Constants.avatarSizeMin),
+
+            avatarView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
+            avatarView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+
+            nameLabel.topAnchor.constraint(equalTo: avatarView.topAnchor),
+            nameLabel.leadingAnchor.constraint(equalTo: avatarView.trailingAnchor, constant: 14),
+            nameLabel.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, constant: -16),
+
+            nameLabelCollapsed.topAnchor.constraint(equalTo: avatarView.topAnchor),
+            nameLabelCollapsed.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
+            nameLabelCollapsed.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -16),
+
+            organisationLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 0),
+            organisationLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
+            organisationLabel.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, constant: -16),
+            organisationLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
+
+            organisationLabelCollapsed.topAnchor.constraint(equalTo: nameLabel.bottomAnchor),
+            organisationLabelCollapsed.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
+            organisationLabelCollapsed.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -16),
+            organisationLabelCollapsed.bottomAnchor.constraint(equalTo: organisationLabel.bottomAnchor),
+
+            locationLabel.bottomAnchor.constraint(equalTo: profileButton.topAnchor, constant: 16),
+            locationLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+
+            profileButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
+            profileButton.centerXAnchor.constraint(equalTo: centerXAnchor),
         ]
+
         expandedConstraints = [
             avatarView.heightAnchor.constraint(equalToConstant: Constants.avatarSizeMax),
             avatarView.widthAnchor.constraint(equalToConstant: Constants.avatarSizeMax),
+
+            avatarView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
+            avatarView.centerXAnchor.constraint(equalTo: centerXAnchor),
+
+            nameLabel.topAnchor.constraint(equalTo: avatarView.bottomAnchor, constant: 16),
+            nameLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            nameLabel.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, constant: -16),
+
+            nameLabelCollapsed.topAnchor.constraint(equalTo: nameLabel.topAnchor),
+            nameLabelCollapsed.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
+
+            organisationLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8),
+            organisationLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            organisationLabel.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, constant: -16),
+
+            organisationLabelCollapsed.topAnchor.constraint(equalTo: organisationLabel.topAnchor),
+            organisationLabelCollapsed.leadingAnchor.constraint(equalTo: organisationLabel.leadingAnchor),
+
+            locationLabel.topAnchor.constraint(equalTo: organisationLabel.bottomAnchor, constant: 8),
+            locationLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            locationLabel.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, constant: -16),
+
+            profileButton.topAnchor.constraint(equalTo: locationLabel.bottomAnchor, constant: 16),
+            profileButton.centerXAnchor.constraint(equalTo: centerXAnchor),
+            profileButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
         ]
     }
 }
