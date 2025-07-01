@@ -40,8 +40,6 @@ class EditProfileViewModel: ObservableObject {
         .store(in: &cancellables)
     }
 
-    // TODO: Implement
-
     func save() async {
         guard let authToken = userSession.accessToken else { return }
         defer {
