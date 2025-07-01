@@ -24,37 +24,37 @@ struct AvatarPickerView: View {
                     .padding()
                 Spacer()
             } else {
-                ImagePickerSectionView(onImageSelected: { selectedImage in
-                    Task {
-                        await avatarPickerModel.upload(selectedImage)
-                    }
-                })
-                .appPadding()
-                gridView()
-                    .transition(.opacity)
+                ScrollView {
+                    ImagePickerSectionView(onImageSelected: { selectedImage in
+                        Task {
+                            await avatarPickerModel.upload(selectedImage)
+                        }
+                    })
+                    .appPadding()
+                    gridView()
+                        .transition(.opacity)
+                }
             }
         }
         .ignoresSafeArea(.container, edges: .top)
     }
 
     func gridView() -> some View {
-        ScrollView {
-            VStack(alignment: .leading) {
-                VStack(alignment: .leading, spacing: 0) {
-                    Text("Previous avatars")
-                        .font(.headline)
-                    Text("Tap for options")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                AvatarGrid(
-                    grid: avatarPickerModel.grid,
-                    onAvatarActionTap: avatarAction,
-                    onUploadFailedAction: avatarUploadFailedAction
-                )
+        VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("Previous avatars")
+                    .font(.headline)
+                Text("Tap for options")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
-            .appPadding()
+            AvatarGrid(
+                grid: avatarPickerModel.grid,
+                onAvatarActionTap: avatarAction,
+                onUploadFailedAction: avatarUploadFailedAction
+            )
         }
+        .appPadding()
     }
 
     // MARK: - Actions
