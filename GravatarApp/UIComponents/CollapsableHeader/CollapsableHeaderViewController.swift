@@ -7,23 +7,15 @@ enum MultiPlatformContent<Content: View> {
 }
 
 class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UIScrollViewDelegate {
-    private let headerContentView: CollapsableHeaderViewContentType
+    private let headerContentView: CollapsableHeaderViewContent
     private let scrollableContent: MultiPlatformContent<ScrollContent>
-    private let headerMaxHeight: CGFloat
-    private let headerMinHeight: CGFloat
-    private var headerHeightConstraint: NSLayoutConstraint = .init()
-    private var currentlySnapping = false
 
     init(
-        headerContentView: CollapsableHeaderViewContentType,
-        scrollableContent: MultiPlatformContent<ScrollContent>,
-        headerMaxHeight: CGFloat,
-        headerMinHeight: CGFloat
+        headerContentView: CollapsableHeaderViewContent,
+        scrollableContent: MultiPlatformContent<ScrollContent>
     ) {
         self.headerContentView = headerContentView
         self.scrollableContent = scrollableContent
-        self.headerMaxHeight = headerMaxHeight
-        self.headerMinHeight = headerMinHeight
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -34,13 +26,19 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
 
     private lazy var headerView: CollapsableHeaderView = {
         let view = CollapsableHeaderView(
-            maxHeight: headerMaxHeight,
-            minHeight: headerMinHeight,
             contentView: headerContentView
         )
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
+
+    var headerMinHeight: CGFloat {
+        headerView.minHeight + view.safeAreaInsets.top
+    }
+
+    var headerMaxHeight: CGFloat {
+        headerView.maxHeight + view.safeAreaInsets.top
+    }
 
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -54,6 +52,42 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
         super.viewDidLoad()
         view.backgroundColor = .clear
         setupViews()
+
+        registerForTraitChanges(
+            [UITraitPreferredContentSizeCategory.self],
+            target: self,
+            action: #selector(recalculateHeightDerivedValues)
+        )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleDidEnterBackgroundNotification),
+            name: UIApplication.didEnterBackgroundNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleWillEnterForeground),
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
+    }
+
+    @objc
+    private func handleDidEnterBackgroundNotification() {
+        headerView.cleanupAnimator()
+    }
+
+    @objc
+    private func handleWillEnterForeground() {
+        headerView.initAnimator(with: headerView.progress)
+    }
+
+    @objc
+    func recalculateHeightDerivedValues() {
+        headerView.calculateHeight()
+        scrollView.contentInset = .init(top: headerView.maxHeight, left: 0, bottom: 0, right: 0)
+        headerView.stopAndResetAnimator(with: headerView.progress)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -69,8 +103,8 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         if scrollView.contentInset.top == 0 {
-            scrollView.contentInset = .init(top: headerView.bounds.height - view.safeAreaInsets.top, left: 0, bottom: 0, right: 0)
-
+            headerView.calculateHeight()
+            scrollView.contentInset = .init(top: headerView.maxHeight, left: 0, bottom: 0, right: 0)
         }
     }
 
@@ -94,12 +128,10 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
         contentView.backgroundColor = .clear
         scrollView.addSubview(contentView)
 
-        headerHeightConstraint = headerView.heightAnchor.constraint(equalToConstant: headerMaxHeight)
         NSLayoutConstraint.activate([
             headerView.topAnchor.constraint(equalTo: view.topAnchor),
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            headerHeightConstraint,
         ])
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -114,20 +146,14 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
             contentView.trailingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.trailingAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
         ])
-
-        headerView.setHeightConstraint(headerHeightConstraint)
     }
 
     // MARK: - Internal methods
 
     private func newProgress(from scrollView: UIScrollView) -> CGFloat {
         let offset = scrollView.contentOffset.y
-        return newProgress(offset: offset)
-    }
-
-    private func newProgress(offset: CGFloat) -> CGFloat {
         let inset = scrollView.contentInset.top
-        let progress = (inset + view.safeAreaInsets.top + offset) / (headerView.maxHeight - headerView.minHeight)
+        let progress = (inset + view.safeAreaInsets.top + offset) / (headerMaxHeight - headerMinHeight)
 
         return progress
     }
@@ -142,7 +168,6 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard !currentlySnapping else { return }
         let progress = newProgress(from: scrollView)
         headerView.setProgress(progress)
         headerView.setNeedsLayout()
@@ -151,9 +176,8 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
     func scrollViewWillBeginDragging(_: UIScrollView) {}
 
     private func snap() {
-        guard !currentlySnapping && headerView.progress >= 0 else { return }
+        guard headerView.progress > 0 && headerView.progress < 1 else { return }
 
-        currentlySnapping = true
         if headerView.lastSnappoint == .fullHeight {
             if headerView.progress > 0.2 {
                 snap(to: 1)
@@ -170,14 +194,9 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
     }
 
     private func snap(to progress: CGFloat) {
-        defer {
-            currentlySnapping = false
-        }
+        let targetOffset = progress * (headerMaxHeight - headerMinHeight) - (scrollView.contentInset.top + view.safeAreaInsets.top)
+        let offset = scrollView.contentOffset
 
-        let deltaProgress = progress - headerView.progress
-        let deltaOffsetY = (headerView.maxHeight - headerView.minHeight) * deltaProgress
-        scrollView.contentOffset = CGPoint(x: scrollView.contentOffset.x, y: scrollView.contentOffset.y + deltaOffsetY)
-
-        self.headerView.snap(with: progress)
+        scrollView.setContentOffset(.init(x: offset.x, y: targetOffset), animated: true)
     }
 }
