@@ -16,33 +16,52 @@ struct ProfileEditContentView: View {
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     var body: some View {
-        VStack {
-            Text("Profile Editor!")
+        content()
+    }
 
-            // Add some content to make it scroll
-            ForEach(1 ... 50, id: \.self) { i in
-                Text("Item \(i)")
-                    .font(.system(size: 16))
+    @ViewBuilder
+    private func content() -> some View {
+        VStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 0) {
+                personal()
+                Spacer().frame(height: .DS.Padding.double)
+                professional()
+                Spacer().frame(height: .DS.Padding.double)
+                contact()
             }
+            .fixedSize(horizontal: false, vertical: true)
+            .padding(.horizontal, .DS.Padding.double)
+            .padding(.vertical, .DS.Padding.double)
         }
-        .padding()
+        .padding(.horizontal, .DS.Padding.double)
+
+        // if !(isKeyboardPresented && vertcalSizeClass == .compact) {
+        saveButton()
+            .padding(.horizontal, .DS.Padding.large)
+            .padding(.bottom, .DS.Padding.double)
+        //  }
     }
 
     private func saveButton() -> some View {
         ZStack {
             Button {
                 Task {
-                    isSaving = true
-                    if let profile = await self.model.saveAboutInfo(for: fields) {
-                        aboutUpdateHandler?(profile)
-                    }
-                    isSaving = false
+                    await self.viewModel.save()
                 }
             } label: {
-                CTAButtonView(Localized.saveButtonTitle)
+                Text(ProfileEditLocalization.saveButtonTitle)
+                    .font(.callout).fontWeight(.bold)
+                    .frame(maxWidth: .infinity)
+                    .foregroundColor(.white)
+                    .padding(.vertical, .DS.Padding.split)
+                    .padding(.horizontal, .DS.Padding.double)
+                    .background(
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(Color(uiColor: viewModel.isSavinDisabled ? UIColor.systemFill : UIColor.tintColor))
+                    )
             }
-            .disabled(!model.hasUnsavedChanges || isSaving)
-            if isSaving {
+            .disabled(viewModel.isSavinDisabled)
+            if viewModel.isSaving {
                 ProgressView()
             }
         }

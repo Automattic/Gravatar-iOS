@@ -71,4 +71,18 @@ class ProfileFieldsModel: ObservableObject {
             contactEmail: contactEmail
         )
     }
+
+    func isEqual(to profile: Profile) -> Bool {
+        firstName == profile.firstName
+            && lastName == profile.lastName
+            && displayName == profile.displayName
+            && aboutMe == profile.description
+            && pronunciation == profile.pronunciation
+            && pronouns == profile.pronouns
+            && location == profile.location
+            && jobTitle == profile.jobTitle
+            && company == profile.company
+            && cellPhone == profile.contactInfo?.cellPhone
+            && contactEmail == profile.contactInfo?.email
+    }
 }

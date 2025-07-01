@@ -117,4 +117,10 @@ enum ProfileEditLocalization {
         value: "Let them know how your name sounds like.",
         comment: "Description for the 'Pronunciation' field in the profile editing screen."
     )
+
+    static let saveButtonTitle: String = NSLocalizedString(
+        "Profile.SaveButton.title",
+        value: "Save",
+        comment: "Title of the save button in the profile editing screen."
+    )
 }
