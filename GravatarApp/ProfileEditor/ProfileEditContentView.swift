@@ -28,6 +28,26 @@ struct ProfileEditContentView: View {
         .padding()
     }
 
+    private func saveButton() -> some View {
+        ZStack {
+            Button {
+                Task {
+                    isSaving = true
+                    if let profile = await self.model.saveAboutInfo(for: fields) {
+                        aboutUpdateHandler?(profile)
+                    }
+                    isSaving = false
+                }
+            } label: {
+                CTAButtonView(Localized.saveButtonTitle)
+            }
+            .disabled(!model.hasUnsavedChanges || isSaving)
+            if isSaving {
+                ProgressView()
+            }
+        }
+    }
+
     @ViewBuilder
     private func personal() -> some View {
         inputField(

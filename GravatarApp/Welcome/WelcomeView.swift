@@ -19,6 +19,11 @@ struct WelcomeView: View {
         }.onAppear {
             viewModel.softLogin()
         }
+        .onReceive(NotificationCenter.default.publisher(for: .sessionExpired)) { _ in
+            Task {
+                await viewModel.logout()
+            }
+        }
     }
 
     @ViewBuilder
