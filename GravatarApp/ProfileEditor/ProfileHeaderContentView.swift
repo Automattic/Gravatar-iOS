@@ -14,7 +14,7 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
         }
     }
 
-    var delegate: (any CollapsableHeaderViewContentDelegate)?
+    weak var delegate: (any CollapsableHeaderViewContentDelegate)?
 
     private let userSession: UserSession
     private var cancellables = Set<AnyCancellable>()
