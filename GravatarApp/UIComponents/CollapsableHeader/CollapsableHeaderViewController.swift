@@ -73,11 +73,13 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
         )
     }
 
-    @objc private func handleDidEnterBackgroundNotification() {
+    @objc
+    private func handleDidEnterBackgroundNotification() {
         headerView.cleanupAnimator()
     }
 
-    @objc private func handleWillEnterForeground() {
+    @objc
+    private func handleWillEnterForeground() {
         headerView.initAnimator(with: headerView.progress)
     }
 
