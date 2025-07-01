@@ -51,7 +51,6 @@ class EditProfileViewModel: ObservableObject {
             isSaving = true
             let request = fields.updateRequest()
             let profile = try await profileService.updateProfile(with: request, token: authToken)
-            print("success!")
             Task { @MainActor in
                 self.userSession.updateProfile(profile)
             }
@@ -61,7 +60,6 @@ class EditProfileViewModel: ObservableObject {
         {
             NotificationCenter.default.post(name: .sessionExpired, object: nil)
         } catch {
-            print("error: \(error)")
             // TODO: Show error toast
         }
     }
