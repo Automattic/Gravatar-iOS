@@ -1,50 +1,62 @@
+import Combine
 import Gravatar
 import SwiftUI
 
 @MainActor
 class EditProfileViewModel: ObservableObject {
-    private let authToken: String
     private let profileService: ProfileService
-    private(set) var profile: Profile {
-        didSet {
-            fields = .init(profile: profile)
-        }
-    }
+    private let userSession: UserSession
+    private var cancellables = Set<AnyCancellable>()
 
     @Published var isSaving: Bool = false
     @Published var fields: ProfileFieldsModel
+
     var isSavinDisabled: Bool {
         !hasUnsavedChanges || isSaving
     }
 
     var hasUnsavedChanges: Bool {
-        !fields.isEqual(to: profile)
+        guard let profile = userSession.profile else {
+            return false
+        }
+        return !fields.isEqual(to: profile)
     }
 
     init(
-        profile: Profile,
-        authToken: String,
+        userSession: UserSession = .shared,
         urlSession: URLSessionProtocol? = nil
     ) {
-        self.authToken = authToken
-        self.profile = profile
+        self.userSession = userSession
         self.profileService = .init(urlSession: urlSession)
-        self.fields = .init(profile: profile)
+        if let profile = userSession.profile {
+            self.fields = .init(profile: profile)
+        } else {
+            self.fields = .init()
+        }
+        userSession.$profile.sink { [weak self] profile in
+            guard let profile else { return }
+            self?.fields = .init(profile: profile)
+        }
+        .store(in: &cancellables)
     }
 
     // TODO: Implement
 
     func save() async {
+        guard let authToken = userSession.accessToken else { return }
         defer {
             isSaving = false
         }
         do {
             isSaving = true
             let request = fields.updateRequest()
-            self.profile = try await profileService.updateProfile(with: request, token: authToken)
+            let profile = try await profileService.updateProfile(with: request, token: authToken)
             print("success!")
+            Task { @MainActor in
+                self.userSession.updateProfile(profile)
+            }
             // TODO: Show success toast
-        } catch APIError.responseError(let .invalidHTTPStatusCode(response, errorPayload))
+        } catch APIError.responseError(let .invalidHTTPStatusCode(response, _))
             where response.statusCode == HTTPStatus.unauthorized.rawValue
         {
             NotificationCenter.default.post(name: .sessionExpired, object: nil)

@@ -4,6 +4,7 @@ import SwiftUI
 
 struct WelcomeView: View {
     @StateObject private var viewModel: WelcomeViewModel = .init()
+    @StateObject private var session = UserSession.shared
 
     var body: some View {
         Group {
@@ -24,6 +25,7 @@ struct WelcomeView: View {
                 await viewModel.logout()
             }
         }
+        .environmentObject(UserSession.shared)
     }
 
     @ViewBuilder

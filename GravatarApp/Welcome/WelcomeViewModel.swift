@@ -14,6 +14,7 @@ class WelcomeViewModel: ObservableObject {
             if let accessToken, accessToken != oldValue {
                 Task {
                     await self.profileViewModel.fetchProfile(with: accessToken)
+                    await self.userSession.updateAccessToken(accessToken)
                 }
             }
         }
@@ -25,16 +26,19 @@ class WelcomeViewModel: ObservableObject {
     private let oauthManager: OAuthManager
     private let analytics: Analytics
     private let userDefaults: UserDefaults
+    private let userSession: UserSession
 
     init(
         oauthManager: OAuthManager = .shared,
         userDefaults: UserDefaults = .standard,
         analytics: Analytics = .shared,
+        userSession: UserSession = .shared,
         profileService: ProfileServiceProtocol = Gravatar.ProfileService()
     ) {
         self.oauthManager = oauthManager
         self.analytics = analytics
         self.userDefaults = userDefaults
+        self.userSession = userSession
         self.profileViewModel = .init(userDefaults: userDefaults, profileService: profileService)
 
         initCombine()
@@ -62,6 +66,7 @@ class WelcomeViewModel: ObservableObject {
             self.oauthManager.saveToken(AccessToken(token: accessToken), withKey: profile.hash)
             Task {
                 await analytics.setUserName(profile.userLogin)
+                await userSession.updateProfile(profile)
             }
         case .failure:
             break
@@ -90,6 +95,7 @@ class WelcomeViewModel: ObservableObject {
         guard let profile = profileResult?.value() else { return }
         oauthManager.deleteToken(with: profile.hash)
         await analytics.setUserName(nil)
+        await userSession.updateProfile(nil)
         withAnimation {
             self.accessToken = nil
             self.profileResult = nil

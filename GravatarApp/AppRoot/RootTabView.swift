@@ -8,7 +8,7 @@ struct RootTabView: View {
 
     init(authToken: String, profile: Profile, onLogout: @escaping () -> Void) {
         _avatarPickerViewModel = StateObject(wrappedValue: AvatarPickerViewModel(profile: profile, authToken: authToken))
-        _editProfileViewModel = StateObject(wrappedValue: EditProfileViewModel(profile: profile, authToken: authToken))
+        _editProfileViewModel = StateObject(wrappedValue: EditProfileViewModel())
         self.onLogout = onLogout
     }
 
