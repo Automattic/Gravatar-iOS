@@ -50,8 +50,8 @@ struct AvatarPickerView: View {
             }
             AvatarGrid(
                 grid: avatarPickerModel.grid,
-                onAvatarActionTap: avatarAction,
-                onUploadFailedAction: avatarUploadFailedAction
+                onAvatarActionSelected: avatarAction,
+                avatarUploadErrorAction: avatarUploadErrorAction
             )
         }
         .appPadding()
@@ -71,7 +71,7 @@ struct AvatarPickerView: View {
         }
     }
 
-    private func avatarUploadFailedAction(action: AvatarUploadErrorAction) {
+    private func avatarUploadErrorAction(action: AvatarUploadErrorAction) {
         switch action {
         case .delete(let avatarID):
             avatarPickerModel.deleteFailed(avatarID)

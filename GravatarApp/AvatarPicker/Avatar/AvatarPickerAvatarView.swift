@@ -6,8 +6,8 @@ struct AvatarPickerAvatarView: View {
     let maxSize: CGFloat
     let minSize: CGFloat
     let shouldSelect: () -> Bool
-    let onUploadFailedAction: (AvatarUploadErrorAction) -> Void
-    let onActionTap: (AvatarAction) -> Void
+    let avatarUploadErrorAction: (AvatarUploadErrorAction) -> Void
+    let onActionSelected: (AvatarAction) -> Void
 
     @State private var uploadError: AvatarUploadErrorInfo?
     @State private var presentUploadErrorActions: Bool = false
@@ -38,7 +38,7 @@ struct AvatarPickerAvatarView: View {
         }
         .transition(.opacity)
         .avatarUploadErrorDialog(isPresented: $presentUploadErrorActions, uploadError: $uploadError, action: { action in
-            onUploadFailedAction(action)
+            avatarUploadErrorAction(action)
         })
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isButton)
@@ -79,7 +79,7 @@ struct AvatarPickerAvatarView: View {
         AvatarActionsMenu(isAvatarSelected: avatarSelected) {
             Color.clear
         } onActionSelected: { action in
-            onActionTap(action)
+            onActionSelected(action)
         }
     }
 
@@ -114,22 +114,22 @@ extension CGFloat {
     ))
     AvatarPickerAvatarView(avatar: avatar, maxSize: 90, minSize: 80) {
         false
-    } onUploadFailedAction: { _ in
-    } onActionTap: { _ in }
+    } avatarUploadErrorAction: { _ in
+    } onActionSelected: { _ in }
     AvatarPickerAvatarView(avatar: avatar, maxSize: 90, minSize: 80) {
         true
-    } onUploadFailedAction: { _ in
-    } onActionTap: { _ in }
+    } avatarUploadErrorAction: { _ in
+    } onActionSelected: { _ in }
     AvatarPickerAvatarView(avatar: avatarLoading, maxSize: 90, minSize: 80) {
         true
-    } onUploadFailedAction: { _ in
-    } onActionTap: { _ in }
+    } avatarUploadErrorAction: { _ in
+    } onActionSelected: { _ in }
     AvatarPickerAvatarView(avatar: avatarError, maxSize: 90, minSize: 80) {
         true
-    } onUploadFailedAction: { _ in
-    } onActionTap: { _ in }
+    } avatarUploadErrorAction: { _ in
+    } onActionSelected: { _ in }
     AvatarPickerAvatarView(avatar: avatarErrorNoRetry, maxSize: 90, minSize: 80) {
         true
-    } onUploadFailedAction: { _ in
-    } onActionTap: { _ in }
+    } avatarUploadErrorAction: { _ in
+    } onActionSelected: { _ in }
 }

@@ -9,8 +9,8 @@ extension CGFloat {
 struct AvatarGrid: View {
     @ObservedObject var grid: AvatarGridModel
 
-    let onAvatarActionTap: (AvatarImageModel, AvatarAction) -> Void
-    let onUploadFailedAction: (AvatarUploadErrorAction) -> Void
+    let onAvatarActionSelected: (AvatarImageModel, AvatarAction) -> Void
+    let avatarUploadErrorAction: (AvatarUploadErrorAction) -> Void
 
     var body: some View {
         let columns: [GridItem] = [GridItem(
@@ -38,9 +38,9 @@ struct AvatarGrid: View {
             shouldSelect: {
                 grid.selectedAvatar?.id == avatar.id
             },
-            onUploadFailedAction: onUploadFailedAction,
-            onActionTap: { action in
-                onAvatarActionTap(avatar, action)
+            avatarUploadErrorAction: avatarUploadErrorAction,
+            onActionSelected: { action in
+                onAvatarActionSelected(avatar, action)
             }
         )
     }
@@ -61,7 +61,7 @@ struct AvatarGrid: View {
     return VStack {
         AvatarGrid(grid: grid) { avatar, _ in
             grid.selectAvatar(withID: avatar.id)
-        } onUploadFailedAction: { _ in }
+        } avatarUploadErrorAction: { _ in }
             .padding()
         Button("Add avatar cell") {
             grid.append(newAvatarModel(nil))
