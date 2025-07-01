@@ -4,7 +4,7 @@ import SwiftUI
 @MainActor
 class EditProfileViewModel: ObservableObject {
     private let authToken: String
-    private let profile: Profile
+    let profile: Profile
 
     init(
         profile: Profile,

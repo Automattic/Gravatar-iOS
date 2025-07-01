@@ -1,4 +1,4 @@
-import Foundation
+import UIKit
 
 enum CollapsableHeaderSnappoint: CGFloat, Sendable {
     case fullHeight = 1.0
@@ -6,10 +6,13 @@ enum CollapsableHeaderSnappoint: CGFloat, Sendable {
 }
 
 @MainActor
-protocol CollapsableHeaderViewContent {
+protocol CollapsableHeaderViewContent: UIView {
     /// Implement different UI states for each snappoint. Transition between these UI states will be animated by `UIViewPropertyAnimator`.
     func updateUI(for snappoint: CollapsableHeaderSnappoint)
 
     /// Implement this method for any interpolations not supported by `UIViewPropertyAnimator`.
     func interpolate(with progress: CGFloat)
+
+    /// Create a copy to be used for frame calculations without affecting the original instance.
+    func makeCopy() -> Self
 }
