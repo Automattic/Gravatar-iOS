@@ -56,18 +56,17 @@ struct ProfileTab: View {
         BackgroundColorView(color: .secondarySystemBackground) {
             Self.content(editProfileViewModel: editProfileViewModel)
         }
+        .ignoresSafeArea()
         .tabItem {
             Label("Profile", systemImage: "brain.filled.head.profile")
         }
     }
 
-    static func content(editProfileViewModel: EditProfileViewModel) -> CollapsableHeaderScrollView<ProfileEditContentView> {
+    static func content(editProfileViewModel: EditProfileViewModel, userSession: UserSession = .shared) -> CollapsableHeaderScrollView<ProfileEditContentView> {
         let profileView = ProfileEditContentView(viewModel: editProfileViewModel)
         return CollapsableHeaderScrollView<ProfileEditContentView>(
-            headerContentView: ProfileHeaderContentView(),
-            scrollableContent: .swiftUI(profileView),
-            headerMaxHeight: 250,
-            headerMinHeight: 100
+            headerContentView: ProfileHeaderContentView(userSession: userSession),
+            scrollableContent: .swiftUI(profileView)
         )
     }
 }
