@@ -102,7 +102,6 @@ struct ImagePicker<Label>: View where Label: View {
     }
 
     private func pickerDidSelectImage(_ item: ImagePickerItem) {
-//        UIApplication.shared.dismissKeyboard()
         imagePickerSelectedItem = item
     }
 }
