@@ -1,5 +1,5 @@
-import GravatarUI
 import Combine
+import GravatarUI
 import UIKit
 
 class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
@@ -13,6 +13,7 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
             updateProfileData()
         }
     }
+
     var delegate: (any CollapsableHeaderViewContentDelegate)?
 
     private let userSession: UserSession
@@ -69,7 +70,6 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
     private var collapsedConstraints: [NSLayoutConstraint] = []
 
     required init(userSession: UserSession = .shared) {
-        
         self.userSession = userSession
         self.profile = userSession.profile
 
@@ -86,10 +86,9 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
             guard let self else { return }
             self.profile = profile
             // Recreate the animator otherwise text alignments get messed up
-            self.delegate?.didUpdateContent(self)
+            self.delegate?.didUpdateData(self)
         }
         .store(in: &cancellables)
-
     }
 
     func makeCopy() -> Self {
