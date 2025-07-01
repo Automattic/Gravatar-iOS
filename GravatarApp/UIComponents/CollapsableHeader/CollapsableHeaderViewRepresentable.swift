@@ -2,11 +2,11 @@ import Gravatar
 import SwiftUI
 
 struct CollapsableHeaderScrollView<Content: View>: UIViewControllerRepresentable {
-    let headerContentView: CollapsableHeaderViewContentType
+    let headerContentView: CollapsableHeaderViewContent
     let scrollableContent: MultiPlatformContent<Content>
 
     init(
-        headerContentView: CollapsableHeaderViewContentType,
+        headerContentView: CollapsableHeaderViewContent,
         scrollableContent: MultiPlatformContent<Content>,
     ) {
         self.headerContentView = headerContentView

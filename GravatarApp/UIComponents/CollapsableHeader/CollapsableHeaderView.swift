@@ -1,7 +1,5 @@
 import UIKit
 
-typealias CollapsableHeaderViewContentType = CollapsableHeaderViewContent & UIView
-
 class CollapsableHeaderView: UIView {
     enum Constants {
         static let fullAnimationDuration: TimeInterval = 0.3
@@ -30,7 +28,7 @@ class CollapsableHeaderView: UIView {
         }
     }
 
-    private(set) var contentView: CollapsableHeaderViewContentType
+    private(set) var contentView: CollapsableHeaderViewContent
     private(set) var lastSnappoint: CollapsableHeaderSnappoint = .fullHeight
     private var _maxHeight: CGFloat = 0.0
     private var _minHeight: CGFloat = 0.0
@@ -38,7 +36,7 @@ class CollapsableHeaderView: UIView {
     private var animator: UIViewPropertyAnimator?
     private var lastWidth: CGFloat = 0
 
-    init(contentView: CollapsableHeaderViewContentType) {
+    init(contentView: CollapsableHeaderViewContent) {
         self.contentView = contentView
         super.init(frame: .zero)
 
@@ -59,27 +57,28 @@ class CollapsableHeaderView: UIView {
 
     func initAnimator(with progress: CGFloat? = nil) {
         // reset the UI
-        self.contentView.updateUI(for: .fullHeight)
-        self.setNeedsLayout()
-        self.layoutIfNeeded()
+
+        contentView.updateUI(for: .fullHeight)
+
+        superview?.setNeedsLayout()
+        superview?.layoutIfNeeded()
 
         // init the animator in the next run loop so UI state starts from .fullHeight
-        DispatchQueue.main.async { [weak self] in
+        Task { @MainActor [weak self] in
             guard let self else { return }
             let newAnimator = UIViewPropertyAnimator(duration: Constants.fullAnimationDuration, curve: .linear) { [weak self] in
                 guard let self else { return }
 
-                self.contentView.updateUI(for: .minHeight)
-                self.setNeedsLayout()
-                self.layoutIfNeeded()
-                self.superview?.layoutIfNeeded()
+                contentView.updateUI(for: .minHeight)
+
+                superview?.layoutIfNeeded()
             }
             newAnimator.pauseAnimation()
             if let progress {
                 // set the progress if given
                 newAnimator.fractionComplete = progress
             }
-            self.animator = newAnimator
+            animator = newAnimator
         }
     }
 
@@ -89,6 +88,7 @@ class CollapsableHeaderView: UIView {
         let currentWidth = bounds.width
         if currentWidth != lastWidth {
             if lastWidth != 0 {
+                print("Width changed to: \(currentWidth)")
                 handleWidthChange()
             }
             lastWidth = currentWidth
@@ -97,19 +97,23 @@ class CollapsableHeaderView: UIView {
 
     @objc
     func calculateHeight() {
-        contentView.updateUI(for: .minHeight)
-        setNeedsLayout()
-        layoutIfNeeded()
-        _minHeight = frame.height
+        let copyContentView = contentView.makeCopy()
+        let widthConstaint = copyContentView.widthAnchor.constraint(equalToConstant: frame.width)
+        widthConstaint.isActive = true
 
-        contentView.updateUI(for: .fullHeight)
-        setNeedsLayout()
-        layoutIfNeeded()
-        _maxHeight = frame.height
+        copyContentView.updateUI(for: .minHeight)
+        copyContentView.setNeedsLayout()
+        copyContentView.layoutIfNeeded()
+        _minHeight = copyContentView.bounds.height
+
+        copyContentView.updateUI(for: .fullHeight)
+        copyContentView.setNeedsLayout()
+        copyContentView.layoutIfNeeded()
+        _maxHeight = copyContentView.bounds.height
     }
 
     private func handleWidthChange() {
-        DispatchQueue.main.async { [weak self] in
+        Task { @MainActor [weak self] in
             guard let self else { return }
             self.stopAndResetAnimator(with: self.progress)
         }

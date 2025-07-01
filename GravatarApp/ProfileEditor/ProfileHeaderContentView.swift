@@ -1,68 +1,8 @@
 import GravatarUI
 import UIKit
 
-class CircularAvatarImageView: UIView {
-    let imageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
-        return imageView
-    }()
-
-    let shadowView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .black
-
-        view.layer.shadowColor = UIColor.black.cgColor
-        view.layer.shadowOffset = CGSize(width: 0, height: 2)
-        view.layer.shadowOpacity = 0.50
-        view.layer.shadowRadius = 2
-        return view
-    }()
-
-    init() {
-        super.init(frame: .zero)
-        translatesAutoresizingMaskIntoConstraints = false
-        addSubview(shadowView)
-        addSubview(imageView)
-        NSLayoutConstraint.activate([
-            shadowView.topAnchor.constraint(equalTo: topAnchor),
-            shadowView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            shadowView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            shadowView.bottomAnchor.constraint(equalTo: bottomAnchor),
-        ])
-        NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: topAnchor),
-            imageView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            imageView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            imageView.bottomAnchor.constraint(equalTo: bottomAnchor),
-        ])
-    }
-
-    @available(*, unavailable)
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        shadowView.layer.cornerRadius = bounds.width / 2.0
-        imageView.layer.cornerRadius = bounds.width / 2.0
-    }
-}
-
-extension UIFont {
-    fileprivate static let nameLabelFont: UIFont = .preferredFont(forTextStyle: .title3).with(weight: .semibold)
-    fileprivate static let organisationLabelFont: UIFont = .preferredFont(forTextStyle: .headline)
-    fileprivate static let locationLabelFont: UIFont = .preferredFont(forTextStyle: .headline)
-}
-
 class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
     enum Constants {
-        static let avatarSizeMin: CGFloat = 44
-        static let avatarSizeMax: CGFloat = 105
         static let backgroundColorExpanded = UIColor.clear
         static let backgroundColorCollapsed = UIColor.systemBackground
     }
@@ -79,10 +19,10 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
         return imageView
     }()
 
-    private let nameLabel: UILabel = makeLabel(with: .nameLabelFont)
+    private let nameLabelExpanded: UILabel = makeLabel(with: .nameLabelFont)
     private let nameLabelCollapsed: UILabel = makeLabel(with: .nameLabelFont)
 
-    private let organisationLabel: UILabel = makeLabel(with: .organisationLabelFont, textColor: .secondaryLabel)
+    private let organisationLabelExpanded: UILabel = makeLabel(with: .organisationLabelFont, textColor: .secondaryLabel)
     private let organisationLabelCollapsed: UILabel = makeLabel(with: .organisationLabelFont, textColor: .secondaryLabel)
 
     private let locationLabel: UILabel = makeLabel(with: .locationLabelFont, textColor: .secondaryLabel)
@@ -113,9 +53,9 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
 
     lazy var allViews: [UIView] = [
         avatarView,
-        nameLabel,
+        nameLabelExpanded,
         nameLabelCollapsed,
-        organisationLabel,
+        organisationLabelExpanded,
         organisationLabelCollapsed,
         locationLabel,
         profileButton,
@@ -124,7 +64,7 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
     private var expandedConstraints: [NSLayoutConstraint] = []
     private var collapsedConstraints: [NSLayoutConstraint] = []
 
-    init(profile: Profile) {
+    required init(profile: Profile) {
         self.profile = profile
 
         super.init(frame: .zero)
@@ -136,6 +76,10 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
 
         initConstraints()
         updateProfileData()
+    }
+
+    func makeCopy() -> Self {
+        .init(profile: profile)
     }
 
     @available(*, unavailable)
@@ -186,22 +130,22 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
 
     private func setLabelsNeedDisplay() {
         organisationLabelCollapsed.setNeedsDisplay()
-        organisationLabel.setNeedsDisplay()
+        organisationLabelExpanded.setNeedsDisplay()
         nameLabelCollapsed.setNeedsDisplay()
-        nameLabel.setNeedsDisplay()
+        nameLabelExpanded.setNeedsDisplay()
     }
 
     private func setAlphas(collapsed: Bool) {
         organisationLabelCollapsed.alpha = collapsed ? 1 : 0
-        organisationLabel.alpha = collapsed ? 0 : 1
+        organisationLabelExpanded.alpha = collapsed ? 0 : 1
         nameLabelCollapsed.alpha = collapsed ? 1 : 0
-        nameLabel.alpha = collapsed ? 0 : 1
+        nameLabelExpanded.alpha = collapsed ? 0 : 1
     }
 
     private func updateProfileData() {
-        nameLabel.text = profile.displayName
+        nameLabelExpanded.text = profile.displayName
         nameLabelCollapsed.text = profile.displayName
-        organisationLabel.text = "\(profile.jobTitle), \(profile.company)"
+        organisationLabelExpanded.text = "\(profile.jobTitle), \(profile.company)"
         organisationLabelCollapsed.text = "\(profile.jobTitle), \(profile.company)"
         locationLabel.text = profile.location
 
@@ -218,82 +162,98 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
 
     private func initConstraints() {
         collapsedConstraints = [
-            avatarView.heightAnchor.constraint(equalToConstant: Constants.avatarSizeMin),
-            avatarView.widthAnchor.constraint(equalToConstant: Constants.avatarSizeMin),
+            avatarView.heightAnchor.constraint(equalToConstant: .avatarSizeMin),
+            avatarView.widthAnchor.constraint(equalToConstant: .avatarSizeMin),
 
             avatarView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
-            avatarView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            avatarView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: .hPadding),
 
-            nameLabel.topAnchor.constraint(equalTo: avatarView.topAnchor),
-            nameLabel.leadingAnchor.constraint(equalTo: avatarView.trailingAnchor, constant: 14),
-            nameLabel.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, constant: -16),
+            nameLabelExpanded.topAnchor.constraint(equalTo: avatarView.topAnchor),
+            nameLabelExpanded.leadingAnchor.constraint(equalTo: avatarView.trailingAnchor, constant: .avatarHSpace),
+            nameLabelExpanded.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, constant: -.hPadding),
 
             nameLabelCollapsed.topAnchor.constraint(equalTo: avatarView.topAnchor),
-            nameLabelCollapsed.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
-            nameLabelCollapsed.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -16),
+            nameLabelCollapsed.leadingAnchor.constraint(equalTo: nameLabelExpanded.leadingAnchor),
+            nameLabelCollapsed.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -.hPadding),
 
-            organisationLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 0),
-            organisationLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
-            organisationLabel.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, constant: -16),
-            organisationLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
+            organisationLabelExpanded.topAnchor.constraint(equalTo: nameLabelExpanded.bottomAnchor),
+            organisationLabelExpanded.leadingAnchor.constraint(equalTo: nameLabelExpanded.leadingAnchor),
+            organisationLabelExpanded.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, constant: -.hPadding),
+            organisationLabelExpanded.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -.hPadding),
 
-            organisationLabelCollapsed.topAnchor.constraint(equalTo: nameLabel.bottomAnchor),
-            organisationLabelCollapsed.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
-            organisationLabelCollapsed.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -16),
-            organisationLabelCollapsed.bottomAnchor.constraint(equalTo: organisationLabel.bottomAnchor),
+            organisationLabelCollapsed.topAnchor.constraint(equalTo: nameLabelExpanded.bottomAnchor),
+            organisationLabelCollapsed.leadingAnchor.constraint(equalTo: nameLabelExpanded.leadingAnchor),
+            organisationLabelCollapsed.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -.hPadding),
+            organisationLabelCollapsed.bottomAnchor.constraint(equalTo: organisationLabelExpanded.bottomAnchor),
 
-            locationLabel.bottomAnchor.constraint(equalTo: profileButton.topAnchor, constant: 16),
+            locationLabel.bottomAnchor.constraint(equalTo: profileButton.topAnchor, constant: .hPadding),
             locationLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
 
-            profileButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
+            profileButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -.hPadding),
             profileButton.centerXAnchor.constraint(equalTo: centerXAnchor),
         ]
 
         expandedConstraints = [
-            avatarView.heightAnchor.constraint(equalToConstant: Constants.avatarSizeMax),
-            avatarView.widthAnchor.constraint(equalToConstant: Constants.avatarSizeMax),
+            avatarView.heightAnchor.constraint(equalToConstant: .avatarSizeMax),
+            avatarView.widthAnchor.constraint(equalToConstant: .avatarSizeMax),
 
             avatarView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
             avatarView.centerXAnchor.constraint(equalTo: centerXAnchor),
 
-            nameLabel.topAnchor.constraint(equalTo: avatarView.bottomAnchor, constant: 16),
-            nameLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-            nameLabel.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, constant: -16),
+            nameLabelExpanded.topAnchor.constraint(equalTo: avatarView.bottomAnchor, constant: .hPadding),
+            nameLabelExpanded.centerXAnchor.constraint(equalTo: centerXAnchor),
+            nameLabelExpanded.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, constant: -.hPadding),
 
-            nameLabelCollapsed.topAnchor.constraint(equalTo: nameLabel.topAnchor),
-            nameLabelCollapsed.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
+            nameLabelCollapsed.topAnchor.constraint(equalTo: nameLabelExpanded.topAnchor),
+            nameLabelCollapsed.leadingAnchor.constraint(equalTo: nameLabelExpanded.leadingAnchor),
 
-            organisationLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8),
-            organisationLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-            organisationLabel.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, constant: -16),
+            organisationLabelExpanded.topAnchor.constraint(equalTo: nameLabelExpanded.bottomAnchor, constant: .vPadding),
+            organisationLabelExpanded.centerXAnchor.constraint(equalTo: centerXAnchor),
+            organisationLabelExpanded.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, constant: -.hPadding),
 
-            organisationLabelCollapsed.topAnchor.constraint(equalTo: organisationLabel.topAnchor),
-            organisationLabelCollapsed.leadingAnchor.constraint(equalTo: organisationLabel.leadingAnchor),
+            organisationLabelCollapsed.topAnchor.constraint(equalTo: organisationLabelExpanded.topAnchor),
+            organisationLabelCollapsed.leadingAnchor.constraint(equalTo: organisationLabelExpanded.leadingAnchor),
 
-            locationLabel.topAnchor.constraint(equalTo: organisationLabel.bottomAnchor, constant: 8),
+            locationLabel.topAnchor.constraint(equalTo: organisationLabelExpanded.bottomAnchor, constant: .vPadding),
             locationLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-            locationLabel.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, constant: -16),
+            locationLabel.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, constant: -.hPadding),
 
-            profileButton.topAnchor.constraint(equalTo: locationLabel.bottomAnchor, constant: 16),
+            profileButton.topAnchor.constraint(equalTo: locationLabel.bottomAnchor, constant: .hPadding),
             profileButton.centerXAnchor.constraint(equalTo: centerXAnchor),
-            profileButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
+            profileButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -.hPadding),
         ]
     }
 }
 
 #if DEBUG
-#Preview {
+#Preview("Max height") {
     let view = ProfileHeaderContentView(profile: .testProfile)
     view.updateUI(for: .fullHeight)
+    view.interpolate(with: 0)
     return view
 }
 
 #Preview("Min height") {
     let view = ProfileHeaderContentView(profile: .testProfile)
     view.updateUI(for: .minHeight)
+    view.interpolate(with: 1)
     return view
 }
 #endif
+
+extension UIFont {
+    fileprivate static let nameLabelFont: UIFont = .preferredFont(forTextStyle: .title3).with(weight: .semibold)
+    fileprivate static let organisationLabelFont: UIFont = .preferredFont(forTextStyle: .headline)
+    fileprivate static let locationLabelFont: UIFont = .preferredFont(forTextStyle: .headline)
+}
+
+extension CGFloat {
+    fileprivate static let avatarSizeMin: CGFloat = 44
+    fileprivate static let avatarSizeMax: CGFloat = 105
+    fileprivate static let hPadding: CGFloat = 16
+    fileprivate static let vPadding: CGFloat = 8
+    fileprivate static let avatarHSpace: CGFloat = 14
+}
 
 extension UIFont {
     func with(weight: UIFont.Weight) -> UIFont {
