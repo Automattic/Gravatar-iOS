@@ -6,7 +6,7 @@ struct AvatarPickerAvatarView: View {
     let maxSize: CGFloat
     let minSize: CGFloat
     let shouldSelect: () -> Bool
-    let onUploadFailedAction: (AvatarUploadFailedAction) -> Void
+    let onUploadFailedAction: (AvatarUploadErrorAction) -> Void
     let onActionTap: (AvatarAction) -> Void
 
     @State private var uploadError: AvatarUploadErrorInfo?
@@ -37,7 +37,7 @@ struct AvatarPickerAvatarView: View {
             avatarOverlayView(for: avatar.state)
         }
         .transition(.opacity)
-        .avatarErrorDialog(isPresented: $presentUploadErrorActions, uploadError: $uploadError, action: { action in
+        .avatarUploadErrorDialog(isPresented: $presentUploadErrorActions, uploadError: $uploadError, action: { action in
             onUploadFailedAction(action)
         })
         .accessibilityElement(children: .combine)

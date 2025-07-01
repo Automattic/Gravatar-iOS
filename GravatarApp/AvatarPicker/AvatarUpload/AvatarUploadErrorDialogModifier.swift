@@ -3,7 +3,7 @@ import SwiftUI
 struct AvatarUploadErrorDialogModifier: ViewModifier {
     @Binding var isPresented: Bool
     @Binding var uploadError: AvatarUploadErrorInfo?
-    let action: (AvatarUploadFailedAction) -> Void
+    let action: (AvatarUploadErrorAction) -> Void
 
     func body(content: Content) -> some View {
         content.confirmationDialog(
@@ -32,10 +32,10 @@ struct AvatarUploadErrorDialogModifier: ViewModifier {
 }
 
 extension View {
-    func avatarErrorDialog(
+    func avatarUploadErrorDialog(
         isPresented: Binding<Bool>,
         uploadError: Binding<AvatarUploadErrorInfo?>,
-        action: @escaping (AvatarUploadFailedAction) -> Void
+        action: @escaping (AvatarUploadErrorAction) -> Void
     ) -> some View {
         self.modifier(AvatarUploadErrorDialogModifier(
             isPresented: isPresented,

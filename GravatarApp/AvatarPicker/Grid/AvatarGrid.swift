@@ -10,7 +10,7 @@ struct AvatarGrid: View {
     @ObservedObject var grid: AvatarGridModel
 
     let onAvatarActionTap: (AvatarImageModel, AvatarAction) -> Void
-    let onUploadFailedAction: (AvatarUploadFailedAction) -> Void
+    let onUploadFailedAction: (AvatarUploadErrorAction) -> Void
 
     var body: some View {
         let columns: [GridItem] = [GridItem(

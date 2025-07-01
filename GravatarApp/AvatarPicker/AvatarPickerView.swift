@@ -71,7 +71,7 @@ struct AvatarPickerView: View {
         }
     }
 
-    private func avatarUploadFailedAction(action: AvatarUploadFailedAction) {
+    private func avatarUploadFailedAction(action: AvatarUploadErrorAction) {
         switch action {
         case .delete(let avatarID):
             avatarPickerModel.deleteFailed(avatarID)
