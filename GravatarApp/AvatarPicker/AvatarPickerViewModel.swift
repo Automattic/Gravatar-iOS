@@ -136,22 +136,6 @@ class AvatarPickerViewModel: ObservableObject {
         }
     }
 
-    func deleteFailed(_ id: String) {
-        _ = grid.deleteModel(id)
-    }
-
-    private func handleUploadError(imageID: String, squareImage: UIImage, supportsRetry: Bool, errorMessage: String) {
-        let storedModel = grid.model(with: imageID)
-        let newModel = AvatarImageModel(
-            id: imageID,
-            source: .local(image: squareImage),
-            state: .error(supportsRetry: supportsRetry, errorMessage: errorMessage),
-            isSelected: false,
-            altText: storedModel?.altText ?? ""
-        )
-        grid.replaceModel(withID: imageID, with: newModel)
-    }
-
     private func updateSelectedAvatarURL() {
         guard let selectedID = selectedAvatarResult?.value() else { return }
         grid.selectAvatar(withID: selectedID)
@@ -230,6 +214,113 @@ class AvatarPickerViewModel: ObservableObject {
                 selectedAvatarURL = previouslySelectedAvatar?.url
             }
         }
+    }
+
+    func upload(_ image: UIImage) async {
+        // SwiftUI doesn't update the UI if the grid is empty.
+        // objectWillChange forces the update.
+        objectWillChange.send()
+
+        let localID = UUID().uuidString
+
+        let localImageModel = AvatarImageModel(id: localID, source: .local(image: image), state: .loading, isSelected: false, altText: "")
+        grid.append(localImageModel)
+
+        await doUpload(squareImage: image, localID: localID, accessToken: authToken)
+    }
+
+    func retryUpload(of localID: String) async {
+        guard
+            let model = grid.avatars.first(where: { $0.id == localID }),
+            let localImage = model.localUIImage
+        else {
+            return
+        }
+        grid.setState(to: .loading, onAvatarWithID: localID)
+        await doUpload(squareImage: localImage, localID: localID, accessToken: authToken)
+    }
+
+    func deleteFailed(_ id: String) {
+        withAnimation {
+            _ = grid.deleteModel(id)
+        }
+    }
+
+    private func doUpload(squareImage: UIImage, localID: String, accessToken: String) async {
+        do {
+            guard let avatar = try await avatarService.upload(
+                squareImage,
+                selectionBehavior: .selectUploadedImageIfNoneSelected(for: .hashID(profile.hash)),
+                accessToken: accessToken
+            ) as? AvatarDetails else {
+                fatalError()
+            }
+
+            ImageCache.shared.setEntry(.ready(squareImage), for: avatar.imageURL)
+
+            let newModel = AvatarImageModel(with: avatar)
+            grid.replaceModel(withID: localID, with: newModel)
+
+            if avatar.isSelected {
+                grid.selectAvatar(withID: avatar.imageID)
+                self.selectedAvatarURL = URL(string: avatar.imageURL)
+                self.backendSelectedAvatarURL = URL(string: avatar.imageURL)
+            }
+        } catch ImageUploadError.responseError(reason: let .invalidHTTPStatusCode(response, errorPayload))
+            where response.statusCode == HTTPStatus.badRequest.rawValue || response.statusCode == HTTPStatus.payloadTooLarge.rawValue
+        {
+            let message: String = {
+                if response.statusCode == HTTPStatus.payloadTooLarge.rawValue {
+                    // The error response comes back as an HTML document for 413, which is unexpected.
+                    // Until BE starts to send the json, we'll handle 413 on the client side.
+                    return Localized.imageTooBigError
+                }
+                return errorPayload?.message ?? Localized.genericUploadError
+            }()
+            // If the status code is 400 then it means we got a validation error about this image and the operation is not suitable for retrying.
+            handleUploadError(
+                imageID: localID,
+                squareImage: squareImage,
+                supportsRetry: false,
+                errorMessage: message
+            )
+        } catch ImageUploadError.responseError(reason: let .invalidHTTPStatusCode(response, errorPayload))
+            where response.statusCode == HTTPStatus.unauthorized.rawValue
+        {
+            // If the status code is 401 (unauthorized), then it means the token is not valid and we should prompt the user accordingly.
+            handleUnrecoverableClientError(APIError.responseError(reason: .invalidHTTPStatusCode(response: response, errorPayload: errorPayload)))
+        } catch ImageUploadError.responseError(reason: let reason) where reason.urlSessionErrorLocalizedDescription != nil {
+            handleUploadError(
+                imageID: localID,
+                squareImage: squareImage,
+                supportsRetry: true,
+                errorMessage: reason.urlSessionErrorLocalizedDescription ?? Localized.genericUploadError
+            )
+        } catch {
+            handleUploadError(
+                imageID: localID,
+                squareImage: squareImage,
+                supportsRetry: true,
+                errorMessage: Localized.genericUploadError
+            )
+        }
+    }
+
+    private func handleUploadError(imageID: String, squareImage: UIImage, supportsRetry: Bool, errorMessage: String) {
+        let storedModel = grid.model(with: imageID)
+        let newModel = AvatarImageModel(
+            id: imageID,
+            source: .local(image: squareImage),
+            state: .error(supportsRetry: supportsRetry, errorMessage: errorMessage),
+            isSelected: false,
+            altText: storedModel?.altText ?? ""
+        )
+        grid.replaceModel(withID: imageID, with: newModel)
+    }
+
+    private func handleUnrecoverableClientError(_ error: Error) {
+        self.grid.setAvatars([])
+        self.gridResponseStatus = .failure(error)
     }
 }
 

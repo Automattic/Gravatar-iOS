@@ -1,10 +1,98 @@
 import GravatarUI
 import SwiftUI
 
-struct FailedUploadInfo {
-    let avatarLocalID: String
-    let supportsRetry: Bool
-    let errorMessage: String
+struct AvatarPickerAvatarView: View {
+    let avatar: AvatarImageModel
+    let maxSize: CGFloat
+    let minSize: CGFloat
+    let shouldSelect: () -> Bool
+    let onUploadFailedAction: (AvatarUploadFailedAction) -> Void
+    let onActionTap: (AvatarAction) -> Void
+
+    @State private var uploadError: AvatarUploadErrorInfo?
+    @State private var presentUploadErrorActions: Bool = false
+
+    var body: some View {
+        AvatarView(
+            url: avatar.url,
+            placeholderView: {
+                avatar.localImage?.resizable()
+            },
+            loadingView: {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle())
+            },
+            transaction: .init(animation: .smooth)
+        )
+        .scaledToFill()
+        .frame(minWidth: minSize, maxWidth: maxSize, minHeight: minSize, maxHeight: maxSize)
+        .background(Color(UIColor.secondarySystemBackground))
+        .aspectRatio(1, contentMode: .fill)
+        .shape(
+            RoundedRectangle(cornerRadius: .avatarCornerRadius),
+            borderColor: Color.clear,
+            borderWidth: 0
+        )
+        .overlay {
+            avatarOverlayView(for: avatar.state)
+        }
+        .transition(.opacity)
+        .avatarErrorDialog(isPresented: $presentUploadErrorActions, uploadError: $uploadError, action: { action in
+            onUploadFailedAction(action)
+        })
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isButton)
+        .accessibilityAddTraits(shouldSelect() ? .isSelected : [])
+        .accessibilityLabel(Text(avatar.accessibilityLabel(altText: avatar.altText)))
+    }
+
+    @ViewBuilder
+    private func avatarOverlayView(for state: AvatarImageModel.State) -> some View {
+        switch state {
+        case .loading:
+            loadingOverlayView()
+        case .error(let supportsRetry, let errorMessage):
+            errorOverlayView(supportsRetry: supportsRetry, errorMessage: errorMessage)
+        case .loaded:
+            loadedOverlayView(avatarSelected: shouldSelect())
+        }
+    }
+
+    private func loadingOverlayView() -> some View {
+        DimmingActivityIndicator()
+            .cornerRadius(.avatarCornerRadius)
+    }
+
+    private func errorOverlayView(supportsRetry: Bool, errorMessage: String) -> some View {
+        DimmingErrorButton {
+            uploadError = AvatarUploadErrorInfo(avatarLocalID: avatar.id, supportsRetry: supportsRetry, errorMessage: errorMessage)
+            presentUploadErrorActions = true
+        }
+        .cornerRadius(.avatarCornerRadius)
+    }
+
+    @ViewBuilder
+    private func loadedOverlayView(avatarSelected: Bool) -> some View {
+        if avatarSelected {
+            selectedCheckmarkView()
+        }
+        AvatarActionsMenu(isAvatarSelected: avatarSelected) {
+            Color.clear
+        } onActionSelected: { action in
+            onActionTap(action)
+        }
+    }
+
+    private func selectedCheckmarkView() -> some View {
+        ZStack {
+            // We want an inner border, so we draw it in the overlay
+            RoundedRectangle(cornerRadius: .avatarCornerRadius)
+                .stroke(Color.primary, lineWidth: .selectedBorderWidth)
+                .padding(1)
+            CheckmarkCircleView()
+                .transition(.scale)
+        }
+    }
 }
 
 extension CGFloat {
@@ -13,84 +101,35 @@ extension CGFloat {
     fileprivate static let avatarCornerRadius: CGFloat = 6
 }
 
-struct AvatarPickerAvatarView: View {
-    let avatar: AvatarImageModel
-    let maxSize: CGFloat
-    let minSize: CGFloat
-    let shouldSelect: () -> Bool
-    let onFailedUploadTapped: (FailedUploadInfo) -> Void
-    let onActionTap: (AvatarAction) -> Void
-
-    var body: some View {
-        ZStack(alignment: .bottomTrailing) {
-            AvatarView(
-                url: avatar.url,
-                placeholderView: {
-                    avatar.localImage?.resizable()
-                },
-                loadingView: {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
-                },
-                transaction: .init(animation: .smooth)
-            )
-            .scaledToFill()
-            .frame(minWidth: minSize, maxWidth: maxSize, minHeight: minSize, maxHeight: maxSize)
-            .background(Color(UIColor.secondarySystemBackground))
-            .aspectRatio(1, contentMode: .fill)
-            .shape(
-                RoundedRectangle(cornerRadius: .avatarCornerRadius),
-                borderColor: Color.clear,
-                borderWidth: 0
-            )
-            .overlay {
-                switch avatar.state {
-                case .loading:
-                    DimmingActivityIndicator()
-                        .cornerRadius(.avatarCornerRadius)
-                case .error(let supportsRetry, let errorMessage):
-                    DimmingErrorButton {
-                        onFailedUploadTapped(
-                            .init(
-                                avatarLocalID: avatar.id,
-                                supportsRetry: supportsRetry,
-                                errorMessage: errorMessage
-                            )
-                        )
-                    }
-                    .cornerRadius(.avatarCornerRadius)
-                case .loaded:
-                    if shouldSelect() {
-                        ZStack {
-                            // We want an inner border, so we draw it in the overlay
-                            RoundedRectangle(cornerRadius: .avatarCornerRadius)
-                                .stroke(Color.primary, lineWidth: .selectedBorderWidth)
-                                .padding(1)
-                            CheckmarkCircleView()
-                                .transition(.scale)
-                        }
-                    } else {
-                        EmptyView()
-                    }
-                }
-            }
-            .transition(.opacity)
-        }
-        .accessibilityElement(children: .combine)
-        .accessibilityAddTraits(.isButton)
-        .accessibilityAddTraits(shouldSelect() ? .isSelected : [])
-        .accessibilityLabel(Text(avatar.accessibilityLabel(altText: avatar.altText)))
-    }
-}
-
 #Preview {
-    let avatar = AvatarImageModel.preview_init(
-        id: "1",
-        source: .remote(url: "https://gravatar.com/userimage/110207384/aa5f129a2ec75162cee9a1f0c472356a.jpeg?size=256")
-    )
+    let avatar = AvatarImageModel.preview_init()
+    let avatarLoading = AvatarImageModel.preview_init(state: .loading)
+    let avatarError = AvatarImageModel.preview_init(state: .error(
+        supportsRetry: true,
+        errorMessage: "Something went wrong. Retry?"
+    ))
+    let avatarErrorNoRetry = AvatarImageModel.preview_init(state: .error(
+        supportsRetry: false,
+        errorMessage: "Something terrible happened."
+    ))
     AvatarPickerAvatarView(avatar: avatar, maxSize: 90, minSize: 80) {
         false
-    } onFailedUploadTapped: { _ in
-    } onActionTap: { _ in
-    }
+    } onUploadFailedAction: { _ in
+    } onActionTap: { _ in }
+    AvatarPickerAvatarView(avatar: avatar, maxSize: 90, minSize: 80) {
+        true
+    } onUploadFailedAction: { _ in
+    } onActionTap: { _ in }
+    AvatarPickerAvatarView(avatar: avatarLoading, maxSize: 90, minSize: 80) {
+        true
+    } onUploadFailedAction: { _ in
+    } onActionTap: { _ in }
+    AvatarPickerAvatarView(avatar: avatarError, maxSize: 90, minSize: 80) {
+        true
+    } onUploadFailedAction: { _ in
+    } onActionTap: { _ in }
+    AvatarPickerAvatarView(avatar: avatarErrorNoRetry, maxSize: 90, minSize: 80) {
+        true
+    } onUploadFailedAction: { _ in
+    } onActionTap: { _ in }
 }

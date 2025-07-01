@@ -24,6 +24,12 @@ struct AvatarPickerView: View {
                     .padding()
                 Spacer()
             } else {
+                ImagePickerSectionView(onImageSelected: { selectedImage in
+                    Task {
+                        await avatarPickerModel.upload(selectedImage)
+                    }
+                })
+                .appPadding()
                 gridView()
                     .transition(.opacity)
             }
@@ -41,16 +47,45 @@ struct AvatarPickerView: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
-                AvatarGrid(grid: avatarPickerModel.grid) { avatar, _ in
-                    Task {
-                        _ = await avatarPickerModel.selectAvatar(with: avatar.id)
-                        forceRefreshHeader = true
-                    }
-                } onFailedUploadTapped: { _ in
-                }
+                AvatarGrid(
+                    grid: avatarPickerModel.grid,
+                    onAvatarActionTap: avatarAction,
+                    onUploadFailedAction: avatarUploadFailedAction
+                )
             }
-            .padding()
+            .appPadding()
         }
+    }
+
+    // MARK: - Actions
+
+    private func avatarAction(avatar: AvatarImageModel, action: AvatarAction) {
+        switch action {
+        case .select:
+            Task {
+                _ = await avatarPickerModel.selectAvatar(with: avatar.id)
+                forceRefreshHeader = true
+            }
+        default:
+            print("Action not implemented")
+        }
+    }
+
+    private func avatarUploadFailedAction(action: AvatarUploadFailedAction) {
+        switch action {
+        case .delete(let avatarID):
+            avatarPickerModel.deleteFailed(avatarID)
+        case .retry(let avatarID):
+            Task {
+                await avatarPickerModel.retryUpload(of: avatarID)
+            }
+        }
+    }
+}
+
+extension View {
+    func appPadding() -> some View {
+        self.padding(16)
     }
 }
 
@@ -59,6 +94,7 @@ struct AvatarPickerView: View {
     AvatarPickerView(avatarPickerModel: .preview_init(avatars: [
         .init(id: "1", source: .remote(url: ""), state: .loaded, isSelected: false, altText: ""),
         .init(id: "2", source: .remote(url: ""), state: .loaded, isSelected: true, altText: ""),
+        .init(id: "3", source: .remote(url: ""), state: .loading, isSelected: false, altText: ""),
     ]), onLogout: {})
 }
 #endif
