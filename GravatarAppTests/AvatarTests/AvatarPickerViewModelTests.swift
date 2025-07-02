@@ -270,11 +270,3 @@ final class AvatarPickerViewModelTests {
         #expect(model.grid.selectedAvatar?.state == .loaded)
     }
 }
-
-enum HTTPStatus: Int {
-    case badRequest = 400
-    case unauthorized = 401
-    case forbidden = 403
-    case notFound = 404
-    case payloadTooLarge = 413
-}
