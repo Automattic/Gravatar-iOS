@@ -94,8 +94,9 @@ class WelcomeViewModel: ObservableObject {
     }
 
     func logout() async {
-        guard let profile = profileResult?.value() else { return }
-        oauthManager.deleteToken(with: profile.hash)
+        if let profile = profileResult?.value() {
+            oauthManager.deleteToken(with: profile.hash)
+        }
         await analytics.setUserName(nil)
         withAnimation {
             self.accessToken = nil
