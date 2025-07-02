@@ -7,7 +7,7 @@ struct WelcomeView: View {
 
     var body: some View {
         Group {
-            if (viewModel.hasUser && viewModel.profileResult == nil) || viewModel.isLoading {
+            if viewModel.isLoading {
                 ProgressView()
             } else if let profileResult = viewModel.profileResult,
                       let accessToken = viewModel.accessToken
@@ -31,6 +31,8 @@ struct WelcomeView: View {
         switch profileResult {
         case .success(let profile):
             rootViewSuccess(accessToken: accessToken, profile: profile)
+        case .failure(APIError.responseError(let .invalidHTTPStatusCode(response, _))) where response.statusCode == HTTPStatus.unauthorized.rawValue:
+            loginView
         case .failure(let error):
             Text("Error fetching the profile: \(error)")
                 .padding()
