@@ -15,4 +15,12 @@ protocol CollapsableHeaderViewContent: UIView {
 
     /// Create a copy to be used for frame calculations without affecting the original instance.
     func makeCopy() -> Self
+
+    /// Delegate for the `CollapsableHeaderViewContent`.
+    var delegate: CollapsableHeaderViewContentDelegate? { get set }
+}
+
+@MainActor
+protocol CollapsableHeaderViewContentDelegate: AnyObject {
+    func didUpdateData(_ content: CollapsableHeaderViewContent)
 }
