@@ -16,39 +16,32 @@ class EditProfileViewModel: ObservableObject {
     }
 
     var hasUnsavedChanges: Bool {
-        guard let profile = userSession.profile else {
-            return false
-        }
-        return !fields.isEqual(to: profile)
+        !fields.isEqual(to: userSession.profile)
     }
 
     init(
-        userSession: UserSession = .shared,
+        userSession: UserSession,
         urlSession: URLSessionProtocol? = nil
     ) {
         self.userSession = userSession
         self.profileService = .init(urlSession: urlSession)
-        if let profile = userSession.profile {
-            self.fields = .init(profile: profile)
-        } else {
-            self.fields = .init()
-        }
+
+        self.fields = .init(profile: userSession.profile)
+
         userSession.$profile.sink { [weak self] profile in
-            guard let profile else { return }
             self?.fields = .init(profile: profile)
         }
         .store(in: &cancellables)
     }
 
     func save() async {
-        guard let authToken = userSession.accessToken else { return }
         defer {
             isSaving = false
         }
         do {
             isSaving = true
             let request = fields.updateRequest()
-            let profile = try await profileService.updateProfile(with: request, token: authToken)
+            let profile = try await profileService.updateProfile(with: request, token: userSession.accessToken)
             Task { @MainActor in
                 self.userSession.updateProfile(profile)
             }
