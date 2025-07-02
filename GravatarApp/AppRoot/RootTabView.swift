@@ -16,11 +16,6 @@ struct RootTabView: View {
         _avatarPickerViewModel = StateObject(wrappedValue: AvatarPickerViewModel(profile: profile, authToken: accessToken))
         _editProfileViewModel = StateObject(wrappedValue: EditProfileViewModel(userSession: session))
         self.onLogout = onLogout
-
-        _avatarPickerViewModel = StateObject(
-            wrappedValue: AvatarPickerViewModel(profile: session.profile, authToken: session.accessToken)
-        )
-        _editProfileViewModel = StateObject(wrappedValue: EditProfileViewModel(userSession: session))
     }
 
     var body: some View {
