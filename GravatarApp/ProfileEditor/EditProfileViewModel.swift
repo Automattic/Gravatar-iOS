@@ -21,7 +21,7 @@ class EditProfileViewModel: ObservableObject {
 
     init(
         userSession: UserSession,
-        urlSession: URLSessionProtocol? = nil
+        urlSession: URLSessionProtocol = GravatarURLSession.shared
     ) {
         self.userSession = userSession
         self.profileService = .init(urlSession: urlSession)
