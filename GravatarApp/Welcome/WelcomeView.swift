@@ -4,11 +4,10 @@ import SwiftUI
 
 struct WelcomeView: View {
     @StateObject private var viewModel: WelcomeViewModel = .init()
-    @StateObject private var session = UserSession.shared
 
     var body: some View {
         Group {
-            if (viewModel.hasUser && viewModel.profileResult == nil) || viewModel.profileViewModel.isLoading == true {
+            if (viewModel.hasUser && viewModel.profileResult == nil) || viewModel.isLoading {
                 ProgressView()
             } else if let profileResult = viewModel.profileResult,
                       let accessToken = viewModel.accessToken
@@ -25,7 +24,6 @@ struct WelcomeView: View {
                 await viewModel.logout()
             }
         }
-        .environmentObject(UserSession.shared)
     }
 
     @ViewBuilder
@@ -40,10 +38,7 @@ struct WelcomeView: View {
     }
 
     private func rootViewSuccess(accessToken: String, profile: Profile) -> some View {
-        RootTabView(
-            authToken: accessToken,
-            profile: profile
-        ) {
+        RootTabView(accessToken: accessToken, profile: profile) {
             Task {
                 await viewModel.logout()
             }

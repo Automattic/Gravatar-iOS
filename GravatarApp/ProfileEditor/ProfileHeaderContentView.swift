@@ -69,7 +69,7 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
     private var expandedConstraints: [NSLayoutConstraint] = []
     private var collapsedConstraints: [NSLayoutConstraint] = []
 
-    required init(userSession: UserSession = .shared) {
+    required init(userSession: UserSession) {
         self.userSession = userSession
         self.profile = userSession.profile
 
@@ -241,8 +241,7 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
 
 #if DEBUG
 #Preview("Max height") {
-    let userSession = UserSession()
-    userSession.updateProfile(.testProfile)
+    let userSession = UserSession(profile: .testProfile, accessToken: "")
     let view = ProfileHeaderContentView(userSession: userSession)
     view.updateUI(for: .fullHeight)
     view.interpolate(with: 0)
@@ -250,8 +249,7 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
 }
 
 #Preview("Min height") {
-    let userSession = UserSession()
-    userSession.updateProfile(.testProfile)
+    let userSession = UserSession(profile: .testProfile, accessToken: "")
     let view = ProfileHeaderContentView(userSession: userSession)
     view.updateUI(for: .minHeight)
     view.interpolate(with: 1)
