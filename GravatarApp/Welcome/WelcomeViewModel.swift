@@ -21,6 +21,8 @@ class WelcomeViewModel: ObservableObject {
 
     @Published var profileViewModel: ProfileViewModel
     @Published var profileResult: Result<Profile, APIError>?
+    @Published var isLoading: Bool = false
+
     private var cancellables = Set<AnyCancellable>()
     private let oauthManager: OAuthManager
     private let analytics: Analytics
@@ -54,6 +56,11 @@ class WelcomeViewModel: ObservableObject {
                 self.handleProfileFetch(accessToken: newToken, profileResult: profileResult)
             }
             .store(in: &cancellables)
+
+        profileViewModel.$isLoading.sink { [weak self] newValue in
+            self?.isLoading = newValue
+        }
+        .store(in: &cancellables)
     }
 
     private func handleProfileFetch(accessToken: String, profileResult newResult: Result<Profile, APIError>) {
@@ -93,6 +100,7 @@ class WelcomeViewModel: ObservableObject {
         withAnimation {
             self.accessToken = nil
             self.profileResult = nil
+            profileViewModel.removeResult()
         }
     }
 

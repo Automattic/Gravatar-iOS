@@ -31,6 +31,10 @@ class ProfileViewModel: ObservableObject {
             profileResult = .failure(.responseError(reason: .unexpected(error)))
         }
     }
+
+    func removeResult() {
+        profileResult = nil
+    }
 }
 
 // Protocol for mocking in tests

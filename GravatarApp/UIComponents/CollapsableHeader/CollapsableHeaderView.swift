@@ -1,6 +1,6 @@
 import UIKit
 
-class CollapsableHeaderView: UIView {
+class CollapsableHeaderView: UIView, CollapsableHeaderViewContentDelegate {
     enum Constants {
         static let fullAnimationDuration: TimeInterval = 0.3
         static let snapAnimationDuration: TimeInterval = 0.15
@@ -39,7 +39,7 @@ class CollapsableHeaderView: UIView {
     init(contentView: CollapsableHeaderViewContent) {
         self.contentView = contentView
         super.init(frame: .zero)
-
+        contentView.delegate = self
         addSubview(contentView)
         setupContent()
         self.lastSnappoint = .fullHeight
@@ -149,6 +149,10 @@ class CollapsableHeaderView: UIView {
     func cleanupAnimator() {
         self.animator?.stopAnimation(false)
         self.animator?.finishAnimation(at: .current)
+    }
+
+    func didUpdateData(_: any CollapsableHeaderViewContent) {
+        stopAndResetAnimator(with: progress)
     }
 
     @available(*, unavailable)

@@ -4,11 +4,17 @@ import SwiftUI
 struct RootTabView: View {
     @StateObject private var avatarPickerViewModel: AvatarPickerViewModel
     @StateObject private var editProfileViewModel: EditProfileViewModel
+
+    let session: UserSession
+
     let onLogout: () -> Void
 
-    init(authToken: String, profile: Profile, onLogout: @escaping () -> Void) {
-        _avatarPickerViewModel = StateObject(wrappedValue: AvatarPickerViewModel(profile: profile, authToken: authToken))
-        _editProfileViewModel = StateObject(wrappedValue: EditProfileViewModel(profile: profile, authToken: authToken))
+    init(accessToken: String, profile: Profile, onLogout: @escaping () -> Void) {
+        let session = UserSession(profile: profile, accessToken: accessToken)
+        self.session = session
+
+        _avatarPickerViewModel = StateObject(wrappedValue: AvatarPickerViewModel(profile: profile, authToken: accessToken))
+        _editProfileViewModel = StateObject(wrappedValue: EditProfileViewModel(userSession: session))
         self.onLogout = onLogout
     }
 
@@ -26,6 +32,7 @@ struct RootTabView: View {
 
             ShareTab()
         }
+        .environmentObject(session)
         .onAppear {
             Task {
                 await avatarPickerViewModel.fetchAvatars()
@@ -51,10 +58,11 @@ struct GravatarTab: View {
 
 struct ProfileTab: View {
     @ObservedObject var editProfileViewModel: EditProfileViewModel
+    @EnvironmentObject var userSession: UserSession
 
     var body: some View {
         BackgroundColorView(color: .secondarySystemBackground) {
-            Self.content(editProfileViewModel: editProfileViewModel)
+            content(editProfileViewModel: editProfileViewModel, userSession: userSession)
         }
         .ignoresSafeArea()
         .tabItem {
@@ -62,10 +70,11 @@ struct ProfileTab: View {
         }
     }
 
-    static func content(editProfileViewModel: EditProfileViewModel) -> CollapsableHeaderScrollView<TestProfileContent> {
-        let profileView = TestProfileContent(viewModel: editProfileViewModel)
-        return CollapsableHeaderScrollView<TestProfileContent>(
-            headerContentView: ProfileHeaderContentView(profile: editProfileViewModel.profile),
+    func content(editProfileViewModel: EditProfileViewModel, userSession: UserSession) -> some View {
+        let profileView = ProfileEditContentView(viewModel: editProfileViewModel)
+
+        return CollapsableHeaderScrollView<ProfileEditContentView>(
+            headerContentView: ProfileHeaderContentView(userSession: userSession),
             scrollableContent: .swiftUI(profileView)
         )
     }
@@ -106,8 +115,7 @@ struct BackgroundColorView<Content>: View where Content: View {
 #if DEBUG // Needed when we use `Profile.testProfile on Previews`
 #Preview {
     RootTabView(
-        authToken: "",
-        profile: .testProfile,
+        accessToken: "", profile: .testProfile,
         onLogout: {}
     )
 }

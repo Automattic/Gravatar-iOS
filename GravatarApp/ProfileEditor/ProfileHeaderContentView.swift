@@ -1,3 +1,4 @@
+import Combine
 import GravatarUI
 import UIKit
 
@@ -7,12 +8,16 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
         static let backgroundColorCollapsed = UIColor.systemBackground
     }
 
-    var profile: Profile {
+    var profile: Profile? {
         didSet {
             updateProfileData()
         }
     }
 
+    weak var delegate: (any CollapsableHeaderViewContentDelegate)?
+
+    private let userSession: UserSession
+    private var cancellables = Set<AnyCancellable>()
     private let avatarView: CircularAvatarImageView = {
         let imageView = CircularAvatarImageView()
         imageView.contentMode = .scaleAspectFill
@@ -64,8 +69,9 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
     private var expandedConstraints: [NSLayoutConstraint] = []
     private var collapsedConstraints: [NSLayoutConstraint] = []
 
-    required init(profile: Profile) {
-        self.profile = profile
+    required init(userSession: UserSession) {
+        self.userSession = userSession
+        self.profile = userSession.profile
 
         super.init(frame: .zero)
         self.translatesAutoresizingMaskIntoConstraints = false
@@ -76,10 +82,17 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
 
         initConstraints()
         updateProfileData()
+        userSession.$profile.sink { [weak self] profile in
+            guard let self else { return }
+            self.profile = profile
+            // Recreate the animator otherwise text alignments get messed up
+            self.delegate?.didUpdateData(self)
+        }
+        .store(in: &cancellables)
     }
 
     func makeCopy() -> Self {
-        .init(profile: profile)
+        .init(userSession: userSession)
     }
 
     @available(*, unavailable)
@@ -143,6 +156,7 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
     }
 
     private func updateProfileData() {
+        guard let profile else { return }
         nameLabelExpanded.text = profile.displayName
         nameLabelCollapsed.text = profile.displayName
         organisationLabelExpanded.text = "\(profile.jobTitle), \(profile.company)"
@@ -227,14 +241,16 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
 
 #if DEBUG
 #Preview("Max height") {
-    let view = ProfileHeaderContentView(profile: .testProfile)
+    let userSession = UserSession(profile: .testProfile, accessToken: "")
+    let view = ProfileHeaderContentView(userSession: userSession)
     view.updateUI(for: .fullHeight)
     view.interpolate(with: 0)
     return view
 }
 
 #Preview("Min height") {
-    let view = ProfileHeaderContentView(profile: .testProfile)
+    let userSession = UserSession(profile: .testProfile, accessToken: "")
+    let view = ProfileHeaderContentView(userSession: userSession)
     view.updateUI(for: .minHeight)
     view.interpolate(with: 1)
     return view
