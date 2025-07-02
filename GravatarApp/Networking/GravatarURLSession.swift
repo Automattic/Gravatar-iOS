@@ -17,18 +17,20 @@ final class GravatarURLSession: URLSessionProtocol, Sendable {
     func data(for request: URLRequest) async throws -> (Data, URLResponse) {
         let result = try await urlSession.data(for: request)
         if let httpResponse = result.1 as? HTTPURLResponse,
-           httpResponse.statusCode == HTTPStatus.unauthorized.rawValue {
+           httpResponse.statusCode == HTTPStatus.unauthorized.rawValue
+        {
             Task { @MainActor in
                 NotificationCenter.default.post(name: .sessionExpired, object: nil)
             }
         }
         return result
     }
-    
+
     func upload(for request: URLRequest, from bodyData: Data) async throws -> (Data, URLResponse) {
         let result = try await urlSession.upload(for: request, from: bodyData)
         if let httpResponse = result.1 as? HTTPURLResponse,
-           httpResponse.statusCode == HTTPStatus.unauthorized.rawValue {
+           httpResponse.statusCode == HTTPStatus.unauthorized.rawValue
+        {
             Task { @MainActor in
                 NotificationCenter.default.post(name: .sessionExpired, object: nil)
             }
