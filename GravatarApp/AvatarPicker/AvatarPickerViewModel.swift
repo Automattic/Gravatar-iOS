@@ -234,7 +234,7 @@ class AvatarPickerViewModel: ObservableObject {
 }
 
 extension AvatarPickerViewModel {
-    enum Localized {
+    private enum Localized {
         static let genericUploadError = NSLocalizedString(
             "AvatarPickerViewModel.Upload.Error.message",
             value: "Oops, there was an error uploading the image.",

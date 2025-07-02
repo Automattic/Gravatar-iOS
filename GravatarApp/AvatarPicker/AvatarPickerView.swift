@@ -6,7 +6,8 @@ struct AvatarPickerView: View {
     @ObservedObject var avatarPickerModel: AvatarPickerViewModel
     let onLogout: () -> Void
 
-    @State var forceRefreshHeader: Bool = false
+    @State private var forceRefreshHeader: Bool = false
+    @State private var avatarToDelete: AvatarImageModel?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -28,6 +29,11 @@ struct AvatarPickerView: View {
                     .transition(.opacity)
             }
         }
+        .avatarDeletionDialog(avatar: $avatarToDelete, deleteAction: { avatar in
+            Task {
+                await avatarPickerModel.delete(avatar)
+            }
+        })
         .ignoresSafeArea(.container, edges: .top)
     }
 
@@ -51,6 +57,40 @@ struct AvatarPickerView: View {
             }
             .padding()
         }
+        .appPadding()
+    }
+
+    // MARK: - Actions
+
+    private func avatarAction(avatar: AvatarImageModel, action: AvatarAction) {
+        switch action {
+        case .select:
+            Task {
+                _ = await avatarPickerModel.selectAvatar(with: avatar.id)
+                forceRefreshHeader = true
+            }
+        case .delete:
+            avatarToDelete = avatar
+        default:
+            print("Action not implemented")
+        }
+    }
+
+    private func avatarUploadErrorAction(action: AvatarUploadErrorAction) {
+        switch action {
+        case .delete(let avatarID):
+            avatarPickerModel.deleteFailed(avatarID)
+        case .retry(let avatarID):
+            Task {
+                await avatarPickerModel.retryUpload(of: avatarID)
+            }
+        }
+    }
+}
+
+extension View {
+    func appPadding() -> some View {
+        self.padding(16)
     }
 }
 
