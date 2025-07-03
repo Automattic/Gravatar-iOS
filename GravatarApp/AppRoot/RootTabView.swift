@@ -26,7 +26,7 @@ struct RootTabView: View {
 
             // MARK: - Second tab
 
-            ProfileTab(editProfileViewModel: editProfileViewModel, userSession: session)
+            ProfileTab(editProfileViewModel: editProfileViewModel)
 
             // MARK: - Third tab
 
@@ -58,11 +58,12 @@ struct GravatarTab: View {
 
 struct ProfileTab: View {
     @ObservedObject var editProfileViewModel: EditProfileViewModel
-    let userSession: UserSession
+
+    @EnvironmentObject var session: UserSession
 
     var body: some View {
         BackgroundColorView(color: .secondarySystemBackground) {
-            content(editProfileViewModel: editProfileViewModel, userSession: userSession)
+            content(editProfileViewModel: editProfileViewModel, userSession: session)
         }
         .ignoresSafeArea()
         .tabItem {
