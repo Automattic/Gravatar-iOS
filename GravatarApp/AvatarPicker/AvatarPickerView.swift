@@ -72,6 +72,8 @@ struct AvatarPickerView: View {
                 _ = await avatarPickerModel.selectAvatar(with: avatar.id)
                 forceRefreshHeader = true
             }
+        case .delete:
+            avatarToDelete = avatar
         default:
             print("Action not implemented")
         }
