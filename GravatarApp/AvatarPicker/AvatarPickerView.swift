@@ -6,7 +6,8 @@ struct AvatarPickerView: View {
     @ObservedObject var avatarPickerModel: AvatarPickerViewModel
     let onLogout: () -> Void
 
-    @State var forceRefreshHeader: Bool = false
+    @State private var forceRefreshHeader: Bool = false
+    @State private var avatarToDelete: AvatarImageModel?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -36,6 +37,11 @@ struct AvatarPickerView: View {
                 }
             }
         }
+        .avatarDeletionDialog(avatar: $avatarToDelete, deleteAction: { avatar in
+            Task {
+                await avatarPickerModel.delete(avatar)
+            }
+        })
         .ignoresSafeArea(.container, edges: .top)
     }
 
@@ -66,6 +72,8 @@ struct AvatarPickerView: View {
                 _ = await avatarPickerModel.selectAvatar(with: avatar.id)
                 forceRefreshHeader = true
             }
+        case .delete:
+            avatarToDelete = avatar
         default:
             print("Action not implemented")
         }
