@@ -14,12 +14,9 @@ struct WelcomeView: View {
 
     var body: some View {
         Group {
-            if
-                let profileResult = viewModel.profileResult,
-                let userSession = viewModel.userSession
-            {
-                rootView(profileResult: profileResult, userSession: userSession)
-            } else if (viewModel.hasUser && viewModel.profileResult == nil) || viewModel.isLoading {
+            if let userSession = viewModel.userSession {
+                rootView(userSession: userSession)
+            } else if viewModel.hasUser || viewModel.isLoading {
                 ProgressView()
             } else {
                 loginView
@@ -36,18 +33,7 @@ struct WelcomeView: View {
         }
     }
 
-    @ViewBuilder
-    private func rootView(profileResult: Result<Profile, APIError>, userSession: UserSession) -> some View {
-        switch profileResult {
-        case .success:
-            rootViewSuccess(userSession: userSession)
-        case .failure(let error):
-            Text("Error fetching the profile: \(error)")
-                .padding()
-        }
-    }
-
-    private func rootViewSuccess(userSession: UserSession) -> some View {
+    private func rootView(userSession: UserSession) -> some View {
         RootTabView(userSession: userSession, context: modelContext) {
             Task {
                 await viewModel.logout()
@@ -69,6 +55,8 @@ struct WelcomeView: View {
             }.buttonStyle(.borderedProminent)
             Spacer()
             if let error = viewModel.oauthError {
+                errorView(with: error)
+            } else if let error = viewModel.profileFetchingError {
                 errorView(with: error)
             }
         }
