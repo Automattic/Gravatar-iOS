@@ -59,33 +59,6 @@ struct AvatarPickerView: View {
         }
         .appPadding()
     }
-
-    // MARK: - Actions
-
-    private func avatarAction(avatar: AvatarImageModel, action: AvatarAction) {
-        switch action {
-        case .select:
-            Task {
-                _ = await avatarPickerModel.selectAvatar(with: avatar.id)
-                forceRefreshHeader = true
-            }
-        case .delete:
-            avatarToDelete = avatar
-        default:
-            print("Action not implemented")
-        }
-    }
-
-    private func avatarUploadErrorAction(action: AvatarUploadErrorAction) {
-        switch action {
-        case .delete(let avatarID):
-            avatarPickerModel.deleteFailed(avatarID)
-        case .retry(let avatarID):
-            Task {
-                await avatarPickerModel.retryUpload(of: avatarID)
-            }
-        }
-    }
 }
 
 extension View {
