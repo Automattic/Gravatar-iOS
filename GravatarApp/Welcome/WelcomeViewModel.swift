@@ -72,11 +72,11 @@ class WelcomeViewModel: ObservableObject {
 
         let descriptor = FetchDescriptor<ProfileStore>(predicate: #Predicate { $0.userHash == currentUserHash })
 
-        Task {
-            if let profile = try? context.fetch(descriptor).first?.profile {
-                configureSession(profile: profile, accessToken: accessToken)
-            }
+        if let profile = try? context.fetch(descriptor).first?.profile {
+            configureSession(profile: profile, accessToken: accessToken)
+        }
 
+        Task {
             await fetchProfile(with: accessToken)
         }
     }
