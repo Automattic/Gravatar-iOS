@@ -1,6 +1,3 @@
-import Foundation
-
-/// Some HTTP status codes we handle
 enum HTTPStatus: Int {
     case badRequest = 400
     case unauthorized = 401
