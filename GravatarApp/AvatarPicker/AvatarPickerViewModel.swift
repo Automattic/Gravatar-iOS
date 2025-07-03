@@ -248,13 +248,11 @@ class AvatarPickerViewModel: ObservableObject {
 
     private func doUpload(squareImage: UIImage, localID: String, accessToken: String) async {
         do {
-            guard let avatar = try await avatarService.upload(
+            let avatar = try await avatarService.upload(
                 squareImage,
-                selectionBehavior: .selectUploadedImageIfNoneSelected(for: .hashID(profile.hash)),
+                selectionPolicy: .selectUploadedImageIfNoneSelected(for: .hashID(HashID(profile.hash))),
                 accessToken: accessToken
-            ) as? AvatarDetails else {
-                fatalError()
-            }
+            )
 
             ImageCache.shared.setEntry(.ready(squareImage), for: avatar.imageURL)
 
