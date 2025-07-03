@@ -209,12 +209,64 @@ final class AvatarPickerViewModelTests {
         let updatedAvatar = model.grid.avatars[0]
         #expect(updatedAvatar.altText == originalAltText, "Alt text should not have changed")
     }
-}
 
-enum HTTPStatus: Int {
-    case badRequest = 400
-    case unauthorized = 401
-    case forbidden = 403
-    case notFound = 404
-    case payloadTooLarge = 413
+    @Test("Test avatar upload")
+    func avatarUpload() async throws {
+        #expect(model.grid.avatars.count == 0)
+        let task = Task {
+            await model.upload(ImageHelper.testImage)
+        }
+
+        try await Task.sleep(for: .milliseconds(0.1)) // execute task
+        #expect(model.grid.avatars.count == 1)
+        #expect(model.grid.avatars.first?.state == .loading)
+
+        _ = await task.result
+
+        #expect(model.grid.selectedAvatar?.state == .loaded)
+    }
+
+    @Test("Test avatar upload failed")
+    func avatarUploadFailed() async throws {
+        let urlSession = URLSessionAvatarPickerMock(shouldSimulateNoNetworkConnection: true)
+        model = Self.createModel(session: urlSession)
+
+        #expect(model.grid.avatars.count == 0)
+
+        await model.upload(ImageHelper.testImage)
+
+        #expect(model.grid.avatars.count == 1)
+        let avatar = model.grid.avatars.first!
+
+        if case .error(let supportsRetry, let errorMessage) = avatar.state {
+            #expect(supportsRetry == true)
+            #expect(errorMessage.isEmpty == false)
+        } else {
+            Issue.record("Unexpected avatar state: \(avatar)")
+        }
+    }
+
+    @Test("Test avatar upload retry")
+    func avatarUploadRetry() async throws {
+        let urlSession = URLSessionAvatarPickerMock(shouldSimulateNoNetworkConnection: true)
+        model = Self.createModel(session: urlSession)
+
+        #expect(model.grid.avatars.count == 0)
+
+        await model.upload(ImageHelper.testImage)
+
+        #expect(model.grid.avatars.count == 1)
+        let avatar = model.grid.avatars.first!
+
+        switch avatar.state {
+        case .loaded, .loading: Issue.record("Unexpected avatar state: \(avatar)")
+        default: break // continue with error state
+        }
+
+        urlSession.shouldSimulateNoNetworkConnection = false
+
+        await model.retryUpload(of: avatar.id)
+
+        #expect(model.grid.selectedAvatar?.state == .loaded)
+    }
 }

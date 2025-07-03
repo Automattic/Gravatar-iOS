@@ -5,7 +5,8 @@ import GravatarUI
 final class URLSessionAvatarPickerMock: URLSessionProtocol {
     static let internetLostErrorMessage: String = "The network connection was lost"
     let returnErrorCode: Int?
-    let shouldSimulateNoNetworkConnection: Bool
+
+    var shouldSimulateNoNetworkConnection: Bool
 
     init(returnErrorCode: Int? = nil, shouldSimulateNoNetworkConnection: Bool = false) {
         self.returnErrorCode = returnErrorCode
@@ -47,6 +48,13 @@ final class URLSessionAvatarPickerMock: URLSessionProtocol {
     }
 
     func upload(for request: URLRequest, from bodyData: Data) async throws -> (Data, URLResponse) {
+        if shouldSimulateNoNetworkConnection {
+            throw NSError(
+                domain: NSURLErrorDomain,
+                code: -1005,
+                userInfo: [NSLocalizedDescriptionKey: URLSessionAvatarPickerMock.internetLostErrorMessage]
+            )
+        }
         if let returnErrorCode {
             return (Data("".utf8), HTTPURLResponse.errorResponse(code: returnErrorCode))
         }

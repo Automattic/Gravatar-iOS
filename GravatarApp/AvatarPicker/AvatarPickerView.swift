@@ -25,8 +25,16 @@ struct AvatarPickerView: View {
                     .padding()
                 Spacer()
             } else {
-                gridView()
-                    .transition(.opacity)
+                ScrollView {
+                    ImagePickerSectionView(onImageSelected: { selectedImage in
+                        Task {
+                            await avatarPickerModel.upload(selectedImage)
+                        }
+                    })
+                    .appPadding()
+                    gridView()
+                        .transition(.opacity)
+                }
             }
         }
         .avatarDeletionDialog(avatar: $avatarToDelete, deleteAction: { avatar in
@@ -38,26 +46,46 @@ struct AvatarPickerView: View {
     }
 
     func gridView() -> some View {
-        ScrollView {
-            VStack(alignment: .leading) {
-                VStack(alignment: .leading, spacing: 0) {
-                    Text("Previous avatars")
-                        .font(.headline)
-                    Text("Tap for options")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                AvatarGrid(grid: avatarPickerModel.grid) { avatar, _ in
-                    Task {
-                        _ = await avatarPickerModel.selectAvatar(with: avatar.id)
-                        forceRefreshHeader = true
-                    }
-                } onFailedUploadTapped: { _ in
-                }
+        VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("Previous avatars")
+                    .font(.headline)
+                Text("Tap for options")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
-            .padding()
+            AvatarGrid(
+                grid: avatarPickerModel.grid,
+                onAvatarActionSelected: avatarAction,
+                avatarUploadErrorAction: avatarUploadErrorAction
+            )
         }
         .appPadding()
+    }
+
+    // MARK: - Actions
+
+    private func avatarAction(avatar: AvatarImageModel, action: AvatarAction) {
+        switch action {
+        case .select:
+            Task {
+                _ = await avatarPickerModel.selectAvatar(with: avatar.id)
+                forceRefreshHeader = true
+            }
+        default:
+            print("Action not implemented")
+        }
+    }
+
+    private func avatarUploadErrorAction(action: AvatarUploadErrorAction) {
+        switch action {
+        case .delete(let avatarID):
+            avatarPickerModel.deleteFailed(avatarID)
+        case .retry(let avatarID):
+            Task {
+                await avatarPickerModel.retryUpload(of: avatarID)
+            }
+        }
     }
 }
 
@@ -72,6 +100,7 @@ extension View {
     AvatarPickerView(avatarPickerModel: .preview_init(avatars: [
         .init(id: "1", source: .remote(url: ""), state: .loaded, isSelected: false, altText: ""),
         .init(id: "2", source: .remote(url: ""), state: .loaded, isSelected: true, altText: ""),
+        .init(id: "3", source: .remote(url: ""), state: .loading, isSelected: false, altText: ""),
     ]), onLogout: {})
 }
 #endif
