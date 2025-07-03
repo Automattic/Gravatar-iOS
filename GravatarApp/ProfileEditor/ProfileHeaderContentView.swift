@@ -233,16 +233,6 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
 }
 
 #if DEBUG
-import SwiftData
-
-extension ModelContext {
-    @MainActor
-    static var testContext: ModelContext {
-        let config = ModelConfiguration(isStoredInMemoryOnly: true)
-        let container = try! ModelContainer(for: ProfileStore.self, configurations: config)
-        return container.mainContext
-    }
-}
 
 #Preview("Max height") {
     let userSession = UserSession(profile: .testProfile, accessToken: "", context: .testContext)

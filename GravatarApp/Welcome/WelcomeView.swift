@@ -78,6 +78,6 @@ extension String {
     }
 }
 
-// #Preview {
-//    WelcomeView()
-// }
+ #Preview {
+     WelcomeView(modelContext: .testContext)
+ }
