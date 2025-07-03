@@ -47,6 +47,13 @@ final class URLSessionAvatarPickerMock: URLSessionProtocol, @unchecked Sendable 
     }
 
     func upload(for request: URLRequest, from bodyData: Data) async throws -> (Data, URLResponse) {
+        if shouldSimulateNoNetworkConnection {
+            throw NSError(
+                domain: NSURLErrorDomain,
+                code: -1005,
+                userInfo: [NSLocalizedDescriptionKey: URLSessionAvatarPickerMock.internetLostErrorMessage]
+            )
+        }
         if let returnErrorCode {
             return (Data("".utf8), HTTPURLResponse.errorResponse(code: returnErrorCode))
         }

@@ -92,7 +92,7 @@ class WelcomeViewModel: ObservableObject {
 
         oauthManager.deleteToken(with: profile.hash)
         await analytics.setUserName(nil)
-
+        userDefaults.set(nil, forKey: .Gravatar.currentUserKey)
         try? context.delete(model: ProfileStore.self)
         context.saveNow()
 

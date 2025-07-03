@@ -5,15 +5,15 @@ import SwiftUI
 class ProfileViewModel: ObservableObject {
     @Published private(set) var isLoading: Bool = false
     @Published private(set) var profileResult: Result<Profile, APIError>?
-    private let profileService: ProfileServiceProtocol
+    private let profileService: ProfileService
     private let userDefaults: UserDefaults
 
     init(
         userDefaults: UserDefaults = .standard,
-        profileService: ProfileServiceProtocol = Gravatar.ProfileService()
+        urlSession: URLSessionProtocol = GravatarURLSession.shared,
     ) {
         self.userDefaults = userDefaults
-        self.profileService = profileService
+        self.profileService = ProfileService(urlSession: urlSession)
     }
 
     func fetchProfile(with token: String) async {
@@ -36,10 +36,3 @@ class ProfileViewModel: ObservableObject {
         profileResult = nil
     }
 }
-
-// Protocol for mocking in tests
-protocol ProfileServiceProtocol: Sendable {
-    func fetchOwnProfile(token: String) async throws -> Profile
-}
-
-extension Gravatar.ProfileService: ProfileServiceProtocol {}
