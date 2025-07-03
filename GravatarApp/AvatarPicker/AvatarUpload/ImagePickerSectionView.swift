@@ -6,9 +6,9 @@ struct ImagePickerSectionView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 0) {
-                Text("Get a new look")
+                Text(Localized.sectionHeader)
                     .font(.headline)
-                Text("It’s been 87 days since you updated your avatar.")
+                Text(Localized.sectionDescription)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
@@ -39,6 +39,19 @@ struct ImagePickerSectionView: View {
         .background(Color.DS.bluishColor.opacity(0.15))
         .cornerRadius(12)
     }
+}
+
+private enum Localized {
+    static let sectionHeader = NSLocalizedString(
+        "AvatarPicker.UploadSection.Header",
+        value: "Get a new look",
+        comment: "Title for the section with the upload image buttons"
+    )
+    static let sectionDescription = NSLocalizedString(
+        "AvatarPicker.UploadSection.Description",
+        value: "It’s been 87 days since you updated your avatar.",
+        comment: "Description for the section with the upload image buttons"
+    )
 }
 
 struct VerticalLabelStyle: LabelStyle {
