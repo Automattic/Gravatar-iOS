@@ -8,9 +8,6 @@ struct ImagePickerSectionView: View {
             VStack(alignment: .leading, spacing: 0) {
                 Text(Localized.sectionHeader)
                     .font(.headline)
-                Text(Localized.sectionDescription)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
             }
             HStack {
                 ForEach(ImagePickerSource.allCases, id: \.id) { source in
@@ -46,11 +43,6 @@ private enum Localized {
         "AvatarPicker.UploadSection.header",
         value: "Get a new look",
         comment: "Title for the section with the upload image buttons"
-    )
-    static let sectionDescription = NSLocalizedString(
-        "AvatarPicker.UploadSection.description",
-        value: "It’s been 87 days since you updated your avatar.",
-        comment: "Description for the section with the upload image buttons"
     )
 }
 
