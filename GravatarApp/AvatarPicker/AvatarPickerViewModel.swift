@@ -10,7 +10,7 @@ class AvatarPickerViewModel: ObservableObject {
     private let imageDownloader: ImageDownloader
 
     private var avatarSelectionTask: Task<AvatarDetails?, Never>?
-    private var authToken: String
+
     private var selectedAvatarResult: Result<String, Error>? {
         didSet {
             if selectedAvatarResult?.value() != nil {
@@ -19,7 +19,7 @@ class AvatarPickerViewModel: ObservableObject {
         }
     }
 
-    @Published var profile: Profile
+    let userSession: UserSession
 
     @Published var selectedAvatarURL: URL?
     @Published private(set) var backendSelectedAvatarURL: URL?
@@ -27,33 +27,31 @@ class AvatarPickerViewModel: ObservableObject {
     @Published private(set) var grid: AvatarGridModel = .init(avatars: [])
 
     @Published private(set) var isAvatarsLoading: Bool = false
-    @Published var avatarIdentifier: AvatarIdentifier?
     @Published var forceRefreshAvatar: Bool = false
+    @Published var profileHash: String
 
     @Published var shouldDisplayNoSelectedAvatarWarning: Bool = false
 
     private var cancellables = Set<AnyCancellable>()
 
     init(
-        profile: Profile,
-        authToken: String,
+        userSession: UserSession,
         profileService: Gravatar.ProfileService? = nil,
         avatarService: AvatarService? = nil,
         imageDownloader: ImageDownloader? = nil
     ) {
-        self.profile = profile
-        avatarIdentifier = .hashID(profile.hash)
-        self.authToken = authToken
+        self.userSession = userSession
         self.profileService = profileService ?? Gravatar.ProfileService()
         self.avatarService = avatarService ?? AvatarService()
         self.imageDownloader = imageDownloader ?? ImageDownloadService()
+        self.profileHash = userSession.profile.hash
 
         setupCombine()
     }
 
     #if DEBUG
     static func preview_init(avatars: [AvatarImageModel] = []) -> AvatarPickerViewModel {
-        let model = AvatarPickerViewModel(profile: .testProfile, authToken: "")
+        let model = AvatarPickerViewModel(userSession: UserSession(profile: .testProfile, accessToken: ""))
         model.grid = .init(avatars: avatars, selectedAvatar: avatars.first(where: { $0.isSelected }))
         model.setupCombine()
         return model
@@ -87,13 +85,13 @@ class AvatarPickerViewModel: ObservableObject {
         avatarSelectionTask?.cancel()
 
         avatarSelectionTask = Task {
-            await postAvatarSelection(with: id, authToken: authToken, identifier: .hashID(profile.hash))
+            await postAvatarSelection(with: id, identifier: .hashID(userSession.profile.hash))
         }
 
         return await avatarSelectionTask?.value
     }
 
-    func postAvatarSelection(with avatarID: String, authToken: String, identifier: ProfileIdentifier) async -> AvatarDetails? {
+    func postAvatarSelection(with avatarID: String, identifier: ProfileIdentifier) async -> AvatarDetails? {
         defer {
             grid.setState(to: .loaded, onAvatarWithID: avatarID)
         }
@@ -101,7 +99,11 @@ class AvatarPickerViewModel: ObservableObject {
         grid.setState(to: .loading, onAvatarWithID: avatarID)
 
         do {
-            let selectedAvatar = try await profileService.setPublicAvatar(profileID: identifier, token: authToken, imageID: avatarID)
+            let selectedAvatar = try await profileService.setPublicAvatar(
+                profileID: identifier,
+                token: userSession.accessToken,
+                imageID: avatarID
+            )
             grid.replaceModel(withID: avatarID, with: .init(with: selectedAvatar))
             selectedAvatarResult = .success(selectedAvatar.imageID)
             return selectedAvatar
@@ -119,10 +121,13 @@ class AvatarPickerViewModel: ObservableObject {
                 isAvatarsLoading = false
             }
         }
-        guard self.authToken.isEmpty == false else { return }
+        guard userSession.accessToken.isEmpty == false else { return }
         do {
             isAvatarsLoading = true
-            let images = try await profileService.fetchAvatars(profileID: .hashID(profile.hash), token: authToken)
+            let images = try await profileService.fetchAvatars(
+                profileID: .hashID(userSession.profile.hash),
+                token: userSession.accessToken
+            )
             withAnimation(.smooth) {
                 grid.setAvatars(images.map(AvatarImageModel.init))
             }
@@ -149,7 +154,11 @@ class AvatarPickerViewModel: ObservableObject {
     @discardableResult
     func update(altText: String, for avatar: AvatarImageModel) async -> Bool {
         do {
-            let updatedAvatar = try await avatarService.updateAvatar(imageID: avatar.id, accessToken: authToken, altText: altText)
+            let updatedAvatar = try await avatarService.updateAvatar(
+                imageID: avatar.id,
+                accessToken: userSession.accessToken,
+                altText: altText
+            )
             withAnimation {
                 grid.replaceModel(withID: avatar.id, with: .init(with: updatedAvatar))
             }
@@ -183,7 +192,7 @@ class AvatarPickerViewModel: ObservableObject {
 
         return await postDeletion(
             of: avatar,
-            token: authToken,
+            token: userSession.accessToken,
             deletingAvatarIndex: deletedIndex,
             previouslySelectedAvatar: previouslySelectedAvatar
         )
@@ -226,7 +235,7 @@ class AvatarPickerViewModel: ObservableObject {
         let localImageModel = AvatarImageModel(id: localID, source: .local(image: image), state: .loading, isSelected: false, altText: "")
         grid.append(localImageModel)
 
-        await doUpload(squareImage: image, localID: localID, accessToken: authToken)
+        await doUpload(squareImage: image, localID: localID, accessToken: userSession.accessToken)
     }
 
     func retryUpload(of localID: String) async {
@@ -237,7 +246,7 @@ class AvatarPickerViewModel: ObservableObject {
             return
         }
         grid.setState(to: .loading, onAvatarWithID: localID)
-        await doUpload(squareImage: localImage, localID: localID, accessToken: authToken)
+        await doUpload(squareImage: localImage, localID: localID, accessToken: userSession.accessToken)
     }
 
     func deleteFailed(_ id: String) {
@@ -250,7 +259,7 @@ class AvatarPickerViewModel: ObservableObject {
         do {
             let avatar = try await avatarService.upload(
                 squareImage,
-                selectionPolicy: .selectUploadedImageIfNoneSelected(for: .hashID(HashID(profile.hash))),
+                selectionPolicy: .selectUploadedImageIfNoneSelected(for: .hashID(HashID(userSession.profile.hash))),
                 accessToken: accessToken
             )
 

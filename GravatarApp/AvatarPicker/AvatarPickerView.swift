@@ -12,7 +12,7 @@ struct AvatarPickerView: View {
     var body: some View {
         VStack(spacing: 0) {
             AvatarPickerHeaderView(
-                profile: $avatarPickerModel.profile,
+                profileHash: $avatarPickerModel.profileHash,
                 forceRefresh: $forceRefreshHeader,
                 onActionPressed: { onLogout() }
             )

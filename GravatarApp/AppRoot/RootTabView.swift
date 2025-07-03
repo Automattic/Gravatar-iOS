@@ -13,7 +13,7 @@ struct RootTabView: View {
         let session = UserSession(profile: profile, accessToken: accessToken)
         self.session = session
 
-        _avatarPickerViewModel = StateObject(wrappedValue: AvatarPickerViewModel(profile: profile, authToken: accessToken))
+        _avatarPickerViewModel = StateObject(wrappedValue: AvatarPickerViewModel(userSession: session))
         _editProfileViewModel = StateObject(wrappedValue: EditProfileViewModel(userSession: session))
         self.onLogout = onLogout
     }
