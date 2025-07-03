@@ -32,12 +32,12 @@ class WelcomeViewModel: ObservableObject {
         oauthManager: OAuthManager = .shared,
         userDefaults: UserDefaults = .standard,
         analytics: Analytics = .shared,
-        profileService: ProfileServiceProtocol = Gravatar.ProfileService()
+        urlSession: URLSessionProtocol = GravatarURLSession.shared,
     ) {
         self.oauthManager = oauthManager
         self.analytics = analytics
         self.userDefaults = userDefaults
-        self.profileViewModel = .init(userDefaults: userDefaults, profileService: profileService)
+        self.profileViewModel = .init(userDefaults: userDefaults, urlSession: urlSession)
 
         initCombine()
     }
@@ -94,8 +94,10 @@ class WelcomeViewModel: ObservableObject {
     }
 
     func logout() async {
-        guard let profile = profileResult?.value() else { return }
-        oauthManager.deleteToken(with: profile.hash)
+        if let userID = userDefaults.string(forKey: .Gravatar.currentUserKey) {
+            oauthManager.deleteToken(with: userID)
+        }
+        userDefaults.set(nil, forKey: .Gravatar.currentUserKey)
         await analytics.setUserName(nil)
         withAnimation {
             self.accessToken = nil
