@@ -39,14 +39,15 @@ class AvatarPickerViewModel: ObservableObject {
         authToken: String,
         profileService: Gravatar.ProfileService? = nil,
         avatarService: AvatarService? = nil,
-        imageDownloader: ImageDownloader? = nil
+        imageDownloader: ImageDownloader? = nil,
+        urlSession: URLSessionProtocol = GravatarURLSession.shared
     ) {
         self.profile = profile
         avatarIdentifier = .hashID(profile.hash)
         self.authToken = authToken
-        self.profileService = profileService ?? Gravatar.ProfileService()
-        self.avatarService = avatarService ?? AvatarService()
-        self.imageDownloader = imageDownloader ?? ImageDownloadService()
+        self.profileService = profileService ?? Gravatar.ProfileService(urlSession: urlSession)
+        self.avatarService = avatarService ?? AvatarService(urlSession: urlSession)
+        self.imageDownloader = imageDownloader ?? ImageDownloadService(urlSession: urlSession)
 
         setupCombine()
     }

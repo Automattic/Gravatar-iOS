@@ -31,6 +31,8 @@ struct WelcomeView: View {
         switch profileResult {
         case .success(let profile):
             rootViewSuccess(accessToken: accessToken, profile: profile)
+        case .failure(APIError.responseError(let .invalidHTTPStatusCode(response, _))) where response.statusCode == HTTPStatus.unauthorized.rawValue:
+            loginView
         case .failure(let error):
             Text("Error fetching the profile: \(error)")
                 .padding()

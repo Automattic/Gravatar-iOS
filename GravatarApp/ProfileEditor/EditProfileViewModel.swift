@@ -21,7 +21,7 @@ class EditProfileViewModel: ObservableObject {
 
     init(
         userSession: UserSession,
-        urlSession: URLSessionProtocol? = nil
+        urlSession: URLSessionProtocol = GravatarURLSession.shared
     ) {
         self.userSession = userSession
         self.profileService = .init(urlSession: urlSession)
@@ -46,10 +46,6 @@ class EditProfileViewModel: ObservableObject {
                 self.userSession.updateProfile(profile)
             }
             // TODO: Show success toast
-        } catch APIError.responseError(let .invalidHTTPStatusCode(response, _))
-            where response.statusCode == HTTPStatus.unauthorized.rawValue
-        {
-            NotificationCenter.default.post(name: .sessionExpired, object: nil)
         } catch {
             // TODO: Show error toast
         }
