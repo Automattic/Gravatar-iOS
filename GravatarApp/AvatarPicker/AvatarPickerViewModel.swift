@@ -19,6 +19,8 @@ class AvatarPickerViewModel: ObservableObject {
         }
     }
 
+    private var networkMonitor: any NetworkMonitor
+
     @Published var profile: Profile
 
     @Published var selectedAvatarURL: URL?
@@ -39,7 +41,8 @@ class AvatarPickerViewModel: ObservableObject {
         authToken: String,
         profileService: Gravatar.ProfileService? = nil,
         avatarService: AvatarService? = nil,
-        imageDownloader: ImageDownloader? = nil
+        imageDownloader: ImageDownloader? = nil,
+        networkMonitor: any NetworkMonitor = SystemNetworkMonitor.shared
     ) {
         self.profile = profile
         avatarIdentifier = .hashID(profile.hash)
@@ -47,6 +50,7 @@ class AvatarPickerViewModel: ObservableObject {
         self.profileService = profileService ?? Gravatar.ProfileService()
         self.avatarService = avatarService ?? AvatarService()
         self.imageDownloader = imageDownloader ?? ImageDownloadService()
+        self.networkMonitor = networkMonitor
 
         setupCombine()
     }
@@ -76,6 +80,14 @@ class AvatarPickerViewModel: ObservableObject {
                 self?.shouldDisplayNoSelectedAvatarWarning = shouldShowWarning
             }
             .store(in: &cancellables)
+
+        networkMonitor.hasNetworkConnection.dropFirst().sink { [weak self] newValue in
+            if newValue && self?.gridResponseStatus?.error() != nil {
+                Task {
+                    await self?.fetchAvatars()
+                }
+            }
+        }.store(in: &cancellables)
     }
 
     func selectAvatar(with id: String) async -> AvatarDetails? {

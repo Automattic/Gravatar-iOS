@@ -2,10 +2,10 @@ import Foundation
 @testable import GravatarApp
 import GravatarUI
 
-final class URLSessionAvatarPickerMock: URLSessionProtocol {
+final class URLSessionAvatarPickerMock: URLSessionProtocol, @unchecked Sendable {
     static let internetLostErrorMessage: String = "The network connection was lost"
     let returnErrorCode: Int?
-    let shouldSimulateNoNetworkConnection: Bool
+    var shouldSimulateNoNetworkConnection: Bool
 
     init(returnErrorCode: Int? = nil, shouldSimulateNoNetworkConnection: Bool = false) {
         self.returnErrorCode = returnErrorCode

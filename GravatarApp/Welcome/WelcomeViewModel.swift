@@ -3,6 +3,7 @@ import Combine
 import Foundation
 import Gravatar
 import OAuth
+import SwiftData
 import SwiftUI
 
 @MainActor
@@ -22,22 +23,27 @@ class WelcomeViewModel: ObservableObject {
     @Published var profileViewModel: ProfileViewModel
     @Published var profileResult: Result<Profile, APIError>?
     @Published var isLoading: Bool = false
+    @Published var userSession: UserSession?
 
     private var cancellables = Set<AnyCancellable>()
     private let oauthManager: OAuthManager
     private let analytics: Analytics
     private let userDefaults: UserDefaults
+    private let context: ModelContext
+    private var storedProfile: Profile?
 
     init(
         oauthManager: OAuthManager = .shared,
         userDefaults: UserDefaults = .standard,
         analytics: Analytics = .shared,
-        profileService: ProfileServiceProtocol = Gravatar.ProfileService()
+        profileService: ProfileServiceProtocol = Gravatar.ProfileService(),
+        context: ModelContext
     ) {
         self.oauthManager = oauthManager
         self.analytics = analytics
         self.userDefaults = userDefaults
         self.profileViewModel = .init(userDefaults: userDefaults, profileService: profileService)
+        self.context = context
 
         initCombine()
     }
@@ -66,15 +72,33 @@ class WelcomeViewModel: ObservableObject {
     private func handleProfileFetch(accessToken: String, profileResult newResult: Result<Profile, APIError>) {
         switch newResult {
         case .success(let profile):
-            self.oauthManager.saveToken(AccessToken(token: accessToken), withKey: profile.hash)
-            Task {
-                await analytics.setUserName(profile.userLogin)
-            }
+            configureSession(profile: profile, accessToken: accessToken)
         case .failure:
-            break
+            withAnimation {
+                if let storedProfile {
+                    // Continue with the stored profile
+                    configureSession(profile: storedProfile, accessToken: accessToken)
+                } else {
+                    profileResult = newResult
+                }
+            }
+        }
+    }
+
+    private func configureSession(profile: Profile, accessToken: String) {
+        self.oauthManager.saveToken(AccessToken(token: accessToken), withKey: profile.hash)
+        Task {
+            await analytics.setUserName(profile.userLogin)
         }
         withAnimation {
-            self.profileResult = newResult
+            if let userSession {
+                userSession.updateProfile(profile)
+            } else {
+                userSession = .init(profile: profile, accessToken: accessToken, context: context)
+                context.insert(ProfileStore(profile: profile))
+                context.saveNow()
+            }
+            profileResult = .success(profile)
         }
     }
 
@@ -83,6 +107,16 @@ class WelcomeViewModel: ObservableObject {
             let currentUser = userDefaults.string(forKey: .Gravatar.currentUserKey),
             let secureToken = oauthManager.sessionToken(with: currentUser)
         else { return }
+
+        let descriptor = FetchDescriptor<ProfileStore>(predicate: #Predicate { $0.userHash == currentUser })
+
+        if let profile = try? context.fetch(descriptor).first?.profile {
+            storedProfile = profile
+            configureSession(profile: profile, accessToken: secureToken.token)
+            withAnimation {
+                self.profileResult = .success(profile)
+            }
+        }
 
         self.accessToken = secureToken.token
     }
@@ -98,8 +132,9 @@ class WelcomeViewModel: ObservableObject {
         oauthManager.deleteToken(with: profile.hash)
         await analytics.setUserName(nil)
         withAnimation {
-            self.accessToken = nil
-            self.profileResult = nil
+            userSession = nil
+            accessToken = nil
+            profileResult = nil
             profileViewModel.removeResult()
         }
     }

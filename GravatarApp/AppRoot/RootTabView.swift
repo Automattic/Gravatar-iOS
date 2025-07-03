@@ -1,4 +1,5 @@
 import Gravatar
+import SwiftData
 import SwiftUI
 
 struct RootTabView: View {
@@ -9,12 +10,11 @@ struct RootTabView: View {
 
     let onLogout: () -> Void
 
-    init(accessToken: String, profile: Profile, onLogout: @escaping () -> Void) {
-        let session = UserSession(profile: profile, accessToken: accessToken)
-        self.session = session
+    init(userSession: UserSession, context: ModelContext, onLogout: @escaping () -> Void) {
+        self.session = userSession
 
-        _avatarPickerViewModel = StateObject(wrappedValue: AvatarPickerViewModel(profile: profile, authToken: accessToken))
-        _editProfileViewModel = StateObject(wrappedValue: EditProfileViewModel(userSession: session))
+        _avatarPickerViewModel = StateObject(wrappedValue: AvatarPickerViewModel(profile: userSession.profile, authToken: userSession.accessToken))
+        _editProfileViewModel = StateObject(wrappedValue: EditProfileViewModel(userSession: userSession))
         self.onLogout = onLogout
     }
 
@@ -26,7 +26,7 @@ struct RootTabView: View {
 
             // MARK: - Second tab
 
-            ProfileTab(editProfileViewModel: editProfileViewModel)
+            ProfileTab(editProfileViewModel: editProfileViewModel, userSession: session)
 
             // MARK: - Third tab
 
@@ -58,7 +58,7 @@ struct GravatarTab: View {
 
 struct ProfileTab: View {
     @ObservedObject var editProfileViewModel: EditProfileViewModel
-    @EnvironmentObject var userSession: UserSession
+    let userSession: UserSession
 
     var body: some View {
         BackgroundColorView(color: .secondarySystemBackground) {
@@ -115,7 +115,8 @@ struct BackgroundColorView<Content>: View where Content: View {
 #if DEBUG // Needed when we use `Profile.testProfile on Previews`
 #Preview {
     RootTabView(
-        accessToken: "", profile: .testProfile,
+        userSession: UserSession(profile: .testProfile, accessToken: "", context: .testContext),
+        context: .testContext,
         onLogout: {}
     )
 }
