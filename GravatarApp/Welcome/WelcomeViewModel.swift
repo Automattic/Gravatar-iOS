@@ -22,7 +22,7 @@ class WelcomeViewModel: ObservableObject {
         oauthManager: OAuthManager = .shared,
         userDefaults: UserDefaults = .standard,
         analytics: Analytics = .shared,
-        profileService: ProfileServiceProtocol = Gravatar.ProfileService(),
+        profileService: ProfileServiceProtocol = Gravatar.ProfileService(urlSession: GravatarURLSession.shared),
         context: ModelContext
     ) {
         self.oauthManager = oauthManager
