@@ -43,12 +43,12 @@ struct ImagePickerSectionView: View {
 
 private enum Localized {
     static let sectionHeader = NSLocalizedString(
-        "AvatarPicker.UploadSection.Header",
+        "AvatarPicker.UploadSection.header",
         value: "Get a new look",
         comment: "Title for the section with the upload image buttons"
     )
     static let sectionDescription = NSLocalizedString(
-        "AvatarPicker.UploadSection.Description",
+        "AvatarPicker.UploadSection.description",
         value: "It’s been 87 days since you updated your avatar.",
         comment: "Description for the section with the upload image buttons"
     )
