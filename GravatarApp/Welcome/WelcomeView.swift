@@ -7,7 +7,7 @@ struct WelcomeView: View {
 
     var body: some View {
         Group {
-            if viewModel.isLoading {
+            if (viewModel.hasUser && viewModel.profileResult == nil) || viewModel.isLoading {
                 ProgressView()
             } else if let profileResult = viewModel.profileResult,
                       let accessToken = viewModel.accessToken

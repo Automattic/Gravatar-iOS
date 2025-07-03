@@ -94,9 +94,10 @@ class WelcomeViewModel: ObservableObject {
     }
 
     func logout() async {
-        if let profile = profileResult?.value() {
-            oauthManager.deleteToken(with: profile.hash)
+        if let userID = userDefaults.string(forKey: .Gravatar.currentUserKey) {
+            oauthManager.deleteToken(with: userID)
         }
+        userDefaults.set(nil, forKey: .Gravatar.currentUserKey)
         await analytics.setUserName(nil)
         withAnimation {
             self.accessToken = nil
