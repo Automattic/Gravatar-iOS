@@ -19,7 +19,7 @@ final class AvatarPickerViewModelTests {
         networkMonitor: TestNetworkMonitor? = nil
     ) -> AvatarPickerViewModel {
         AvatarPickerViewModel(
-            userSession: UserSession(profile: .testProfile, accessToken: "token"),
+            userSession: UserSession(profile: .testProfile, accessToken: "token", context: .testContext),
             profileService: ProfileService(urlSession: session),
             avatarService: AvatarService(urlSession: session),
             imageDownloader: imageDownloader,
