@@ -81,16 +81,13 @@ struct ProfileTab: View {
 }
 
 struct ShareTab: View {
+    @EnvironmentObject var userSession: UserSession
+
     var body: some View {
         NavigationStack {
             BackgroundColorView(color: .secondarySystemBackground) {
-                Text("Share!")
+                ShareContent(viewModel: ShareViewModel(userSession: userSession))
             }
-            .navigationTitle("Share")
-            .navigationBarItems(
-                trailing: Button("Share", systemImage: "square.and.arrow.up", action: {})
-            )
-            .navigationBarTitleDisplayMode(.inline)
         }
         .background(Color(uiColor: .secondarySystemBackground))
         .tabItem {

@@ -180,6 +180,91 @@ struct ProfileEditContentView: View {
     }
 }
 
+struct ProfileInputField: View {
+    private enum Constants {
+        static let primaryFont: Font = .subheadline
+        static let sectionHeaderFont: Font = .subheadline.weight(.semibold)
+        static let footerFont: Font = .footnote
+        static let horizontalPadding: CGFloat = .DS.Padding.double
+        static let vStackVerticalSpacing: CGFloat = .DS.Padding.medium
+    }
+
+    let title: String
+    @Binding var value: String
+    let footerText: String?
+
+    @Binding var isSaving: Bool
+    let isLarge: Bool
+
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
+
+    init(title: String, value: Binding<String>, footerText: String? = nil, isSaving: Binding<Bool>, isLarge: Bool = false) {
+        self.title = title
+        self._value = value
+        self.footerText = footerText
+        self._isSaving = isSaving
+        self.isLarge = isLarge
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: .DS.Padding.single) {
+            Text(title)
+                .font(Constants.primaryFont)
+                .multilineTextAlignment(.leading)
+                .accessibilityHidden(true)
+            if isLarge {
+                TextEditor(text: $value)
+                    .font(Constants.primaryFont)
+                    .multilineTextAlignment(.leading)
+                    .padding(.horizontal, .DS.Padding.single)
+                    .padding(.vertical, 0)
+                    .inputBorders(colorScheme: colorScheme)
+                    .frame(height: dynamicTypeSize >= .accessibility1 ? 150 : 120)
+                    .disabled(isSaving)
+                    .accessibilityLabel(title)
+            } else {
+                TextField(
+                    "",
+                    text: $value
+                )
+                .font(Constants.primaryFont)
+                .padding(.DS.Padding.split)
+                .inputBorders(colorScheme: colorScheme)
+                .disabled(isSaving)
+                .accessibilityLabel(title)
+            }
+
+            if let footerText {
+                Text(footerText)
+                    .font(Constants.footerFont)
+                    .multilineTextAlignment(.leading)
+                    .foregroundColor(Color(uiColor: UIColor.secondaryLabel))
+            }
+        }
+        .padding(.vertical, .DS.Padding.single)
+        .frame(maxWidth: .infinity)
+    }
+}
+
+struct StyledTextField: View {
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
+
+    @Binding var value: String
+    @Binding var disabled: Bool
+
+    var body: some View {
+        TextField(
+            "",
+            text: $value
+        )
+        .font(.subheadline)
+        .padding(.DS.Padding.split)
+        .inputBorders(colorScheme: colorScheme)
+        .disabled(disabled)
+    }
+}
+
 extension View {
     fileprivate func inputBorders(colorScheme: ColorScheme) -> some View {
         self.shape(
