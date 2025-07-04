@@ -49,9 +49,11 @@ struct ShareContent: View {
     var email: String {
         userSession.profile.contactInfo?.email ?? ""
     }
+
     var phone: String {
         userSession.profile.contactInfo?.cellPhone ?? ""
     }
+
     var contactForm: String {
         userSession.profile.contactInfo?.contactForm ?? ""
     }
@@ -59,9 +61,16 @@ struct ShareContent: View {
     var body: some View {
         GeometryReader { geometry in
             ScrollView {
-                ShareHeaderView(forceRefresh: $forceRefresh, profile: userSession.profile, safeAreaInsets: $safeAreaInsets, width: geometry.size.width)
-                    .transformEffect(.init(translationX: 0, y: -max(0, -scrollOffset)))
-                    .frame(width: geometry.size.width)
+                ShareHeaderView(
+                    forceRefresh: $forceRefresh,
+                    profile: userSession.profile,
+                    safeAreaInsets: $safeAreaInsets,
+                    width: geometry.size.width,
+                    maxHeight: geometry.size.height
+                )
+                // Sticky header on scroll bounce
+                .transformEffect(.init(translationX: 0, y: -max(0, -scrollOffset)))
+                .frame(width: geometry.size.width)
                 VStack(spacing: 16) {
                     ShareField(title: "Public email", value: .constant(email), selected: $shareFiedsModel.email)
                     ShareField(title: "Public phone", value: .constant(phone), selected: $shareFiedsModel.phone)
@@ -114,6 +123,7 @@ struct ShareHeaderView: View {
     @State var contentWidth: CGFloat = 0
     @Binding var safeAreaInsets: EdgeInsets
     let windowWidth: CGFloat
+    let maxHeight: CGFloat
 
     private var imageURL: URL? {
         AvatarURL(
@@ -122,11 +132,18 @@ struct ShareHeaderView: View {
         )?.url
     }
 
-    init(forceRefresh: Binding<Bool>, profile: Profile, safeAreaInsets: Binding<EdgeInsets>, width: CGFloat) {
+    init(
+        forceRefresh: Binding<Bool>,
+        profile: Profile,
+        safeAreaInsets: Binding<EdgeInsets>,
+        width: CGFloat,
+        maxHeight: CGFloat
+    ) {
         self._forceRefresh = forceRefresh
         self.qrGenerator = QRGenerator(profile: profile)
         self._safeAreaInsets = safeAreaInsets
         self.windowWidth = width
+        self.maxHeight = maxHeight
     }
 
     var body: some View {
@@ -168,7 +185,7 @@ struct ShareHeaderView: View {
                         contentHeight = newValue.height
                     }
             })
-            .frame(maxHeight: UIScreen.main.bounds.height - safeAreaInsets.bottom)
+            .frame(maxHeight: maxHeight)
         }
         .overlay(GeometryReader { geo in
             Color.clear
