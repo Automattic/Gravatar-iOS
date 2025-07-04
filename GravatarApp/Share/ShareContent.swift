@@ -98,7 +98,7 @@ extension View {
                 offset.wrappedValue = newValue
             })
         } else {
-            return self.scrollBounceBehavior(.basedOnSize)
+            return self
         }
     }
 }
