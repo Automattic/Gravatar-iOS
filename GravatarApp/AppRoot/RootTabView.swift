@@ -12,10 +12,10 @@ struct RootTabView: View {
 
     init(userSession: UserSession, context: ModelContext, onLogout: @escaping () -> Void) {
         self.session = userSession
-
-        _avatarPickerViewModel = StateObject(wrappedValue: AvatarPickerViewModel(profile: userSession.profile, authToken: userSession.accessToken))
-        _editProfileViewModel = StateObject(wrappedValue: EditProfileViewModel(userSession: userSession))
         self.onLogout = onLogout
+
+        _avatarPickerViewModel = StateObject(wrappedValue: AvatarPickerViewModel(userSession: session))
+        _editProfileViewModel = StateObject(wrappedValue: EditProfileViewModel(userSession: session))        
     }
 
     var body: some View {
