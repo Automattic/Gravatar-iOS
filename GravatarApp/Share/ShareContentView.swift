@@ -82,12 +82,14 @@ struct ShareContentView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     ShareContentView(
         viewModel: .init(userSession: .init(profile: .testProfile, accessToken: ""))
     )
     .environmentObject(UserSession(profile: .testProfile, accessToken: ""))
 }
+#endif
 
 private enum Localized {
     static let emailFieldTitle: String = NSLocalizedString(
