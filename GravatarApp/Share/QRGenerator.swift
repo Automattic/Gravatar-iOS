@@ -1,6 +1,6 @@
 import CoreImage.CIFilterBuiltins
-import UIKit
 import Gravatar
+import UIKit
 
 struct QRGenerator: @unchecked Sendable {
     private let profile: Profile

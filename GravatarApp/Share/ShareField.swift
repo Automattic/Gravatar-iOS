@@ -12,6 +12,7 @@ struct ShareField: View {
         HStack {
             VStack(alignment: .leading) {
                 Text(title)
+                    .font(.subheadline)
                 Toggle(isOn: $selected) {
                     TextField("", text: .constant(value))
                         .styleTextField(colorScheme: colorScheme)

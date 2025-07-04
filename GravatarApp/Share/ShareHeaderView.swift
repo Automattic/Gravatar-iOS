@@ -1,5 +1,5 @@
-import SwiftUI
 import Gravatar
+import SwiftUI
 
 struct ShareHeaderView: View {
     @EnvironmentObject var userSession: UserSession
