@@ -13,3 +13,22 @@ extension View {
         }
     }
 }
+
+extension View {
+    func borders(colorScheme: ColorScheme) -> some View {
+        self.shape(
+            RoundedRectangle(cornerRadius: 2),
+            borderColor: Color(uiColor: .label).opacity(colorScheme == .dark ? 0.30 : 0.15),
+            borderWidth: 1
+        )
+    }
+}
+
+extension View {
+    func styleTextField(colorScheme: ColorScheme) -> some View {
+        self
+            .font(.subheadline)
+            .padding(.DS.Padding.split)
+            .borders(colorScheme: colorScheme)
+    }
+}

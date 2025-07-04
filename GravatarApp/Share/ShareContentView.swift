@@ -41,17 +41,17 @@ struct ShareContentView: View {
                 VStack(spacing: 16) {
                     ShareField(
                         title: Localized.emailFieldTitle,
-                        value: .constant(userEmail),
+                        value: userEmail,
                         selected: viewModel.share.$email
                     )
                     ShareField(
                         title: Localized.phoneNumberFieldTitle,
-                        value: .constant(userPhone),
+                        value: userPhone,
                         selected: viewModel.share.$phone
                     )
                     ShareField(
                         title: Localized.contactFieldTitle,
-                        value: .constant(userContactForm),
+                        value: userContactForm,
                         selected: viewModel.share.$contactForm
                     )
                 }
