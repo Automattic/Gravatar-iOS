@@ -4,8 +4,8 @@ import UIKit
 
 class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
     enum Constants {
-        static let backgroundColorExpanded = UIColor.clear
-        static let backgroundColorCollapsed = UIColor.systemBackground
+        static let backgroundColorExpanded = UIColor.secondarySystemBackground
+        static let backgroundColorCollapsed = UIColor.secondarySystemBackground
     }
 
     var profile: Profile? {

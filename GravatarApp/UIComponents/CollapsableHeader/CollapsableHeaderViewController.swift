@@ -6,7 +6,7 @@ enum MultiPlatformContent<Content: View> {
     case uiView(UIView)
 }
 
-class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UIScrollViewDelegate {
+class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UIScrollViewDelegate, UITextFieldDelegate {
     private let headerContentView: CollapsableHeaderViewContent
     private let scrollableContent: MultiPlatformContent<ScrollContent>
 
@@ -108,11 +108,15 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
         }
     }
 
+    var innerContentView: UIView?
+
     private func setupViews() {
         view.addSubview(scrollView)
         view.addSubview(headerView)
 
-        let contentView: UIView
+        /*
+         let contentView: UIView
+        
         switch scrollableContent {
         case .swiftUI(let swiftUIView):
             let hostingController = UIHostingController(rootView: swiftUIView)
@@ -123,11 +127,25 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
         case .uiView(let view):
             contentView = view
             scrollView.addSubview(view)
+        }*/
+        var textFields: [UITextField] = []
+        for i in 0..<20 {
+            let textField = UITextField()
+            textField.translatesAutoresizingMaskIntoConstraints = false
+            textField.borderStyle = .roundedRect
+            textField.placeholder = "TextField \(i)"
+            textField.delegate = self
+            textFields.append(textField)
         }
+        let contentView = UIStackView(arrangedSubviews: textFields)
+        contentView.spacing = 8
+        contentView.axis = .vertical
+        self.innerContentView = contentView
+
         contentView.translatesAutoresizingMaskIntoConstraints = false
         contentView.backgroundColor = .clear
         scrollView.addSubview(contentView)
-
+        //scrollView.keyboardDismissMode = .onDrag
         NSLayoutConstraint.activate([
             headerView.topAnchor.constraint(equalTo: view.topAnchor),
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -144,8 +162,111 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
             contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.trailingAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
+          //  contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
         ])
+        
+        NotificationCenter.default.addObserver(
+              self,
+              selector: #selector(keyboardWillShow),
+              name: UIResponder.keyboardWillShowNotification,
+              object: nil
+          )
+          NotificationCenter.default.addObserver(
+              self,
+              selector: #selector(keyboardWillHide),
+              name: UIResponder.keyboardWillHideNotification,
+              object: nil
+          )
+    }
+
+    @objc private func keyboardWillHide(notification: Notification) {
+        resetScrollView()
+    }
+
+    func resetScrollView() {
+       guard
+          let originalInsets = contentInsetPreKeyboardDisplay,
+          let originalOffset = contentOffsetPreKeyboardDisplay
+       else { return }
+
+       scrollView.contentInset = originalInsets
+       scrollView.setContentOffset(originalOffset, animated: true) // 3
+
+       contentInsetPreKeyboardDisplay = nil
+       contentOffsetPreKeyboardDisplay = nil
+    }
+
+    var contentOffsetPreKeyboardDisplay: CGPoint?
+    var contentInsetPreKeyboardDisplay: UIEdgeInsets?
+
+    /// Solution based on https://developer.apple.com/videos/play/wwdc2023/
+    /// In iPads the app UI can now be smaller than the screen.  Using the full keyboard height to push the views
+    /// will result in the views to be pushed too high and appear in the wrong place. So we first check it screen's
+    /// coordinates are same with app's.
+    @objc func keyboardWillShow(notification: NSNotification) {
+        guard let userInfo = notification.userInfo,
+              let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+              let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double else {
+            return
+        }
+        
+        if contentInsetPreKeyboardDisplay == nil {
+            contentInsetPreKeyboardDisplay = scrollView.contentInset
+        }
+        if contentOffsetPreKeyboardDisplay == nil {
+            contentOffsetPreKeyboardDisplay = scrollView.contentOffset
+        }
+        
+        // Retrieve the UIScreen object from the notification (Added iOS 16.1)
+        guard let screen = notification.object as? UIScreen else { return }
+        
+        // Determine if the notification’s screen corresponds to your view’s screen
+        guard(screen.isEqual(view.window?.screen)) else { return }
+        
+        // Calculate intersection with keyboard
+        let endFrameKey = UIResponder.keyboardFrameEndUserInfoKey
+        
+        // Get the ending screen position of the keyboard
+        guard let keyboardFrameEnd = notification.userInfo?[endFrameKey] as? CGRect else { return }
+        
+        let fromCoordinateSpace: UICoordinateSpace = screen.coordinateSpace
+        let toCoordinateSpace: UICoordinateSpace = view
+        
+        // Convert from the screen coordinate space to your local coordinate space
+        let convertedKeyboardFrameEnd = fromCoordinateSpace.convert(keyboardFrameEnd, to: toCoordinateSpace)
+        
+        // Calculate offset for view adjustment
+        //var bottomOffset: CGFloat = 0//view.safeAreaInsets.bottom
+        
+        // Get the intersection between the keyboard's frame and the view's bounds
+        let viewIntersection = view.bounds.intersection(convertedKeyboardFrameEnd)
+        
+        print("viewIntersection: \(String(describing: viewIntersection)), isEmpty: \(viewIntersection.isEmpty)")
+        // Check whether the keyboard intersects your view before adjusting your offset.
+        guard !viewIntersection.isEmpty else {
+            return
+        }
+        
+        let bottomOffset = viewIntersection.size.height //- view.safeAreaInsets.bottom
+
+        scrollView.contentInset.bottom = bottomOffset
+        
+        if let focusedTextField, let innerContentView {
+            let rectInContent = focusedTextField.convert(focusedTextField.bounds, to: innerContentView)
+            print("rectInContent: \(String(describing: rectInContent))")
+            // here we adjust the scroll offset
+        }
+    }
+    var focusedTextField: UITextField?
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        focusedTextField = textField
+    }
+
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        focusedTextField = nil
+        textField.resignFirstResponder()
+        return true
     }
 
     // MARK: - Internal methods
