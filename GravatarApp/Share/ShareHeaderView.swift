@@ -105,3 +105,22 @@ struct ShareHeaderView: View {
             .environment(\.colorScheme, .dark)
     }
 }
+
+#if DEBUG
+#Preview {
+    GeometryReader { geometry in
+        ScrollView {
+            ShareHeaderView(
+                forceRefresh: .constant(false),
+                profile: .testProfile,
+                safeAreaInsets: .constant(geometry.safeAreaInsets),
+                width: geometry.size.width,
+                maxHeight: geometry.size.height
+            )
+            .environmentObject(UserSession(profile: .testProfile, accessToken: ""))
+            .frame(width: geometry.size.width)
+        }
+        .ignoresSafeArea()
+    }
+}
+#endif

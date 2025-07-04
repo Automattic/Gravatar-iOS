@@ -11,17 +11,19 @@ struct ShareContentView: View {
     @State var scrollOffset: CGFloat = 0
     @State var safeAreaInsets: EdgeInsets = .init()
 
-    var email: String {
+    var userEmail: String {
         userSession.profile.contactInfo?.email ?? ""
     }
 
-    var phone: String {
+    var userPhone: String {
         userSession.profile.contactInfo?.cellPhone ?? ""
     }
 
-    var contactForm: String {
+    var userContactForm: String {
         userSession.profile.contactInfo?.contactForm ?? ""
     }
+
+    @State var isFirstAppear = true
 
     var body: some View {
         GeometryReader { geometry in
@@ -37,9 +39,21 @@ struct ShareContentView: View {
                 .transformEffect(.init(translationX: 0, y: -max(0, -scrollOffset)))
                 .frame(width: geometry.size.width)
                 VStack(spacing: 16) {
-                    ShareField(title: "Public email", value: .constant(email), selected: viewModel.share.$email)
-                    ShareField(title: "Public phone", value: .constant(phone), selected: viewModel.share.$phone)
-                    ShareField(title: "Public contact form", value: .constant(contactForm), selected: viewModel.share.$contactForm)
+                    ShareField(
+                        title: Localized.emailFieldTitle,
+                        value: .constant(userEmail),
+                        selected: viewModel.share.$email
+                    )
+                    ShareField(
+                        title: Localized.phoneNumberFieldTitle,
+                        value: .constant(userPhone),
+                        selected: viewModel.share.$phone
+                    )
+                    ShareField(
+                        title: Localized.contactFieldTitle,
+                        value: .constant(userContactForm),
+                        selected: viewModel.share.$contactForm
+                    )
                 }
                 .padding()
                 Spacer()
@@ -56,8 +70,13 @@ struct ShareContentView: View {
                     safeAreaInsets = geometry.safeAreaInsets
                 }
         }
-
         .onAppear {
+            guard !isFirstAppear else {
+                isFirstAppear = false
+                // Skip refresh on first appear, since the image loads from url.
+                return
+            }
+            // Refreshing in consecuent appear in case image selection has changed.
             forceRefresh = true
         }
     }
@@ -68,4 +87,24 @@ struct ShareContentView: View {
         viewModel: .init(userSession: .init(profile: .testProfile, accessToken: ""))
     )
     .environmentObject(UserSession(profile: .testProfile, accessToken: ""))
+}
+
+private enum Localized {
+    static let emailFieldTitle: String = NSLocalizedString(
+        "Share.Contact.Email.title",
+        value: "Public email",
+        comment: "Title for the email field to be shared via QR code"
+    )
+
+    static let phoneNumberFieldTitle: String = NSLocalizedString(
+        "Share.Contact.PhoneNumber.title",
+        value: "Public phone number",
+        comment: "Title for the phone number field to be shared via QR code"
+    )
+
+    static let contactFieldTitle: String = NSLocalizedString(
+        "Share.Contact.ContactField.title",
+        value: "Contact page",
+        comment: "Title for the contact form url field to be shared via QR code"
+    )
 }
