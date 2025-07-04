@@ -55,7 +55,7 @@ class AvatarPickerViewModel: ObservableObject {
 
     #if DEBUG
     static func preview_init(avatars: [AvatarImageModel] = []) -> AvatarPickerViewModel {
-        let model = AvatarPickerViewModel(userSession: UserSession(profile: .testProfile, accessToken: ""))
+        let model = AvatarPickerViewModel(userSession: UserSession(profile: .testProfile, accessToken: "", context: .testContext))
         model.grid = .init(avatars: avatars, selectedAvatar: avatars.first(where: { $0.isSelected }))
         model.setupCombine()
         return model
