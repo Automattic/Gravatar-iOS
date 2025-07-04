@@ -2,14 +2,14 @@ import GravatarUI
 import SwiftUI
 
 struct AvatarPickerHeaderView: View {
-    @Binding var profile: Profile
+    @Binding var profileHash: String
     @Binding var forceRefresh: Bool
 
     let onActionPressed: () -> Void
 
     private var imageURL: URL? {
         AvatarURL(
-            with: .hashID(profile.hash),
+            with: .hashID(profileHash),
             options: .init(preferredSize: .points(.circlesSize))
         )?.url
     }
@@ -91,7 +91,7 @@ struct AvatarPickerHeaderView: View {
 #if DEBUG
 #Preview {
     AvatarPickerHeaderView(
-        profile: .constant(.testProfile),
+        profileHash: .constant(""),
         forceRefresh: .constant(false),
         onActionPressed: {}
     )
