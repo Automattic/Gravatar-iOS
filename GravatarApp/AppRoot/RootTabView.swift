@@ -86,7 +86,7 @@ struct ShareTab: View {
     var body: some View {
         NavigationStack {
             BackgroundColorView(color: .secondarySystemBackground) {
-                ShareContent(viewModel: ShareViewModel(userSession: userSession))
+                ShareContentView(viewModel: ShareViewModel(userSession: userSession))
             }
         }
         .background(Color(uiColor: .secondarySystemBackground))
