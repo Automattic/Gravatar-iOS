@@ -45,6 +45,7 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.delegate = self
         scrollView.backgroundColor = .clear
+        scrollView.contentInsetAdjustmentBehavior = .never
         return scrollView
     }()
 
@@ -83,10 +84,39 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
         headerView.initAnimator(with: headerView.progress)
     }
 
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        scrollView.contentInset = .init(
+            top: view.safeAreaInsets.top + additionalScrollViewInset.top,
+            left: 0,
+            bottom: view.safeAreaInsets.bottom + additionalScrollViewInset.bottom,
+            right: 0
+        )
+        if headerView.progress == 0 {
+            scrollView.setContentOffset(.init(x: 0, y: -scrollView.contentInset.top), animated: false)
+        }
+    }
+
+    var additionalScrollViewInset: UIEdgeInsets = .zero {
+        didSet {
+            scrollView.contentInset = .init(
+                top: view.safeAreaInsets.top + additionalScrollViewInset.top,
+                left: 0,
+                bottom: view.safeAreaInsets.bottom + additionalScrollViewInset.bottom,
+                right: 0
+            )
+        }
+    }
+
     @objc
     func recalculateHeightDerivedValues() {
         headerView.calculateHeight()
-        scrollView.contentInset = .init(top: headerView.maxHeight, left: 0, bottom: 0, right: 0)
+        additionalScrollViewInset = UIEdgeInsets(
+            top: headerView.maxHeight,
+            left: 0,
+            bottom: additionalScrollViewInset.bottom,
+            right: 0
+        )
         headerView.stopAndResetAnimator(with: headerView.progress)
     }
 
@@ -102,9 +132,10 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        if scrollView.contentInset.top == 0 {
+        if additionalSafeAreaInsets.top == 0 && view.safeAreaInsets.top > 0 {
             headerView.calculateHeight()
-            scrollView.contentInset = .init(top: headerView.maxHeight, left: 0, bottom: 0, right: 0)
+            additionalScrollViewInset = .init(top: headerView.maxHeight, left: 0, bottom: 0, right: 0)
+            scrollView.setContentOffset(.init(x: 0, y: -scrollView.contentInset.top), animated: false)
         }
     }
 
@@ -116,7 +147,7 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
 
         /*
          let contentView: UIView
-        
+
         switch scrollableContent {
         case .swiftUI(let swiftUIView):
             let hostingController = UIHostingController(rootView: swiftUIView)
@@ -145,7 +176,8 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
         contentView.translatesAutoresizingMaskIntoConstraints = false
         contentView.backgroundColor = .clear
         scrollView.addSubview(contentView)
-        //scrollView.keyboardDismissMode = .onDrag
+//        scrollView.keyboardDismissMode = .onDrag
+
         NSLayoutConstraint.activate([
             headerView.topAnchor.constraint(equalTo: view.topAnchor),
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -164,7 +196,7 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
             contentView.trailingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.trailingAnchor),
           //  contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
         ])
-        
+
         NotificationCenter.default.addObserver(
               self,
               selector: #selector(keyboardWillShow),
@@ -184,20 +216,13 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
     }
 
     func resetScrollView() {
-       guard
-          let originalInsets = contentInsetPreKeyboardDisplay,
-          let originalOffset = contentOffsetPreKeyboardDisplay
-       else { return }
-
-       scrollView.contentInset = originalInsets
-       scrollView.setContentOffset(originalOffset, animated: true) // 3
-
-       contentInsetPreKeyboardDisplay = nil
-       contentOffsetPreKeyboardDisplay = nil
+        additionalScrollViewInset = UIEdgeInsets(
+            top: headerView.maxHeight,
+            left: 0,
+            bottom: 0,
+            right: 0
+        )
     }
-
-    var contentOffsetPreKeyboardDisplay: CGPoint?
-    var contentInsetPreKeyboardDisplay: UIEdgeInsets?
 
     /// Solution based on https://developer.apple.com/videos/play/wwdc2023/
     /// In iPads the app UI can now be smaller than the screen.  Using the full keyboard height to push the views
@@ -206,59 +231,64 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
     @objc func keyboardWillShow(notification: NSNotification) {
         guard let userInfo = notification.userInfo,
               let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
-              let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double else {
+              let focusedField = focusedTextField
+        else {
             return
         }
-        
-        if contentInsetPreKeyboardDisplay == nil {
-            contentInsetPreKeyboardDisplay = scrollView.contentInset
-        }
-        if contentOffsetPreKeyboardDisplay == nil {
-            contentOffsetPreKeyboardDisplay = scrollView.contentOffset
-        }
-        
+
         // Retrieve the UIScreen object from the notification (Added iOS 16.1)
         guard let screen = notification.object as? UIScreen else { return }
-        
+
         // Determine if the notification’s screen corresponds to your view’s screen
         guard(screen.isEqual(view.window?.screen)) else { return }
-        
+
         // Calculate intersection with keyboard
         let endFrameKey = UIResponder.keyboardFrameEndUserInfoKey
-        
+
         // Get the ending screen position of the keyboard
         guard let keyboardFrameEnd = notification.userInfo?[endFrameKey] as? CGRect else { return }
-        
+
         let fromCoordinateSpace: UICoordinateSpace = screen.coordinateSpace
         let toCoordinateSpace: UICoordinateSpace = view
-        
+
         // Convert from the screen coordinate space to your local coordinate space
         let convertedKeyboardFrameEnd = fromCoordinateSpace.convert(keyboardFrameEnd, to: toCoordinateSpace)
-        
-        // Calculate offset for view adjustment
-        //var bottomOffset: CGFloat = 0//view.safeAreaInsets.bottom
-        
-        // Get the intersection between the keyboard's frame and the view's bounds
-        let viewIntersection = view.bounds.intersection(convertedKeyboardFrameEnd)
-        
-        print("viewIntersection: \(String(describing: viewIntersection)), isEmpty: \(viewIntersection.isEmpty)")
-        // Check whether the keyboard intersects your view before adjusting your offset.
-        guard !viewIntersection.isEmpty else {
+
+        // Calculate the focused field's frame on the controller's view coordinate space.
+        let fieldCoordinateSpace: UICoordinateSpace = scrollView.coordinateSpace
+        let fieldConvertedFrame = fieldCoordinateSpace.convert(focusedField.frame, to: toCoordinateSpace)
+
+        // Get the intersection between the focused field frame and the keyboard
+        let fieldIntersectionWithKeyboard = convertedKeyboardFrameEnd.intersection(fieldConvertedFrame)
+
+        additionalScrollViewInset = UIEdgeInsets(
+            top: headerView.maxHeight,
+            left: 0,
+            bottom: keyboardFrame.height - view.safeAreaInsets.bottom,
+            right: 0
+        )
+
+        if fieldIntersectionWithKeyboard.isEmpty {
             return
         }
-        
-        let bottomOffset = viewIntersection.size.height //- view.safeAreaInsets.bottom
 
-        scrollView.contentInset.bottom = bottomOffset
-        
-        if let focusedTextField, let innerContentView {
-            let rectInContent = focusedTextField.convert(focusedTextField.bounds, to: innerContentView)
-            print("rectInContent: \(String(describing: rectInContent))")
-            // here we adjust the scroll offset
+        // How much will the field need to move up to be over the keyboard
+        let offsetByKeyboard = keyboardFrame.height - (view.bounds.height - fieldIntersectionWithKeyboard.origin.y)
+
+        let shouldSnap: Bool = headerView.progress < 1 && offsetByKeyboard < headerView.maxHeight - headerView.minHeight
+
+        if shouldSnap {
+            snap(to: 1)
+            return
         }
+
+        scrollView.setContentOffset(
+            CGPoint(x: 0, y: scrollView.contentOffset.y + offsetByKeyboard + fieldConvertedFrame.height),
+            animated: true
+        )
     }
     var focusedTextField: UITextField?
-    
+
     func textFieldDidBeginEditing(_ textField: UITextField) {
         focusedTextField = textField
     }
@@ -274,7 +304,7 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
     private func newProgress(from scrollView: UIScrollView) -> CGFloat {
         let offset = scrollView.contentOffset.y
         let inset = scrollView.contentInset.top
-        let progress = (inset + view.safeAreaInsets.top + offset) / (headerMaxHeight - headerMinHeight)
+        let progress = (inset + offset) / (headerMaxHeight - headerMinHeight)
 
         return progress
     }
@@ -315,7 +345,7 @@ class CollapsableHeaderViewController<ScrollContent: View>: UIViewController, UI
     }
 
     private func snap(to progress: CGFloat) {
-        let targetOffset = progress * (headerMaxHeight - headerMinHeight) - (scrollView.contentInset.top + view.safeAreaInsets.top)
+        let targetOffset = progress * (headerMaxHeight - headerMinHeight) - (scrollView.contentInset.top)
         let offset = scrollView.contentOffset
 
         scrollView.setContentOffset(.init(x: offset.x, y: targetOffset), animated: true)
