@@ -62,6 +62,7 @@ struct ProfileEditorScrollableHeaderView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     let imageURL = URL(string: "https://1.gravatar.com/avatar/1?size=256")
     VStack {
@@ -74,3 +75,4 @@ struct ProfileEditorScrollableHeaderView: View {
         Spacer()
     }
 }
+#endif

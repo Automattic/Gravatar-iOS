@@ -43,6 +43,8 @@ struct ProfileEditorView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     ProfileEditorView(viewModel: .init(userSession: UserSession(profile: .testProfile, accessToken: "")))
 }
+#endif
