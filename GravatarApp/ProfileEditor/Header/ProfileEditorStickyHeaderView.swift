@@ -9,31 +9,40 @@ struct ProfileEditorStickyHeaderView: View {
     let imageURL: URL?
     @Binding var forceRefresh: Bool
 
-    var profession: String? {
-        [profile.jobTitle, profile.company].filter { !$0.isEmpty }.joined(separator: ", ")
-    }
-
     var body: some View {
-        BouncyImageBackgroundHeaderView(topSafeArea: safeAreaInsets.top, imageURL: imageURL, forceRefresh: $forceRefresh) {
+        BouncyImageBackgroundHeaderView(
+            topSafeArea: safeAreaInsets.top,
+            imageURL: imageURL,
+            forceRefresh: $forceRefresh
+        ) {
             HStack(alignment: .top) {
-                HeaderAvatarView(imageURL: imageURL, showLoading: false, forceRefresh: $forceRefresh) {
-                    EmptyView()
-                }
-                .frame(width: 44, height: 44)
-                .shape(Circle(), borderColor: .black.opacity(0.2), borderWidth: 2)
-                .shadow(radius: 2, x: 0, y: 3)
+                avatar()
 
-                VStack(alignment: .leading, spacing: 0) {
-                    Text(profile.displayName).font(.title3).fontWeight(.semibold)
-                    if let profession {
-                        Text(profession).font(.subheadline).foregroundStyle(.secondary)
-                    }
-                }
+                profileInfo()
+
                 Spacer()
             }
             .padding(.horizontal, safeAreaInsets.leading + 16)
         }
         .opacity(opacity)
+    }
+
+    func avatar() -> some View {
+        HeaderAvatarView(imageURL: imageURL, showLoading: false, forceRefresh: $forceRefresh) {
+            EmptyView()
+        }
+        .frame(width: 44, height: 44)
+        .shape(Circle(), borderColor: .black.opacity(0.2), borderWidth: 2)
+        .shadow(radius: 2, x: 0, y: 3)
+    }
+
+    func profileInfo() -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text(profile.displayName).font(.title3).fontWeight(.semibold)
+            if let profession = profile.professionFullDescription {
+                Text(profession).font(.subheadline).foregroundStyle(.secondary)
+            }
+        }
     }
 }
 

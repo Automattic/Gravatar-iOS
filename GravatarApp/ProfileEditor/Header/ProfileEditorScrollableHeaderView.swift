@@ -7,43 +7,57 @@ struct ProfileEditorScrollableHeaderView: View {
     let imageURL: URL?
     @Binding var forceRefresh: Bool
 
-    var profession: String? {
-        [profile.jobTitle, profile.company].filter { !$0.isEmpty }.joined(separator: ", ")
+    var body: some View {
+        BouncyImageBackgroundHeaderView(
+            topSafeArea: topSafeArea,
+            imageURL: imageURL,
+            forceRefresh: $forceRefresh)
+        {
+            VStack(spacing: 16) {
+                avatar()
+
+                profileInfo()
+
+                profileURLButton()
+            }
+        }
     }
 
-    var body: some View {
-        BouncyImageBackgroundHeaderView(topSafeArea: topSafeArea, imageURL: imageURL, forceRefresh: $forceRefresh) {
-            VStack(spacing: 16) {
-                HeaderAvatarView(imageURL: imageURL, showLoading: false, forceRefresh: $forceRefresh) {
-                    EmptyView()
-                }
-                .frame(width: 105, height: 105)
-                .shape(Circle(), borderColor: .black.opacity(0.2), borderWidth: 2)
-                .shadow(radius: 2, x: 0, y: 3)
-                VStack(spacing: 0) {
-                    Text(profile.displayName).font(.title3).fontWeight(.semibold)
-                    if let profession {
-                        Text(profession).font(.subheadline).foregroundStyle(.secondary)
-                    }
-                    if !profile.location.isEmpty {
-                        Text(profile.location).font(.subheadline).foregroundStyle(.secondary)
-                    }
-                }
-                Button {} label: {
-                    Label {
-                        Text(profile.profileUrl.replacingOccurrences(of: "https://", with: ""))
-                            .font(.subheadline)
-                    } icon: {
-                        Image(systemName: "safari")
-                            .font(.subheadline)
-                    }
-                    .foregroundStyle(Color.primary)
-                    .padding(.horizontal)
-                    .padding(.vertical, 8)
-                    .background(Color.black)
-                    .clipShape(Capsule())
-                }
+    func avatar() -> some View {
+        HeaderAvatarView(imageURL: imageURL, showLoading: false, forceRefresh: $forceRefresh) {
+            EmptyView()
+        }
+        .frame(width: 105, height: 105)
+        .shape(Circle(), borderColor: .black.opacity(0.2), borderWidth: 2)
+        .shadow(radius: 2, x: 0, y: 3)
+    }
+
+    func profileInfo() -> some View {
+        VStack(spacing: 0) {
+            Text(profile.displayName).font(.title3).fontWeight(.semibold)
+            if let profession = profile.professionFullDescription {
+                Text(profession).font(.subheadline).foregroundStyle(.secondary)
             }
+            if !profile.location.isEmpty {
+                Text(profile.location).font(.subheadline).foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    func profileURLButton() -> some View {
+        Button {} label: {
+            Label {
+                Text(profile.profileUrl.replacingOccurrences(of: "https://", with: ""))
+                    .font(.subheadline)
+            } icon: {
+                Image(systemName: "safari")
+                    .font(.subheadline)
+            }
+            .foregroundStyle(Color.primary)
+            .padding(.horizontal)
+            .padding(.vertical, 8)
+            .background(Color.black)
+            .clipShape(Capsule())
         }
     }
 }

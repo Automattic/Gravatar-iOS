@@ -33,16 +33,13 @@ struct AnimatedHeaderScrollView<ContentView, ScrollableHeader, StickyHeader, Men
                 .scrollTargetLayout()
             }
             .ignoresSafeArea(.container, edges: .top)
-            .onPreferenceChange(ScrollOffsetKey.self) { value in
-                scrollOffset = value
-            }
 
-            stickyHeader(stickyHeaderAlpha, safeAreaInset)
+            stickyHeader(stickyHeaderOpacity, safeAreaInset)
                 .contentHeightReader($stickyHeaderHeight)
                 .allowsHitTesting(false)
                 .ignoresSafeArea(.container)
                 .if(animationBehavior == .automatic, transform: { view in
-                    view.animation(.snappy(duration: 0.15), value: stickyHeaderAlpha)
+                    view.animation(.snappy(duration: 0.15), value: stickyHeaderOpacity)
                 })
 
             HStack {
@@ -67,7 +64,7 @@ struct AnimatedHeaderScrollView<ContentView, ScrollableHeader, StickyHeader, Men
         })
     }
 
-    private var stickyHeaderAlpha: Double {
+    private var stickyHeaderOpacity: Double {
         let animationLength: CGFloat = 30
         let start = -(scrollableHeaderHeight - stickyHeaderHeight)
 
@@ -159,13 +156,5 @@ struct AnimatedHeaderScrollView<ContentView, ScrollableHeader, StickyHeader, Men
             systemImage: "iphone.and.arrow.forward.outward",
             role: .destructive
         ) {}
-    }
-}
-
-private struct ScrollOffsetKey: PreferenceKey {
-    nonisolated(unsafe) static var defaultValue: CGFloat = 0
-
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = nextValue()
     }
 }
