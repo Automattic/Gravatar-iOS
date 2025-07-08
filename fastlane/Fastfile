@@ -6,8 +6,6 @@ require 'xcodeproj'
 
 fastlane_version '2.0'
 
-OS = '18.2'
-IPHONE_DEVICE = "iPhone SE (3rd generation) (#{OS})".freeze
 PROJECT_ROOT_FOLDER = File.dirname(File.expand_path(__dir__))
 
 CODE_SIGNING_STORAGE_OPTIONS = {
