@@ -29,7 +29,7 @@ struct ProfileEditContentView: View {
                 Spacer().frame(height: .DS.Padding.double)
                 contact()
             }
-            .fixedSize(horizontal: false, vertical: true)
+//            .fixedSize(horizontal: false, vertical: true)
             .padding(.horizontal, .DS.Padding.double)
             .padding(.vertical, .DS.Padding.double)
         }
