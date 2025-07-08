@@ -30,7 +30,6 @@ struct AnimatedHeaderScrollView<ContentView, ScrollableHeader, StickyHeader, Men
                         .ignoresSafeArea(.container, edges: .horizontal)
                     content()
                 }
-                .scrollTargetLayout()
             }
             .ignoresSafeArea(.container, edges: .top)
 
@@ -38,9 +37,9 @@ struct AnimatedHeaderScrollView<ContentView, ScrollableHeader, StickyHeader, Men
                 .contentHeightReader($stickyHeaderHeight)
                 .allowsHitTesting(false)
                 .ignoresSafeArea(.container)
-                .if(animationBehavior == .automatic, transform: { view in
+                .if(animationBehavior == .automatic) { view in
                     view.animation(.snappy(duration: 0.15), value: stickyHeaderOpacity)
-                })
+                }
 
             HStack {
                 Spacer()

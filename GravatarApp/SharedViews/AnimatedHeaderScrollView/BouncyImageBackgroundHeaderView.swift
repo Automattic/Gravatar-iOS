@@ -51,29 +51,7 @@ struct BouncyImageBackgroundHeaderView<Content>: View where Content: View {
     }
 }
 
-struct HeaderAvatarView<Placeholder>: View where Placeholder: View {
-    let imageURL: URL?
-    let showLoading: Bool
-    @Binding var forceRefresh: Bool
 
-    let placeholderView: () -> Placeholder
-
-    var body: some View {
-        AvatarView(
-            url: imageURL,
-            placeholderView: {
-                placeholderView()
-            },
-            oneTimeForceRefresh: $forceRefresh,
-            loadingView: {
-                showLoading ?
-                    AnyView(ProgressView().progressViewStyle(.circular))
-                    :
-                    AnyView(EmptyView())
-            }
-        )
-    }
-}
 
 #Preview {
     let imageURL = URL(string: "https://1.gravatar.com/avatar/1?size=256")
