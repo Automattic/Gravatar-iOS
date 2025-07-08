@@ -1,7 +1,7 @@
-#if DEBUG
 import Foundation
 import Gravatar
 
+#if DEBUG
 extension Profile {
     static var testProfile: Profile {
         let rawProfile: [String: Any] = [
