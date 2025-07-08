@@ -24,7 +24,6 @@ extension Profile {
 }
 #endif
 
-
 extension Profile {
     var professionFullDescription: String? {
         [jobTitle, company].filter { !$0.isEmpty }.joined(separator: ", ")

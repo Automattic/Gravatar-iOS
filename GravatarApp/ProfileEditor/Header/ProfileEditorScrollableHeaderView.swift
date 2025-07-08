@@ -11,8 +11,8 @@ struct ProfileEditorScrollableHeaderView: View {
         BouncyImageBackgroundHeaderView(
             topSafeArea: topSafeArea,
             imageURL: imageURL,
-            forceRefresh: $forceRefresh)
-        {
+            forceRefresh: $forceRefresh
+        ) {
             VStack(spacing: 16) {
                 avatar()
 

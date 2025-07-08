@@ -34,7 +34,7 @@ struct ProfileEditorView: View {
         } buttonMenuItems: {
             Button {} label: {
                 Button(
-                    "Logout",
+                    "Logout (not implemented yet)",
                     systemImage: "iphone.and.arrow.forward.outward",
                     role: .destructive
                 ) {}
