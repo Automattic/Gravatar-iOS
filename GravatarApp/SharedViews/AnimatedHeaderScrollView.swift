@@ -3,7 +3,12 @@ import GravatarUI
 
 struct AnimatedHeaderScrollView<ContentView, ScrollableHeader, StickyHeader, MenuItems>: View
 where ContentView: View, ScrollableHeader: View, StickyHeader: View, MenuItems: View {
+    enum AnimationBehavior {
+        case automatic
+        case interactive
+    }
 
+    let animationBehavior: AnimationBehavior
     let scrollableHeader: (CGFloat) -> ScrollableHeader
     let stickyHeader: (CGFloat, EdgeInsets) -> StickyHeader
     let content: () -> ContentView
@@ -58,6 +63,9 @@ where ContentView: View, ScrollableHeader: View, StickyHeader: View, MenuItems: 
                     }
                 )
                 .allowsHitTesting(false)
+                .if(animationBehavior == .automatic, transform: { view in
+                    view.animation(.snappy, value: stickyHeaderAlpha)
+                })
 
             HStack() {
                 Spacer()
@@ -85,6 +93,13 @@ where ContentView: View, ScrollableHeader: View, StickyHeader: View, MenuItems: 
     private var stickyHeaderAlpha: Double {
         let animationLength: CGFloat = 30
         let start = -(scrollableHeaderHeight - stickyHeaderHeight)
+
+        if animationBehavior == .automatic {
+            // 8 is a magic number found on testing. I'm not sure where I'm missing this.
+            // My guess is the `GeometryReader` at the top of the scroll view.
+            return scrollOffset >= (start - 8) ? 0 : 1
+        }
+
         let end = start - animationLength
 
         if scrollOffset >= start {
@@ -100,7 +115,7 @@ where ContentView: View, ScrollableHeader: View, StickyHeader: View, MenuItems: 
 #Preview("Avatar Picker Header") {
     let imageURL = URL(string: "https://1.gravatar.com/avatar/150494b4e538b347b031c4fd3b5c40027d0f7a6d870404020415aa794e7ed254?size=256")
 
-    AnimatedHeaderScrollView { topSafeArea in
+    AnimatedHeaderScrollView(animationBehavior: .automatic) { topSafeArea in
         AvatarPickerScrollableHeaderView(
             topSafeArea: topSafeArea,
             imageURL: imageURL,
@@ -136,14 +151,16 @@ where ContentView: View, ScrollableHeader: View, StickyHeader: View, MenuItems: 
 #Preview("Profile editor Header") {
     let imageURL = URL(string: "https://1.gravatar.com/avatar/150494b4e538b347b031c4fd3b5c40027d0f7a6d870404020415aa794e7ed254?size=256")
 
-    AnimatedHeaderScrollView { topSafeArea in
-        AvatarPickerScrollableHeaderView(
+    AnimatedHeaderScrollView(animationBehavior: .interactive) { topSafeArea in
+        ProfileEditorScrollableHeaderView(
+            profile: .testProfile,
             topSafeArea: topSafeArea,
             imageURL: imageURL,
             forceRefresh: .constant(false)
         )
     } stickyHeader: { opacity, safeAreaInsets in
-        AvatarPickerStickyHeaderView(
+        ProfileEditorStickyHeaderView(
+            profile: .testProfile,
             opacity: opacity,
             safeAreaInsets: safeAreaInsets,
             imageURL: imageURL,
@@ -308,5 +325,176 @@ struct AvatarPickerStickyHeaderView: View {
         }
         .ignoresSafeArea()
         .environment(\.colorScheme, .dark)
+    }
+}
+
+struct ProfileEditorScrollableHeaderView: View {
+    let profile: Profile
+
+    let topSafeArea: CGFloat
+    let imageURL: URL?
+    @Binding var forceRefresh: Bool
+
+    @State private var contentHeight: CGFloat = 0
+
+    var viewHeight: CGFloat {
+        return contentHeight + topSafeArea
+    }
+
+    var profession: String? {
+        [profile.jobTitle, profile.company].filter { !$0.isEmpty }.joined(separator: ", ")
+    }
+
+    var body: some View {
+        GeometryReader { geo in
+            let minY = geo.frame(in: .global).minY
+            let isBouncing = minY > 0
+
+            HeaderAvatarView(imageURL: imageURL, showLoading: false, forceRefresh: $forceRefresh) {
+                EmptyView()
+            }
+            .scaledToFill()
+            .frame(width: geo.size.width ,height: isBouncing ? viewHeight + minY : viewHeight)
+            .clipped()
+            .blur(radius: 26, opaque: true)
+            .offset(y: isBouncing ? -minY : 0)
+            .overlay(content: {
+                Color.black.opacity(0.2)
+                    .frame(height: isBouncing ? viewHeight + minY : viewHeight)
+                    .offset(y: isBouncing ? -minY : 0)
+            })
+            .overlay {
+                VStack {
+                    Spacer()
+                    VStack(spacing: 16) {
+                        HeaderAvatarView(imageURL: imageURL, showLoading: false, forceRefresh: $forceRefresh) {
+                            EmptyView()
+                        }
+                        .frame(width: 105, height: 105)
+                        .shape(Circle(), borderColor: .black.opacity(0.2), borderWidth: 2)
+                        .shadow(radius: 2, x: 0, y: 3)
+                        VStack(spacing: 0) {
+                            Text(profile.displayName).font(.title3).fontWeight(.semibold)
+                            if let profession {
+                                Text(profession).font(.subheadline).foregroundStyle(.secondary)
+                            }
+                            if !profile.location.isEmpty {
+                                Text(profile.location).font(.subheadline).foregroundStyle(.secondary)
+                            }
+                        }
+                        Button {
+
+                        } label: {
+                            Label {
+                                Text(profile.profileUrl.replacingOccurrences(of: "https://", with: ""))
+                                    .font(.subheadline)
+                            } icon: {
+                                Image(systemName: "safari")
+                                    .font(.subheadline)
+                            }
+                            .foregroundStyle(Color.primary)
+                            .padding(.horizontal)
+                            .padding(.vertical, 8)
+                            .background(Color.black)
+                            .clipShape(Capsule())
+                        }
+                    }
+                    .padding(.bottom)
+                    .contentHeightReader($contentHeight)
+                }
+                .frame(height: isBouncing ? viewHeight + minY : viewHeight)
+                .offset(y: isBouncing ? -minY : 0)
+
+            }
+        }
+        .environment(\.colorScheme, .dark)
+        .frame(height: viewHeight)
+    }
+}
+
+struct ProfileEditorStickyHeaderView: View {
+    let profile: Profile
+
+    let opacity: CGFloat
+    let safeAreaInsets: EdgeInsets
+    let imageURL: URL?
+    @Binding var forceRefresh: Bool
+
+    var headerHeight: CGFloat {
+        return safeAreaInsets.top == 0 ? 16 + contentHeight : contentHeight + safeAreaInsets.top
+    }
+
+    @State var contentHeight: CGFloat = 0
+
+    var profession: String? {
+        [profile.jobTitle, profile.company].filter { !$0.isEmpty }.joined(separator: ", ")
+    }
+
+    var body: some View {
+        HeaderAvatarView(imageURL: imageURL, showLoading: false, forceRefresh: $forceRefresh) {
+            EmptyView()
+        }
+        .scaledToFill()
+        .frame(height: headerHeight)
+        .clipped()
+        .opacity(opacity)
+        .blur(radius: 26, opaque: true)
+        .overlay(content: {
+            Color.black.opacity(0.2 * opacity)
+        })
+        .overlay {
+            VStack() {
+                Spacer()
+                HStack(alignment: .top) {
+                    HeaderAvatarView(imageURL: imageURL, showLoading: false, forceRefresh: $forceRefresh) {
+                        EmptyView()
+                    }
+                    .frame(width: 44, height: 44)
+                    .shape(Circle(), borderColor: .black.opacity(0.2), borderWidth: 2)
+                    .shadow(radius: 2, x: 0, y: 3)
+
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text(profile.displayName).font(.title3).fontWeight(.semibold)
+                        if let profession {
+                            Text(profession).font(.subheadline).foregroundStyle(.secondary)
+                        }
+                    }
+                    Spacer()
+                }
+                .padding(.top)
+                .contentHeightReader($contentHeight)
+            }
+
+            .padding(.horizontal, safeAreaInsets.leading + 16)
+            .padding(.bottom, 16)
+            .opacity(opacity)
+        }
+        .ignoresSafeArea()
+        .environment(\.colorScheme, .dark)
+    }
+}
+
+
+extension View {
+    func contentHeightReader(_ height: Binding<CGFloat>) -> some View {
+        self.background(
+            GeometryReader { geo in
+                Color.clear.onChange(of: geo.size) { _, value in
+                    height.wrappedValue = value.height
+                }.onAppear {
+                    height.wrappedValue = geo.size.height
+                }
+            }
+        )
+    }
+}
+
+extension View {
+    @ViewBuilder func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
     }
 }

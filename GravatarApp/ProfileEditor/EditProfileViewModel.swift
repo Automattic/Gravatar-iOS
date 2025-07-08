@@ -5,7 +5,7 @@ import SwiftUI
 @MainActor
 class EditProfileViewModel: ObservableObject {
     private let profileService: ProfileService
-    private let userSession: UserSession
+    let userSession: UserSession
     private var cancellables = Set<AnyCancellable>()
 
     @Published var isSaving: Bool = false

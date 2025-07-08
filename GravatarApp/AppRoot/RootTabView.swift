@@ -58,25 +58,14 @@ struct GravatarTab: View {
 
 struct ProfileTab: View {
     @ObservedObject var editProfileViewModel: EditProfileViewModel
-    @EnvironmentObject var userSession: UserSession
 
     var body: some View {
         BackgroundColorView(color: .secondarySystemBackground) {
-            content(editProfileViewModel: editProfileViewModel, userSession: userSession)
+            ProfileEditorView(viewModel: editProfileViewModel)
         }
-        .ignoresSafeArea()
         .tabItem {
             Label("Profile", systemImage: "brain.filled.head.profile")
         }
-    }
-
-    func content(editProfileViewModel: EditProfileViewModel, userSession: UserSession) -> some View {
-        let profileView = ProfileEditContentView(viewModel: editProfileViewModel)
-
-        return CollapsableHeaderScrollView<ProfileEditContentView>(
-            headerContentView: ProfileHeaderContentView(userSession: userSession),
-            scrollableContent: .swiftUI(profileView)
-        )
     }
 }
 

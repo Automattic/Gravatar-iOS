@@ -20,7 +20,7 @@ struct AvatarPickerView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            AnimatedHeaderScrollView { topSafeArea in
+            AnimatedHeaderScrollView(animationBehavior: .automatic) { topSafeArea in
                 AvatarPickerScrollableHeaderView(
                     topSafeArea: topSafeArea,
                     imageURL: headerAvatarURL,
