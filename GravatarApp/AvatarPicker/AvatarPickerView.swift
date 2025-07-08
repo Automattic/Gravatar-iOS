@@ -44,14 +44,14 @@ struct AvatarPickerView: View {
                             .padding()
                         Spacer()
                     } else {
-                            ImagePickerSectionView(onImageSelected: { selectedImage in
-                                Task {
-                                    await avatarPickerModel.upload(selectedImage)
-                                }
-                            })
-                            .appPadding()
-                            gridView()
-                                .transition(.opacity)
+                        ImagePickerSectionView(onImageSelected: { selectedImage in
+                            Task {
+                                await avatarPickerModel.upload(selectedImage)
+                            }
+                        })
+                        .appPadding()
+                        gridView()
+                            .transition(.opacity)
                     }
                 }
             } buttonMenuItems: {

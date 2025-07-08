@@ -1,7 +1,8 @@
 import SwiftUI
 
 struct AnimatedHeaderScrollView<ContentView, ScrollableHeader, StickyHeader, MenuItems>: View
-where ContentView: View, ScrollableHeader: View, StickyHeader: View, MenuItems: View {
+    where ContentView: View, ScrollableHeader: View, StickyHeader: View, MenuItems: View
+{
     enum AnimationBehavior {
         case automatic
         case interactive
@@ -44,7 +45,7 @@ where ContentView: View, ScrollableHeader: View, StickyHeader: View, MenuItems: 
                     view.animation(.snappy(duration: 0.15), value: stickyHeaderAlpha)
                 })
 
-            HStack() {
+            HStack {
                 Spacer()
                 Menu {
                     buttonMenuItems()
@@ -106,7 +107,7 @@ where ContentView: View, ScrollableHeader: View, StickyHeader: View, MenuItems: 
             forceRefresh: .constant(false)
         )
     } content: {
-        ForEach(0..<20) { i in
+        ForEach(0 ..< 20) { i in
             Text("Row \(i)")
                 .padding()
                 .frame(maxWidth: .infinity)
@@ -143,7 +144,7 @@ where ContentView: View, ScrollableHeader: View, StickyHeader: View, MenuItems: 
             forceRefresh: .constant(false)
         )
     } content: {
-        ForEach(0..<20) { i in
+        ForEach(0 ..< 20) { i in
             Text("Row \(i)")
                 .padding()
                 .frame(maxWidth: .infinity)

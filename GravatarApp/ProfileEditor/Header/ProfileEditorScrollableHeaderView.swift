@@ -1,5 +1,5 @@
-import SwiftUI
 import Gravatar
+import SwiftUI
 
 struct ProfileEditorScrollableHeaderView: View {
     let profile: Profile
@@ -29,9 +29,7 @@ struct ProfileEditorScrollableHeaderView: View {
                         Text(profile.location).font(.subheadline).foregroundStyle(.secondary)
                     }
                 }
-                Button {
-
-                } label: {
+                Button {} label: {
                     Label {
                         Text(profile.profileUrl.replacingOccurrences(of: "https://", with: ""))
                             .font(.subheadline)

@@ -1,5 +1,5 @@
-import SwiftUI
 import GravatarUI
+import SwiftUI
 
 struct BouncyImageBackgroundHeaderView<Content>: View where Content: View {
     let topSafeArea: CGFloat
@@ -11,7 +11,7 @@ struct BouncyImageBackgroundHeaderView<Content>: View where Content: View {
     @State private var contentHeight: CGFloat = 0
 
     private var viewHeight: CGFloat {
-        return contentHeight + topSafeArea
+        contentHeight + topSafeArea
     }
 
     var body: some View {
@@ -23,7 +23,7 @@ struct BouncyImageBackgroundHeaderView<Content>: View where Content: View {
                 EmptyView()
             }
             .scaledToFill()
-            .frame(width: geo.size.width ,height: isBouncing ? viewHeight + offset : viewHeight)
+            .frame(width: geo.size.width, height: isBouncing ? viewHeight + offset : viewHeight)
             .clipped()
             .blur(radius: 26, opaque: true)
             .offset(y: isBouncing ? -offset : 0)
@@ -67,9 +67,9 @@ struct HeaderAvatarView<Placeholder>: View where Placeholder: View {
             oneTimeForceRefresh: $forceRefresh,
             loadingView: {
                 showLoading ?
-                AnyView(ProgressView().progressViewStyle(.circular))
-                :
-                AnyView(EmptyView())
+                    AnyView(ProgressView().progressViewStyle(.circular))
+                    :
+                    AnyView(EmptyView())
             }
         )
     }

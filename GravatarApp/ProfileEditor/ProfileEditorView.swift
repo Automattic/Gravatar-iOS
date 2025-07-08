@@ -1,5 +1,5 @@
-import SwiftUI
 import GravatarUI
+import SwiftUI
 
 struct ProfileEditorView: View {
     @State private var forceRefresh: Bool = false
@@ -32,16 +32,12 @@ struct ProfileEditorView: View {
         } content: {
             ProfileEditContentView(viewModel: viewModel)
         } buttonMenuItems: {
-            Button {
-
-            } label: {
+            Button {} label: {
                 Button(
                     "Logout",
                     systemImage: "iphone.and.arrow.forward.outward",
                     role: .destructive
-                ) {
-
-                }
+                ) {}
             }
         }
     }
