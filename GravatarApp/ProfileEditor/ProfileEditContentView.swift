@@ -31,7 +31,6 @@ struct ProfileEditContentView: View {
                 professional()
             }
             .fixedSize(horizontal: false, vertical: true)
-            .padding(.vertical, .DS.Padding.double)
             saveButton()
                 .padding(.top, .DS.Padding.double)
         }
