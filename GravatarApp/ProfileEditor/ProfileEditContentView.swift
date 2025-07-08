@@ -176,8 +176,10 @@ extension View {
     }
 }
 
+#if DEBUG // Needed when we use `Profile.testProfile on Previews`
 #Preview {
     ScrollView {
         ProfileEditContentView(viewModel: .init(userSession: .init(profile: .testProfile, accessToken: "")))
     }
 }
+#endif
