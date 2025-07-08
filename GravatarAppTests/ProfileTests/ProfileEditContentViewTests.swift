@@ -7,12 +7,15 @@ import Testing
 struct ProfileEditContentViewTests {
     @MainActor
     @Test
-    func testProfileEditContentViewIntrinsicHeight() async throws {
-        let editProfileViewModel: EditProfileViewModel = .init(userSession: .init(profile: .full, accessToken: "testToken"), urlSession: URLSessionProfileMock())
+    func profileEditContentViewIntrinsicHeight() async throws {
+        let editProfileViewModel: EditProfileViewModel = .init(
+            userSession: .init(profile: .full, accessToken: "testToken"),
+            urlSession: URLSessionProfileMock()
+        )
         let view = ProfileEditContentView(viewModel: editProfileViewModel)
             .fixedSize(horizontal: false, vertical: true)
             .frame(width: ViewImageConfig.iPhone13Pro.size?.width ?? 0)
-        
+
         assertSnapshots(
             of: view,
             as: [

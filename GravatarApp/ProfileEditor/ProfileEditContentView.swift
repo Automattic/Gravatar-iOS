@@ -34,7 +34,6 @@ struct ProfileEditContentView: View {
             .padding(.vertical, .DS.Padding.double)
             saveButton()
                 .padding(.top, .DS.Padding.double)
-
         }
         .padding(.DS.Padding.double)
     }
@@ -168,7 +167,7 @@ struct ProfileEditContentView: View {
 }
 
 extension View {
-    fileprivate func inputBorders(colorScheme: ColorScheme) -> some View {
+    private func inputBorders(colorScheme: ColorScheme) -> some View {
         self.shape(
             RoundedRectangle(cornerRadius: 2),
             borderColor: Color(uiColor: .label).opacity(colorScheme == .dark ? 0.30 : 0.15),
