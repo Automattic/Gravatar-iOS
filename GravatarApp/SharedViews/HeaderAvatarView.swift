@@ -1,5 +1,5 @@
-import SwiftUI
 import GravatarUI
+import SwiftUI
 
 struct HeaderAvatarView<Placeholder>: View where Placeholder: View {
     let imageURL: URL?

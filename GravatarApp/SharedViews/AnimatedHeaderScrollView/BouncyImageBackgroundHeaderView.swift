@@ -51,8 +51,6 @@ struct BouncyImageBackgroundHeaderView<Content>: View where Content: View {
     }
 }
 
-
-
 #Preview {
     let imageURL = URL(string: "https://1.gravatar.com/avatar/1?size=256")
 
