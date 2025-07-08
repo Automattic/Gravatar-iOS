@@ -1,5 +1,5 @@
 {
-  "originHash" : "437adc9d79bbd65f1a26832e8f13a2ef3fffd3eb33063cdda86c8dde1cd94dce",
+  "originHash" : "9ee4626c9d84e80103409b26a0a058364525b0c9d5cf134c4ae0b383a2f29de0",
   "pins" : [
     {
       "identity" : "automattic-tracks-ios",
@@ -28,6 +28,24 @@
       }
     },
     {
+      "identity" : "swift-custom-dump",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/swift-custom-dump",
+      "state" : {
+        "revision" : "82645ec760917961cfa08c9c0c7104a57a0fa4b1",
+        "version" : "1.3.3"
+      }
+    },
+    {
+      "identity" : "swift-snapshot-testing",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/swift-snapshot-testing",
+      "state" : {
+        "revision" : "37230a37e83f1b7023be08e1b1a2603fcb1567fb",
+        "version" : "1.18.4"
+      }
+    },
+    {
       "identity" : "swift-sodium",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/jedisct1/swift-sodium",
@@ -37,12 +55,30 @@
       }
     },
     {
+      "identity" : "swift-syntax",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftlang/swift-syntax",
+      "state" : {
+        "revision" : "f99ae8aa18f0cf0d53481901f88a0991dc3bd4a2",
+        "version" : "601.0.1"
+      }
+    },
+    {
       "identity" : "uideviceidentifier",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/squarefrog/UIDeviceIdentifier",
       "state" : {
         "revision" : "4699794b08bb79a4d77785edaba6ea739e298e4b",
         "version" : "2.3.0"
+      }
+    },
+    {
+      "identity" : "xctest-dynamic-overlay",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/xctest-dynamic-overlay",
+      "state" : {
+        "revision" : "39de59b2d47f7ef3ca88a039dff3084688fe27f4",
+        "version" : "1.5.2"
       }
     }
   ],
