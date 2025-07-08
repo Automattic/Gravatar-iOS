@@ -10,7 +10,7 @@ struct ProfileEditContentView: View {
         static let sectionHeaderFont: Font = .title2.weight(.semibold)
         static let footerFont: Font = .footnote
         static let textBackgroundColor: UIColor = .tertiarySystemFill
-
+        static let fieldVerticalPadding: CGFloat = 10
     }
 
     @ObservedObject var viewModel: EditProfileViewModel
@@ -162,7 +162,7 @@ struct ProfileEditContentView: View {
                     .foregroundColor(Color(uiColor: UIColor.secondaryLabel))
             }
         }
-        .padding(.vertical, .DS.Padding.single)
+        .padding(.vertical, Constants.fieldVerticalPadding)
         .frame(maxWidth: .infinity)
     }
 }
