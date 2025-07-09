@@ -1,7 +1,7 @@
 import Combine
+import Foundation
 import Gravatar
 import SwiftData
-import Foundation
 
 @MainActor
 class UserSession: ObservableObject {
@@ -14,7 +14,13 @@ class UserSession: ObservableObject {
     private let profileService: ProfileService
     private var cancellables = Set<AnyCancellable>()
 
-    init(profile: Profile, accessToken: String, context: ModelContext, networkMonitor: NetworkMonitor = SystemNetworkMonitor.shared, urlSession: URLSessionProtocol = URLSession.shared) {
+    init(
+        profile: Profile,
+        accessToken: String,
+        context: ModelContext,
+        networkMonitor: NetworkMonitor = SystemNetworkMonitor.shared,
+        urlSession: URLSessionProtocol = URLSession.shared
+    ) {
         self.profile = profile
         self.accessToken = accessToken
         self.context = context
@@ -24,7 +30,7 @@ class UserSession: ObservableObject {
     }
 
     func setupCombine() {
-        networkMonitor.hasNetworkConnection.dropFirst().sink {[weak self] hasConnection in
+        networkMonitor.hasNetworkConnection.dropFirst().sink { [weak self] hasConnection in
             guard let self, hasConnection else { return }
             Task {
                 let profile = try await profileService.fetchOwnProfile(token: accessToken)
