@@ -11,8 +11,6 @@ class EditProfileViewModel: ObservableObject {
     @Published var isSaving: Bool = false
     @Published var fields: ProfileFieldsModel
 
-    private var networkMonitor: any NetworkMonitor
-
     var isSavinDisabled: Bool {
         !hasUnsavedChanges || isSaving
     }
@@ -28,7 +26,6 @@ class EditProfileViewModel: ObservableObject {
     ) {
         self.userSession = userSession
         self.profileService = .init(urlSession: urlSession)
-        self.networkMonitor = networkMonitor
 
         self.fields = .init(profile: userSession.profile)
 
@@ -40,13 +37,6 @@ class EditProfileViewModel: ObservableObject {
             self?.fields = .init(profile: profile)
         }
         .store(in: &cancellables)
-        networkMonitor.hasNetworkConnection.dropFirst().sink { [weak self] newValue in
-            if newValue {
-                Task {
-                    await self?.fetchProfile()
-                }
-            }
-        }.store(in: &cancellables)
     }
 
     func save() async {
