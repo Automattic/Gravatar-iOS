@@ -27,7 +27,7 @@ extension View {
             .padding(.DS.Padding.split)
             .borders(colorScheme: colorScheme)
     }
-    
+
     @ViewBuilder
     func `if`(_ condition: Bool, transform: (Self) -> some View) -> some View {
         if condition {
