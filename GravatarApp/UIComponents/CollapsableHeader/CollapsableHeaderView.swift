@@ -88,7 +88,6 @@ class CollapsableHeaderView: UIView, CollapsableHeaderViewContentDelegate {
         let currentWidth = bounds.width
         if currentWidth != lastWidth {
             if lastWidth != 0 {
-                print("Width changed to: \(currentWidth)")
                 handleWidthChange()
             }
             lastWidth = currentWidth
