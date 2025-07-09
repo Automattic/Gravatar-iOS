@@ -12,9 +12,7 @@ extension View {
             return self
         }
     }
-}
 
-extension View {
     func borders(colorScheme: ColorScheme) -> some View {
         self.shape(
             RoundedRectangle(cornerRadius: 2),
@@ -22,13 +20,20 @@ extension View {
             borderWidth: 1
         )
     }
-}
 
-extension View {
     func styleTextField(colorScheme: ColorScheme) -> some View {
         self
             .font(.subheadline)
             .padding(.DS.Padding.split)
             .borders(colorScheme: colorScheme)
+    }
+    
+    @ViewBuilder
+    func `if`(_ condition: Bool, transform: (Self) -> some View) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
     }
 }
