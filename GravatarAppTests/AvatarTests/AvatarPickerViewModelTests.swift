@@ -215,7 +215,7 @@ final class AvatarPickerViewModelTests {
     func reloadAfterReconnection() async throws {
         let networkMonitor = TestNetworkMonitor()
         networkMonitor.isConnected = false
-        let session = URLSessionAvatarPickerMock(shouldSimulateNoNetworkConnection: true)
+        let session = URLSessionMock(shouldSimulateNoNetworkConnection: true)
 
         let model = Self.createModel(session: session, networkMonitor: networkMonitor)
         await model.refresh()
