@@ -49,15 +49,17 @@ struct ProfileEditorStickyHeaderView: View {
 #if DEBUG
 #Preview {
     let imageURL = URL(string: "https://1.gravatar.com/avatar/1?size=256")
-    VStack {
-        ProfileEditorStickyHeaderView(
-            profile: .testProfile,
-            opacity: 1,
-            safeAreaInsets: EdgeInsets(),
-            imageURL: imageURL,
-            forceRefresh: .constant(false)
-        )
-        Spacer()
+    GeometryReader { geo in
+        VStack {
+            ProfileEditorStickyHeaderView(
+                profile: .testProfile,
+                opacity: 1,
+                safeAreaInsets: geo.safeAreaInsets,
+                imageURL: imageURL,
+                forceRefresh: .constant(false)
+            )
+            Spacer()
+        }.ignoresSafeArea()
     }
 }
 #endif

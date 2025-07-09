@@ -53,17 +53,18 @@ struct BouncyImageBackgroundHeaderView<Content>: View where Content: View {
 
 #Preview {
     let imageURL = URL(string: "https://1.gravatar.com/avatar/1?size=256")
-
-    ScrollView {
-        BouncyImageBackgroundHeaderView(
-            topSafeArea: 0,
-            imageURL: imageURL,
-            forceRefresh: .constant(false)
-        ) {
-            VStack {
-                Text("Hello world")
-                Text("Drag me down!")
+    GeometryReader { geo in
+        ScrollView {
+            BouncyImageBackgroundHeaderView(
+                topSafeArea: geo.safeAreaInsets.top,
+                imageURL: imageURL,
+                forceRefresh: .constant(false)
+            ) {
+                VStack {
+                    Text("Hello world")
+                    Text("Drag me down!")
+                }
             }
-        }
+        }.ignoresSafeArea()
     }
 }

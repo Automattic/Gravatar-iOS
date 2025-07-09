@@ -41,12 +41,14 @@ struct AvatarPickerScrollableHeaderView: View {
 
 #Preview {
     let imageURL = URL(string: "https://1.gravatar.com/avatar/1?size=256")
-    VStack {
-        AvatarPickerScrollableHeaderView(
-            topSafeArea: 0,
-            imageURL: imageURL,
-            forceRefresh: .constant(false)
-        )
-        Spacer()
+    GeometryReader { geo in
+        VStack {
+            AvatarPickerScrollableHeaderView(
+                topSafeArea: geo.safeAreaInsets.top,
+                imageURL: imageURL,
+                forceRefresh: .constant(false)
+            )
+            Spacer()
+        }.ignoresSafeArea()
     }
 }

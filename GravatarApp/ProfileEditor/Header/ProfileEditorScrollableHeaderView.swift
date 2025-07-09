@@ -65,14 +65,16 @@ struct ProfileEditorScrollableHeaderView: View {
 #if DEBUG
 #Preview {
     let imageURL = URL(string: "https://1.gravatar.com/avatar/1?size=256")
-    VStack {
-        ProfileEditorScrollableHeaderView(
-            profile: .testProfile,
-            topSafeArea: 0,
-            imageURL: imageURL,
-            forceRefresh: .constant(false)
-        )
-        Spacer()
+    GeometryReader { geo in
+        VStack {
+            ProfileEditorScrollableHeaderView(
+                profile: .testProfile,
+                topSafeArea: geo.safeAreaInsets.top,
+                imageURL: imageURL,
+                forceRefresh: .constant(false)
+            )
+            Spacer()
+        }.ignoresSafeArea()
     }
 }
 #endif
