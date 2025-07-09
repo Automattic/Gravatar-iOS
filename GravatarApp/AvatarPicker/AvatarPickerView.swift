@@ -72,11 +72,18 @@ struct AvatarPickerView: View {
     func gridView() -> some View {
         VStack(alignment: .leading) {
             VStack(alignment: .leading, spacing: 0) {
-                Text("Previous avatars")
+                Text(Localized.avatarGridTitle)
                     .font(.headline)
-                Text("Tap for options")
+                Text(Localized.avatarGridSubtext)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
+            }
+            if avatarPickerModel.shouldDisplayNoSelectedAvatarWarning {
+                VStack {
+                    Text(Localized.noSelectedAvatar)
+                        .font(.subheadline)
+                }
+              
             }
             AvatarGrid(
                 grid: avatarPickerModel.grid,
@@ -112,6 +119,23 @@ struct AvatarPickerView: View {
                 await avatarPickerModel.retryUpload(of: avatarID)
             }
         }
+    }
+    enum Localized {
+        static let avatarGridTitle = NSLocalizedString(
+            "AvatarPicker.Grid.title",
+            value: "Previous avatars",
+            comment: "Title of the avatars grid"
+        )
+        static let avatarGridSubtext = NSLocalizedString(
+            "AvatarPicker.Grid.subtext",
+            value: "Tap for options",
+            comment: "A subtext that appears below the avatars grid title"
+        )
+        static let noSelectedAvatar = NSLocalizedString(
+            "AvatarPicker.Grid.NoSelectedAvatar",
+            value: "No avatar selected. Showing the default avatar.",
+            comment: "A warning message that appears above the avatars grid when there's no selected avatar."
+        )
     }
 }
 
