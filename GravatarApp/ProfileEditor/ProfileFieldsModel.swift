@@ -11,8 +11,6 @@ class ProfileFieldsModel: ObservableObject {
     @Published var company: String = ""
     @Published var firstName: String = ""
     @Published var lastName: String = ""
-    @Published var cellPhone: String = ""
-    @Published var contactEmail: String = ""
 
     init() {}
 
@@ -26,8 +24,6 @@ class ProfileFieldsModel: ObservableObject {
         self.company = profile.company
         self.firstName = profile.firstName ?? ""
         self.lastName = profile.lastName ?? ""
-        self.cellPhone = profile.contactInfo?.cellPhone ?? ""
-        self.contactEmail = profile.contactInfo?.email ?? ""
     }
 
     init(
@@ -39,9 +35,7 @@ class ProfileFieldsModel: ObservableObject {
         jobTitle: String,
         company: String,
         firstName: String,
-        lastName: String,
-        cellPhone: String,
-        contactEmail: String
+        lastName: String
     ) {
         self.displayName = displayName
         self.aboutMe = aboutMe
@@ -52,8 +46,6 @@ class ProfileFieldsModel: ObservableObject {
         self.company = company
         self.firstName = firstName
         self.lastName = lastName
-        self.cellPhone = cellPhone
-        self.contactEmail = contactEmail
     }
 
     func updateRequest() -> UpdateProfileRequest {
@@ -66,9 +58,7 @@ class ProfileFieldsModel: ObservableObject {
             pronouns: pronouns,
             location: location,
             jobTitle: jobTitle,
-            company: company,
-            cellPhone: cellPhone,
-            contactEmail: contactEmail
+            company: company
         )
     }
 
@@ -82,7 +72,5 @@ class ProfileFieldsModel: ObservableObject {
             && location == profile.location
             && jobTitle == profile.jobTitle
             && company == profile.company
-            && cellPhone == profile.contactInfo?.cellPhone
-            && contactEmail == profile.contactInfo?.email
     }
 }
