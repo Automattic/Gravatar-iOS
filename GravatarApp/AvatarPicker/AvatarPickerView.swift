@@ -70,7 +70,7 @@ struct AvatarPickerView: View {
     }
 
     func gridView() -> some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: .DS.Padding.split) {
             VStack(alignment: .leading, spacing: 0) {
                 Text(Localized.avatarGridTitle)
                     .font(.headline)
@@ -79,11 +79,8 @@ struct AvatarPickerView: View {
                     .foregroundStyle(.secondary)
             }
             if avatarPickerModel.shouldDisplayNoSelectedAvatarWarning {
-                VStack {
-                    Text(Localized.noSelectedAvatar)
-                        .font(.subheadline)
-                }
-              
+                SimpleMessageView(message: Localized.noSelectedAvatar)
+                    .frame(idealWidth: .infinity)
             }
             AvatarGrid(
                 grid: avatarPickerModel.grid,
@@ -120,6 +117,7 @@ struct AvatarPickerView: View {
             }
         }
     }
+
     enum Localized {
         static let avatarGridTitle = NSLocalizedString(
             "AvatarPicker.Grid.title",
