@@ -2,7 +2,7 @@ import Foundation
 @testable import GravatarApp
 import GravatarUI
 
-final class URLSessionAvatarPickerMock: URLSessionProtocol, @unchecked Sendable {
+final class URLSessionMock: URLSessionProtocol, @unchecked Sendable {
     static let internetLostErrorMessage: String = "The network connection was lost"
     let returnErrorCode: Int?
     var shouldSimulateNoNetworkConnection: Bool
@@ -17,7 +17,7 @@ final class URLSessionAvatarPickerMock: URLSessionProtocol, @unchecked Sendable 
             throw NSError(
                 domain: NSURLErrorDomain,
                 code: -1005,
-                userInfo: [NSLocalizedDescriptionKey: URLSessionAvatarPickerMock.internetLostErrorMessage]
+                userInfo: [NSLocalizedDescriptionKey: URLSessionMock.internetLostErrorMessage]
             )
         }
 
@@ -51,7 +51,7 @@ final class URLSessionAvatarPickerMock: URLSessionProtocol, @unchecked Sendable 
             throw NSError(
                 domain: NSURLErrorDomain,
                 code: -1005,
-                userInfo: [NSLocalizedDescriptionKey: URLSessionAvatarPickerMock.internetLostErrorMessage]
+                userInfo: [NSLocalizedDescriptionKey: URLSessionMock.internetLostErrorMessage]
             )
         }
         if let returnErrorCode {
