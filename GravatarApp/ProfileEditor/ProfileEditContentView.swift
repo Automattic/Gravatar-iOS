@@ -30,7 +30,6 @@ struct ProfileEditContentView: View {
                 Spacer().frame(height: .DS.Padding.medium)
                 professional()
             }
-            .fixedSize(horizontal: false, vertical: true)
             saveButton()
                 .padding(.top, .DS.Padding.double)
         }
