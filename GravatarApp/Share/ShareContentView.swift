@@ -85,9 +85,9 @@ struct ShareContentView: View {
 #if DEBUG
 #Preview {
     ShareContentView(
-        viewModel: .init(userSession: .init(profile: .testProfile, accessToken: ""))
+        viewModel: .init(userSession: .init(profile: .testProfile, accessToken: "", context: .testContext))
     )
-    .environmentObject(UserSession(profile: .testProfile, accessToken: ""))
+    .environmentObject(UserSession(profile: .testProfile, accessToken: "", context: .testContext))
 }
 #endif
 

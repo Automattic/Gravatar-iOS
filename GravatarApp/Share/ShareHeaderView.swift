@@ -117,7 +117,7 @@ struct ShareHeaderView: View {
                 width: geometry.size.width,
                 maxHeight: geometry.size.height
             )
-            .environmentObject(UserSession(profile: .testProfile, accessToken: ""))
+            .environmentObject(UserSession(profile: .testProfile, accessToken: "", context: .testContext))
             .frame(width: geometry.size.width)
         }
         .ignoresSafeArea()
