@@ -20,8 +20,8 @@ struct HeaderAvatarView<Placeholder>: View where Placeholder: View {
                     AnyView(ProgressView().progressViewStyle(.circular))
                     :
                     AnyView(EmptyView())
-            },
-            transaction: Transaction(animation: .smooth)
+            }
         )
+        .allowsHitTesting(false)
     }
 }

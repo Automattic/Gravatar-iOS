@@ -1,6 +1,18 @@
 import SwiftUI
 
 extension View {
+    func contentHeightReader(_ height: Binding<CGFloat>) -> some View {
+        self.background(
+            GeometryReader { geo in
+                Color.clear.onChange(of: geo.size) { _, value in
+                    height.wrappedValue = value.height
+                }.onAppear {
+                    height.wrappedValue = geo.size.height
+                }
+            }
+        )
+    }
+
     func scrollOffsetReader(_ offset: Binding<CGFloat>) -> some View {
         if #available(iOS 18.0, *) {
             return self.onScrollGeometryChange(for: CGFloat.self, of: { geometry in
@@ -21,13 +33,6 @@ extension View {
         )
     }
 
-    func styleTextField(colorScheme: ColorScheme) -> some View {
-        self
-            .font(.subheadline)
-            .padding(.DS.Padding.split)
-            .borders(colorScheme: colorScheme)
-    }
-
     @ViewBuilder
     func `if`(_ condition: Bool, transform: (Self) -> some View) -> some View {
         if condition {
@@ -35,5 +40,12 @@ extension View {
         } else {
             self
         }
+    }
+
+    func styleTextField(colorScheme: ColorScheme) -> some View {
+        self
+            .font(.subheadline)
+            .padding(.DS.Padding.split)
+            .borders(colorScheme: colorScheme)
     }
 }
