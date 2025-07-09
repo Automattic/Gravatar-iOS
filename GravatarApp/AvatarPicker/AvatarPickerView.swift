@@ -6,7 +6,6 @@ struct AvatarPickerView: View {
     @ObservedObject var avatarPickerModel: AvatarPickerViewModel
     let onLogout: () -> Void
 
-    @State private var forceRefreshHeader: Bool = false
     @State private var avatarToDelete: AvatarImageModel?
 
     var headerAvatarURL: URL? {
@@ -22,14 +21,14 @@ struct AvatarPickerView: View {
                 AvatarPickerScrollableHeaderView(
                     topSafeArea: topSafeArea,
                     imageURL: headerAvatarURL,
-                    forceRefresh: $forceRefreshHeader
+                    forceRefresh: $avatarPickerModel.forceRefreshAvatar
                 )
             } stickyHeader: { opacity, safeAreaInsets in
                 AvatarPickerStickyHeaderView(
                     opacity: opacity,
                     safeAreaInsets: safeAreaInsets,
                     imageURL: headerAvatarURL,
-                    forceRefresh: $forceRefreshHeader
+                    forceRefresh: $avatarPickerModel.forceRefreshAvatar
                 )
             } content: {
                 Group {
@@ -98,7 +97,6 @@ struct AvatarPickerView: View {
         case .select:
             Task {
                 _ = await avatarPickerModel.selectAvatar(with: avatar.id)
-                forceRefreshHeader = true
             }
         case .delete:
             avatarToDelete = avatar
