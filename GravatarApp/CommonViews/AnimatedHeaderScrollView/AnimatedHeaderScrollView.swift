@@ -1,8 +1,6 @@
 import SwiftUI
 
-struct AnimatedHeaderScrollView<ContentView, ScrollableHeader, StickyHeader, MenuItems>: View
-    where ContentView: View, ScrollableHeader: View, StickyHeader: View, MenuItems: View
-{
+struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, StickyHeader: View, MenuItems: View>: View {
     enum AnimationBehavior {
         case automatic
         case interactive

@@ -9,8 +9,6 @@ struct AvatarPickerView: View {
     @State private var forceRefreshHeader: Bool = false
     @State private var avatarToDelete: AvatarImageModel?
 
-    @State private var theText: String = ""
-
     var headerAvatarURL: URL? {
         AvatarURL(
             with: .hashID(avatarPickerModel.userSession.profile.hash),
