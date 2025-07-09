@@ -19,6 +19,7 @@ class AvatarPickerViewModel: ObservableObject {
         }
     }
 
+    private var networkMonitor: any NetworkMonitor
     let userSession: UserSession
 
     @Published var selectedAvatarURL: URL?
@@ -39,12 +40,14 @@ class AvatarPickerViewModel: ObservableObject {
         profileService: Gravatar.ProfileService? = nil,
         avatarService: AvatarService? = nil,
         imageDownloader: ImageDownloader? = nil,
+        networkMonitor: any NetworkMonitor = SystemNetworkMonitor.shared,
         urlSession: URLSessionProtocol = GravatarURLSession.shared
     ) {
         self.userSession = userSession
         self.profileService = profileService ?? Gravatar.ProfileService(urlSession: urlSession)
         self.avatarService = avatarService ?? AvatarService(urlSession: urlSession)
         self.imageDownloader = imageDownloader ?? ImageDownloadService(urlSession: urlSession)
+        self.networkMonitor = networkMonitor
         self.profileHash = userSession.profile.hash
 
         setupCombine()
@@ -52,7 +55,7 @@ class AvatarPickerViewModel: ObservableObject {
 
     #if DEBUG
     static func preview_init(avatars: [AvatarImageModel] = []) -> AvatarPickerViewModel {
-        let model = AvatarPickerViewModel(userSession: UserSession(profile: .testProfile, accessToken: ""))
+        let model = AvatarPickerViewModel(userSession: UserSession(profile: .testProfile, accessToken: "", context: .testContext))
         model.grid = .init(avatars: avatars, selectedAvatar: avatars.first(where: { $0.isSelected }))
         model.setupCombine()
         return model
@@ -75,6 +78,14 @@ class AvatarPickerViewModel: ObservableObject {
                 self?.shouldDisplayNoSelectedAvatarWarning = shouldShowWarning
             }
             .store(in: &cancellables)
+
+        networkMonitor.hasNetworkConnection.dropFirst().sink { [weak self] newValue in
+            if newValue && self?.gridResponseStatus?.error() != nil {
+                Task {
+                    await self?.fetchAvatars()
+                }
+            }
+        }.store(in: &cancellables)
     }
 
     func selectAvatar(with id: String) async -> AvatarDetails? {

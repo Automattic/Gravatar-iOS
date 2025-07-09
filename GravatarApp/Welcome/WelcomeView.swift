@@ -1,22 +1,29 @@
 import Gravatar
 import OAuth
+import SwiftData
 import SwiftUI
 
 struct WelcomeView: View {
-    @StateObject private var viewModel: WelcomeViewModel = .init()
+    @StateObject private var viewModel: WelcomeViewModel
+    private var modelContext: ModelContext
+
+    init(modelContext: ModelContext) {
+        self.modelContext = modelContext
+        _viewModel = .init(wrappedValue: WelcomeViewModel(context: modelContext))
+    }
 
     var body: some View {
         Group {
-            if (viewModel.hasUser && viewModel.profileResult == nil) || viewModel.isLoading {
+            if let userSession = viewModel.userSession {
+                rootView(userSession: userSession)
+            } else if viewModel.hasUser || viewModel.isLoading {
                 ProgressView()
-            } else if let profileResult = viewModel.profileResult,
-                      let accessToken = viewModel.accessToken
-            {
-                rootView(accessToken: accessToken, profileResult: profileResult)
             } else {
                 loginView
             }
-        }.onAppear {
+        }
+        .modelContext(modelContext)
+        .onAppear {
             viewModel.softLogin()
         }
         .onReceive(NotificationCenter.default.publisher(for: .sessionExpired)) { _ in
@@ -26,21 +33,8 @@ struct WelcomeView: View {
         }
     }
 
-    @ViewBuilder
-    private func rootView(accessToken: String, profileResult: Result<Profile, APIError>) -> some View {
-        switch profileResult {
-        case .success(let profile):
-            rootViewSuccess(accessToken: accessToken, profile: profile)
-        case .failure(APIError.responseError(let .invalidHTTPStatusCode(response, _))) where response.statusCode == HTTPStatus.unauthorized.rawValue:
-            loginView
-        case .failure(let error):
-            Text("Error fetching the profile: \(error)")
-                .padding()
-        }
-    }
-
-    private func rootViewSuccess(accessToken: String, profile: Profile) -> some View {
-        RootTabView(accessToken: accessToken, profile: profile) {
+    private func rootView(userSession: UserSession) -> some View {
+        RootTabView(userSession: userSession, context: modelContext) {
             Task {
                 await viewModel.logout()
             }
@@ -61,6 +55,8 @@ struct WelcomeView: View {
             }.buttonStyle(.borderedProminent)
             Spacer()
             if let error = viewModel.oauthError {
+                errorView(with: error)
+            } else if let error = viewModel.profileFetchingError {
                 errorView(with: error)
             }
         }
@@ -83,5 +79,5 @@ extension String {
 }
 
 #Preview {
-    WelcomeView()
+    WelcomeView(modelContext: .testContext)
 }

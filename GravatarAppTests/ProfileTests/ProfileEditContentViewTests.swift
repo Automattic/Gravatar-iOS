@@ -9,8 +9,8 @@ struct ProfileEditContentViewTests {
     @Test
     func profileEditContentViewIntrinsicHeight() async throws {
         let editProfileViewModel: EditProfileViewModel = .init(
-            userSession: .init(profile: .full, accessToken: "testToken"),
-            urlSession: URLSessionProfileMock()
+            userSession: .init(profile: .full, accessToken: "testToken", context: .testContext),
+            urlSession: URLSessionMock()
         )
         let view = ProfileEditContentView(viewModel: editProfileViewModel)
             .fixedSize(horizontal: false, vertical: true)

@@ -8,12 +8,6 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
         static let backgroundColorCollapsed = UIColor.systemBackground
     }
 
-    var profile: Profile? {
-        didSet {
-            updateProfileData()
-        }
-    }
-
     weak var delegate: (any CollapsableHeaderViewContentDelegate)?
 
     private let userSession: UserSession
@@ -71,7 +65,6 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
 
     required init(userSession: UserSession) {
         self.userSession = userSession
-        self.profile = userSession.profile
 
         super.init(frame: .zero)
         self.translatesAutoresizingMaskIntoConstraints = false
@@ -81,12 +74,13 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
         }
 
         initConstraints()
-        updateProfileData()
+        update(with: userSession.profile)
         userSession.$profile.sink { [weak self] profile in
             guard let self else { return }
-            self.profile = profile
+
+            update(with: profile)
             // Recreate the animator otherwise text alignments get messed up
-            self.delegate?.didUpdateData(self)
+            delegate?.didUpdateData(self)
         }
         .store(in: &cancellables)
     }
@@ -155,8 +149,7 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
         nameLabelExpanded.alpha = collapsed ? 0 : 1
     }
 
-    private func updateProfileData() {
-        guard let profile else { return }
+    private func update(with profile: Profile) {
         nameLabelExpanded.text = profile.displayName
         nameLabelCollapsed.text = profile.displayName
         organisationLabelExpanded.text = "\(profile.jobTitle), \(profile.company)"
@@ -240,8 +233,9 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
 }
 
 #if DEBUG
+
 #Preview("Max height") {
-    let userSession = UserSession(profile: .testProfile, accessToken: "")
+    let userSession = UserSession(profile: .testProfile, accessToken: "", context: .testContext)
     let view = ProfileHeaderContentView(userSession: userSession)
     view.updateUI(for: .fullHeight)
     view.interpolate(with: 0)
@@ -249,7 +243,7 @@ class ProfileHeaderContentView: UIView, CollapsableHeaderViewContent {
 }
 
 #Preview("Min height") {
-    let userSession = UserSession(profile: .testProfile, accessToken: "")
+    let userSession = UserSession(profile: .testProfile, accessToken: "", context: .testContext)
     let view = ProfileHeaderContentView(userSession: userSession)
     view.updateUI(for: .minHeight)
     view.interpolate(with: 1)

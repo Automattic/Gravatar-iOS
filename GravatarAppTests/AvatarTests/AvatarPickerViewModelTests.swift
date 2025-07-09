@@ -14,14 +14,16 @@ final class AvatarPickerViewModelTests {
     }
 
     static func createModel(
-        session: URLSessionProtocol = URLSessionProfileMock(),
-        imageDownloader: ImageDownloader = TestImageDownloader(result: .success)
+        session: URLSessionProtocol = URLSessionMock(),
+        imageDownloader: ImageDownloader = TestImageDownloader(result: .success),
+        networkMonitor: TestNetworkMonitor? = nil
     ) -> AvatarPickerViewModel {
         AvatarPickerViewModel(
-            userSession: UserSession(profile: .testProfile, accessToken: "token"),
+            userSession: UserSession(profile: .testProfile, accessToken: "token", context: .testContext),
             profileService: ProfileService(urlSession: session),
             avatarService: AvatarService(urlSession: session),
-            imageDownloader: imageDownloader
+            imageDownloader: imageDownloader,
+            networkMonitor: networkMonitor ?? TestNetworkMonitor()
         )
     }
 
@@ -84,7 +86,7 @@ final class AvatarPickerViewModelTests {
     @Test
     func selectAvatarFailNoInternet() async throws {
         let toSelectID = "9862792c565394"
-        let model = Self.createModel(session: URLSessionProfileMock(shouldSimulateNoNetworkConnection: true))
+        let model = Self.createModel(session: URLSessionMock(shouldSimulateNoNetworkConnection: true))
         model.grid.setAvatars([Self.createImageModel(id: toSelectID, source: .remote(url: ""))])
 
         await confirmation(expectedCount: 1) { confirmation in
@@ -97,7 +99,7 @@ final class AvatarPickerViewModelTests {
     @Test
     func selectAvatarFailInvalidHTTPStatusCode() async throws {
         let toSelectID = "9862792c565394"
-        let model = Self.createModel(session: URLSessionProfileMock(returnErrorCode: 400))
+        let model = Self.createModel(session: URLSessionMock(returnErrorCode: 400))
         model.grid.setAvatars([Self.createImageModel(id: toSelectID, source: .remote(url: ""))])
 
         await confirmation(expectedCount: 1) { confirmation in
@@ -144,7 +146,7 @@ final class AvatarPickerViewModelTests {
     @Test("Test success deletion when the response is a 404 error")
     func deleteError404() async throws {
         let avatarToDelete = Self.createImageModel(id: "1", source: .remote(url: ""))
-        model = Self.createModel(session: URLSessionProfileMock(returnErrorCode: HTTPStatus.notFound.rawValue))
+        model = Self.createModel(session: URLSessionMock(returnErrorCode: HTTPStatus.notFound.rawValue))
         model.grid.setAvatars([avatarToDelete])
 
         #expect(await model.delete(avatarToDelete))
@@ -154,7 +156,7 @@ final class AvatarPickerViewModelTests {
     @Test("Test success deletion of selected avatar when the response is a 404 error")
     func deleteSelectedAvatarError404() async throws {
         let avatarToDelete = Self.createImageModel(id: "1", source: .remote(url: ""), isSelected: true)
-        model = Self.createModel(session: URLSessionProfileMock(returnErrorCode: HTTPStatus.notFound.rawValue))
+        model = Self.createModel(session: URLSessionMock(returnErrorCode: HTTPStatus.notFound.rawValue))
         model.grid.setAvatars([avatarToDelete])
         #expect(model.grid.selectedAvatar != nil)
 
@@ -175,7 +177,7 @@ final class AvatarPickerViewModelTests {
     @Test("Test error deletion when the response is an error different to 404")
     func deleteErrorFails() async throws {
         let avatarToDelete = Self.createImageModel(id: "1", source: .remote(url: ""))
-        model = Self.createModel(session: URLSessionProfileMock(returnErrorCode: HTTPStatus.unauthorized.rawValue))
+        model = Self.createModel(session: URLSessionMock(returnErrorCode: HTTPStatus.unauthorized.rawValue))
         model.grid.setAvatars([avatarToDelete])
 
         #expect(await model.delete(avatarToDelete) == false, "Delete request should fail")
@@ -200,13 +202,39 @@ final class AvatarPickerViewModelTests {
         arguments: [HTTPStatus.unauthorized, .forbidden]
     )
     func updateAltTextError(httpStatus: HTTPStatus) async throws {
-        model = Self.createModel(session: URLSessionProfileMock(returnErrorCode: httpStatus.rawValue))
+        model = Self.createModel(session: URLSessionMock(returnErrorCode: httpStatus.rawValue))
         model.grid.setAvatars([Self.createImageModel(id: "1", source: .remote(url: ""))])
         let avatar = model.grid.avatars[0]
         let originalAltText = avatar.altText
 
         let updatedAvatar = model.grid.avatars[0]
         #expect(updatedAvatar.altText == originalAltText, "Alt text should not have changed")
+    }
+
+    @Test("Test reload after connectivity reconnection")
+    func reloadAfterReconnection() async throws {
+        let networkMonitor = TestNetworkMonitor()
+        networkMonitor.isConnected = false
+        let session = URLSessionMock(shouldSimulateNoNetworkConnection: true)
+
+        let model = Self.createModel(session: session, networkMonitor: networkMonitor)
+        await model.refresh()
+
+        #expect(model.gridResponseStatus?.error() != nil)
+
+        try await confirmation(expectedCount: 1) { @MainActor confirmation in
+            model.$gridResponseStatus.dropFirst().sink { result in
+                #expect(result?.error() == nil)
+                #expect(result?.value() != nil)
+
+                confirmation.confirm()
+            }.store(in: &cancellables)
+
+            session.shouldSimulateNoNetworkConnection = false
+            networkMonitor.isConnected = true
+            // Make the clock tick!
+            try await Task.sleep(for: .milliseconds(10))
+        }
     }
 
     @Test("Test avatar upload")
@@ -227,7 +255,7 @@ final class AvatarPickerViewModelTests {
 
     @Test("Test avatar upload failed")
     func avatarUploadFailed() async throws {
-        let urlSession = URLSessionProfileMock(shouldSimulateNoNetworkConnection: true)
+        let urlSession = URLSessionMock(shouldSimulateNoNetworkConnection: true)
         model = Self.createModel(session: urlSession)
 
         #expect(model.grid.avatars.count == 0)
@@ -247,7 +275,7 @@ final class AvatarPickerViewModelTests {
 
     @Test("Test avatar upload retry")
     func avatarUploadRetry() async throws {
-        let urlSession = URLSessionProfileMock(shouldSimulateNoNetworkConnection: true)
+        let urlSession = URLSessionMock(shouldSimulateNoNetworkConnection: true)
         model = Self.createModel(session: urlSession)
 
         #expect(model.grid.avatars.count == 0)
