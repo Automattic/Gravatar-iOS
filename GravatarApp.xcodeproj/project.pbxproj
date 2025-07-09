@@ -12,6 +12,7 @@
 		1E99F8A72DFBE7B500F892CD /* Analytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1E99F8A62DFBE7B500F892CD /* Analytics */; };
 		1EE237E82E0B146C0074663F /* Gravatar in Frameworks */ = {isa = PBXBuildFile; productRef = 1EE237E72E0B146C0074663F /* Gravatar */; };
 		1EE237EA2E0B146C0074663F /* GravatarUI in Frameworks */ = {isa = PBXBuildFile; productRef = 1EE237E92E0B146C0074663F /* GravatarUI */; };
+		91CC91AF2E1D59190060BD77 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 91CC91AE2E1D59190060BD77 /* SnapshotTesting */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,6 +66,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				91CC91AF2E1D59190060BD77 /* SnapshotTesting in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,6 +141,7 @@
 			);
 			name = GravatarAppTests;
 			packageProductDependencies = (
+				91CC91AE2E1D59190060BD77 /* SnapshotTesting */,
 			);
 			productName = GravatarAppTests;
 			productReference = 1EDD7F9E2DF9B94500E5F1B6 /* GravatarAppTests.xctest */;
@@ -176,6 +179,7 @@
 				1E99F8A52DFBE7B500F892CD /* XCLocalSwiftPackageReference "Packages/Analytics" */,
 				1E79E4CF2E019CD8008D2640 /* XCLocalSwiftPackageReference "Packages/OAuth" */,
 				1EE237E62E0B146C0074663F /* XCRemoteSwiftPackageReference "Gravatar-SDK-iOS" */,
+				91CC91AD2E1D59190060BD77 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1EDD7F912DF9B94300E5F1B6 /* Products */;
@@ -640,6 +644,14 @@
 				revision = 342e40cf493672ad9aef1ad72b085cccc3bbb2f1;
 			};
 		};
+		91CC91AD2E1D59190060BD77 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.18.4;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -660,6 +672,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1EE237E62E0B146C0074663F /* XCRemoteSwiftPackageReference "Gravatar-SDK-iOS" */;
 			productName = GravatarUI;
+		};
+		91CC91AE2E1D59190060BD77 /* SnapshotTesting */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 91CC91AD2E1D59190060BD77 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
+			productName = SnapshotTesting;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

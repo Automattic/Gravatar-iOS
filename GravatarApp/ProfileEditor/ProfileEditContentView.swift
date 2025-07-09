@@ -4,11 +4,13 @@ import SwiftUI
 
 struct ProfileEditContentView: View {
     private enum Constants {
-        static let primaryFont: Font = .subheadline
-        static let sectionHeaderFont: Font = .subheadline.weight(.semibold)
+        static let textTitleFont: Font = .callout
+        static let textInputFont: Font = .body
+        static let textInputCornerRadius: CGFloat = 8
+        static let sectionHeaderFont: Font = .title2.weight(.semibold)
         static let footerFont: Font = .footnote
-        static let horizontalPadding: CGFloat = .DS.Padding.double
-        static let vStackVerticalSpacing: CGFloat = .DS.Padding.medium
+        static let textBackgroundColor: UIColor = .tertiarySystemFill
+        static let fieldVerticalPadding: CGFloat = 10
     }
 
     @ObservedObject var viewModel: EditProfileViewModel
@@ -17,6 +19,7 @@ struct ProfileEditContentView: View {
 
     var body: some View {
         content()
+            .background(Color(uiColor: UIColor.secondarySystemBackground))
     }
 
     @ViewBuilder
@@ -24,21 +27,13 @@ struct ProfileEditContentView: View {
         VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 0) {
                 personal()
-                Spacer().frame(height: .DS.Padding.double)
+                Spacer().frame(height: .DS.Padding.medium)
                 professional()
-                Spacer().frame(height: .DS.Padding.double)
-                contact()
             }
-            .padding(.horizontal, .DS.Padding.double)
-            .padding(.vertical, .DS.Padding.double)
+            saveButton()
+                .padding(.top, .DS.Padding.double)
         }
-        .padding(.horizontal, .DS.Padding.double)
-
-        // if !(isKeyboardPresented && vertcalSizeClass == .compact) {
-        saveButton()
-            .padding(.horizontal, .DS.Padding.large)
-            .padding(.bottom, .DS.Padding.double)
-        //  }
+        .padding(.DS.Padding.double)
     }
 
     private func saveButton() -> some View {
@@ -81,12 +76,6 @@ struct ProfileEditContentView: View {
             value: $viewModel.fields.lastName
         )
         inputField(
-            for: ProfileEditLocalization.aboutMe,
-            footerText: AttributedString(ProfileEditLocalization.aboutMeFooterText),
-            value: $viewModel.fields.aboutMe,
-            isLarge: true
-        )
-        inputField(
             for: ProfileEditLocalization.pronunciation,
             footerText: AttributedString(ProfileEditLocalization.pronunciationFooterText),
             value: $viewModel.fields.pronunciation
@@ -98,6 +87,12 @@ struct ProfileEditContentView: View {
         inputField(
             for: ProfileEditLocalization.location,
             value: $viewModel.fields.location
+        )
+        inputField(
+            for: ProfileEditLocalization.aboutMe,
+            footerText: AttributedString(ProfileEditLocalization.aboutMeFooterText),
+            value: $viewModel.fields.aboutMe,
+            isLarge: true
         )
     }
 
@@ -111,19 +106,6 @@ struct ProfileEditContentView: View {
         inputField(
             for: ProfileEditLocalization.company,
             value: $viewModel.fields.company
-        )
-    }
-
-    @ViewBuilder
-    private func contact() -> some View {
-        sectionHeader(title: ProfileEditLocalization.contactSectionHeader)
-        inputField(
-            for: ProfileEditLocalization.contactEmail,
-            value: $viewModel.fields.contactEmail
-        )
-        inputField(
-            for: ProfileEditLocalization.phone,
-            value: $viewModel.fields.cellPhone
         )
     }
 
@@ -142,27 +124,32 @@ struct ProfileEditContentView: View {
     ) -> some View {
         VStack(alignment: .leading, spacing: .DS.Padding.single) {
             Text(title)
-                .font(Constants.primaryFont)
+                .font(Constants.textTitleFont)
                 .multilineTextAlignment(.leading)
                 .accessibilityHidden(true)
             if isLarge {
                 TextEditor(text: value)
-                    .font(Constants.primaryFont)
+                    .font(Constants.textInputFont)
                     .multilineTextAlignment(.leading)
                     .padding(.horizontal, .DS.Padding.single)
-                    .padding(.vertical, 0)
-                    .borders(colorScheme: colorScheme)
                     .frame(height: dynamicTypeSize >= .accessibility1 ? 150 : 120)
                     .disabled(viewModel.isSaving)
                     .accessibilityLabel(title)
+                    .padding(.vertical, 0)
+                    .background(Color(uiColor: Constants.textBackgroundColor))
+                    .scrollContentBackground(.hidden)
+                    .cornerRadius(Constants.textInputCornerRadius)
             } else {
                 TextField(
                     "",
                     text: value
                 )
-                .styleTextField(colorScheme: colorScheme)
+                .font(Constants.textInputFont)
+                .padding(.DS.Padding.split)
                 .disabled(viewModel.isSaving)
                 .accessibilityLabel(title)
+                .background(Color(uiColor: Constants.textBackgroundColor))
+                .cornerRadius(Constants.textInputCornerRadius)
             }
 
             if let footerText {
@@ -172,7 +159,25 @@ struct ProfileEditContentView: View {
                     .foregroundColor(Color(uiColor: UIColor.secondaryLabel))
             }
         }
-        .padding(.vertical, .DS.Padding.single)
+        .padding(.vertical, Constants.fieldVerticalPadding)
         .frame(maxWidth: .infinity)
     }
 }
+
+extension View {
+    private func inputBorders(colorScheme: ColorScheme) -> some View {
+        self.shape(
+            RoundedRectangle(cornerRadius: 2),
+            borderColor: Color(uiColor: .label).opacity(colorScheme == .dark ? 0.30 : 0.15),
+            borderWidth: 1
+        )
+    }
+}
+
+#if DEBUG // Needed when we use `Profile.testProfile on Previews`
+#Preview {
+    ScrollView {
+        ProfileEditContentView(viewModel: .init(userSession: .init(profile: .testProfile, accessToken: "", context: .testContext)))
+    }
+}
+#endif
