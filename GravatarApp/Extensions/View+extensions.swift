@@ -10,6 +10,7 @@ extension View {
                     height.wrappedValue = geo.size.height
                 }
             }
+        )
     }
 }
 
