@@ -83,9 +83,9 @@ class AvatarPickerViewModel: ObservableObject {
             .dropFirst()
             .removeDuplicates()
             .sink { [weak self] _ in
-            self?.forceRefreshAvatar = true
-        }
-        .store(in: &cancellables)
+                self?.forceRefreshAvatar = true
+            }
+            .store(in: &cancellables)
 
         networkMonitor.hasNetworkConnection.dropFirst().sink { [weak self] newValue in
             if newValue && self?.gridResponseStatus?.error() != nil {
