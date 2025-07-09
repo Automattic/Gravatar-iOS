@@ -36,3 +36,10 @@ class ProfileViewModel: ObservableObject {
         profileResult = nil
     }
 }
+
+// Protocol for mocking in tests
+protocol ProfileServiceProtocol: Sendable {
+    func fetchOwnProfile(token: String) async throws -> Profile
+}
+
+extension Gravatar.ProfileService: ProfileServiceProtocol {}

@@ -11,6 +11,8 @@ class EditProfileViewModel: ObservableObject {
     @Published var isSaving: Bool = false
     @Published var fields: ProfileFieldsModel
 
+    private var networkMonitor: any NetworkMonitor
+
     var isSavinDisabled: Bool {
         !hasUnsavedChanges || isSaving
     }
@@ -21,17 +23,30 @@ class EditProfileViewModel: ObservableObject {
 
     init(
         userSession: UserSession,
-        urlSession: URLSessionProtocol = GravatarURLSession.shared
+        urlSession: URLSessionProtocol = GravatarURLSession.shared,
+        networkMonitor: any NetworkMonitor = SystemNetworkMonitor.shared
     ) {
         self.userSession = userSession
         self.profileService = .init(urlSession: urlSession)
+        self.networkMonitor = networkMonitor
 
         self.fields = .init(profile: userSession.profile)
 
+        setupCombine()
+    }
+
+    private func setupCombine() {
         userSession.$profile.sink { [weak self] profile in
             self?.fields = .init(profile: profile)
         }
         .store(in: &cancellables)
+        networkMonitor.hasNetworkConnection.dropFirst().sink { [weak self] newValue in
+            if newValue {
+                Task {
+                    await self?.fetchProfile()
+                }
+            }
+        }.store(in: &cancellables)
     }
 
     func save() async {
@@ -43,11 +58,18 @@ class EditProfileViewModel: ObservableObject {
             let request = fields.updateRequest()
             let profile = try await profileService.updateProfile(with: request, token: userSession.accessToken)
             Task { @MainActor in
-                self.userSession.updateProfile(profile)
+                userSession.updateProfile(profile)
             }
             // TODO: Show success toast
         } catch {
             // TODO: Show error toast
         }
+    }
+
+    func fetchProfile() async {
+        do {
+            let profile = try await profileService.fetchOwnProfile(token: userSession.accessToken)
+            userSession.updateProfile(profile)
+        } catch {}
     }
 }

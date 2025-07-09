@@ -1,4 +1,5 @@
 import Gravatar
+import SwiftData
 import SwiftUI
 
 struct RootTabView: View {
@@ -9,13 +10,12 @@ struct RootTabView: View {
 
     let onLogout: () -> Void
 
-    init(accessToken: String, profile: Profile, onLogout: @escaping () -> Void) {
-        let session = UserSession(profile: profile, accessToken: accessToken)
-        self.session = session
-
-        _avatarPickerViewModel = StateObject(wrappedValue: AvatarPickerViewModel(userSession: session))
-        _editProfileViewModel = StateObject(wrappedValue: EditProfileViewModel(userSession: session))
+    init(userSession: UserSession, context: ModelContext, onLogout: @escaping () -> Void) {
+        self.session = userSession
         self.onLogout = onLogout
+
+        _avatarPickerViewModel = StateObject(wrappedValue: AvatarPickerViewModel(userSession: userSession))
+        _editProfileViewModel = StateObject(wrappedValue: EditProfileViewModel(userSession: userSession))
     }
 
     var body: some View {
@@ -70,16 +70,13 @@ struct ProfileTab: View {
 }
 
 struct ShareTab: View {
+    @EnvironmentObject var userSession: UserSession
+
     var body: some View {
         NavigationStack {
             BackgroundColorView(color: .secondarySystemBackground) {
-                Text("Share!")
+                ShareContentView(viewModel: ShareViewModel(userSession: userSession))
             }
-            .navigationTitle("Share")
-            .navigationBarItems(
-                trailing: Button("Share", systemImage: "square.and.arrow.up", action: {})
-            )
-            .navigationBarTitleDisplayMode(.inline)
         }
         .background(Color(uiColor: .secondarySystemBackground))
         .tabItem {
@@ -104,7 +101,8 @@ struct BackgroundColorView<Content>: View where Content: View {
 #if DEBUG // Needed when we use `Profile.testProfile on Previews`
 #Preview {
     RootTabView(
-        accessToken: "", profile: .testProfile,
+        userSession: UserSession(profile: .testProfile, accessToken: "", context: .testContext),
+        context: .testContext,
         onLogout: {}
     )
 }

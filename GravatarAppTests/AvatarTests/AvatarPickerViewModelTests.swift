@@ -15,13 +15,15 @@ final class AvatarPickerViewModelTests {
 
     static func createModel(
         session: URLSessionProtocol = URLSessionAvatarPickerMock(),
-        imageDownloader: ImageDownloader = TestImageDownloader(result: .success)
+        imageDownloader: ImageDownloader = TestImageDownloader(result: .success),
+        networkMonitor: TestNetworkMonitor? = nil
     ) -> AvatarPickerViewModel {
         AvatarPickerViewModel(
-            userSession: UserSession(profile: .testProfile, accessToken: "token"),
+            userSession: UserSession(profile: .testProfile, accessToken: "token", context: .testContext),
             profileService: ProfileService(urlSession: session),
             avatarService: AvatarService(urlSession: session),
-            imageDownloader: imageDownloader
+            imageDownloader: imageDownloader,
+            networkMonitor: networkMonitor ?? TestNetworkMonitor()
         )
     }
 
@@ -207,6 +209,32 @@ final class AvatarPickerViewModelTests {
 
         let updatedAvatar = model.grid.avatars[0]
         #expect(updatedAvatar.altText == originalAltText, "Alt text should not have changed")
+    }
+
+    @Test("Test reload after connectivity reconnection")
+    func reloadAfterReconnection() async throws {
+        let networkMonitor = TestNetworkMonitor()
+        networkMonitor.isConnected = false
+        let session = URLSessionAvatarPickerMock(shouldSimulateNoNetworkConnection: true)
+
+        let model = Self.createModel(session: session, networkMonitor: networkMonitor)
+        await model.refresh()
+
+        #expect(model.gridResponseStatus?.error() != nil)
+
+        try await confirmation(expectedCount: 1) { @MainActor confirmation in
+            model.$gridResponseStatus.dropFirst().sink { result in
+                #expect(result?.error() == nil)
+                #expect(result?.value() != nil)
+
+                confirmation.confirm()
+            }.store(in: &cancellables)
+
+            session.shouldSimulateNoNetworkConnection = false
+            networkMonitor.isConnected = true
+            // Make the clock tick!
+            try await Task.sleep(for: .milliseconds(10))
+        }
     }
 
     @Test("Test avatar upload")

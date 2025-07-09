@@ -151,7 +151,7 @@ struct ProfileEditContentView: View {
                     .multilineTextAlignment(.leading)
                     .padding(.horizontal, .DS.Padding.single)
                     .padding(.vertical, 0)
-                    .inputBorders(colorScheme: colorScheme)
+                    .borders(colorScheme: colorScheme)
                     .frame(height: dynamicTypeSize >= .accessibility1 ? 150 : 120)
                     .disabled(viewModel.isSaving)
                     .accessibilityLabel(title)
@@ -160,9 +160,7 @@ struct ProfileEditContentView: View {
                     "",
                     text: value
                 )
-                .font(Constants.primaryFont)
-                .padding(.DS.Padding.split)
-                .inputBorders(colorScheme: colorScheme)
+                .styleTextField(colorScheme: colorScheme)
                 .disabled(viewModel.isSaving)
                 .accessibilityLabel(title)
             }
@@ -176,15 +174,5 @@ struct ProfileEditContentView: View {
         }
         .padding(.vertical, .DS.Padding.single)
         .frame(maxWidth: .infinity)
-    }
-}
-
-extension View {
-    fileprivate func inputBorders(colorScheme: ColorScheme) -> some View {
-        self.shape(
-            RoundedRectangle(cornerRadius: 2),
-            borderColor: Color(uiColor: .label).opacity(colorScheme == .dark ? 0.30 : 0.15),
-            borderWidth: 1
-        )
     }
 }
