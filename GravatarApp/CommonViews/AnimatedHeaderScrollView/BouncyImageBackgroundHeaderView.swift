@@ -25,7 +25,7 @@ struct BouncyImageBackgroundHeaderView<Content>: View where Content: View {
             .scaledToFill()
             .frame(width: geo.size.width, height: isBouncing ? viewHeight + offset : viewHeight)
             .clipped()
-            .blur(radius: 26, opaque: true)
+            .blur(radius: 40, opaque: true)
             .offset(y: isBouncing ? -offset : 0)
             .overlay(content: {
                 Color.black.opacity(0.2)

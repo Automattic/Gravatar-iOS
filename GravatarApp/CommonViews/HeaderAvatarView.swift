@@ -22,5 +22,6 @@ struct HeaderAvatarView<Placeholder>: View where Placeholder: View {
                     AnyView(EmptyView())
             }
         )
+        .allowsHitTesting(false)
     }
 }

@@ -24,7 +24,7 @@ struct ProfileEditorScrollableHeaderView: View {
     }
 
     func avatar() -> some View {
-        HeaderAvatarView(imageURL: imageURL, showLoading: false, forceRefresh: $forceRefresh) {
+        HeaderAvatarView(imageURL: imageURL, showLoading: true, forceRefresh: $forceRefresh) {
             EmptyView()
         }
         .frame(width: 105, height: 105)
@@ -36,10 +36,10 @@ struct ProfileEditorScrollableHeaderView: View {
         VStack(spacing: 0) {
             Text(profile.displayName).font(.title3).fontWeight(.semibold)
             if let profession = profile.professionFullDescription {
-                Text(profession).font(.subheadline).foregroundStyle(.secondary)
+                Text(profession).font(.subheadline).opacity(0.8)
             }
             if !profile.location.isEmpty {
-                Text(profile.location).font(.subheadline).foregroundStyle(.secondary)
+                Text(profile.location).font(.subheadline).opacity(0.8)
             }
         }
     }

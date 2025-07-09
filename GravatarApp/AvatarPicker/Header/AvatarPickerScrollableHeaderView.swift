@@ -21,7 +21,7 @@ struct AvatarPickerScrollableHeaderView: View {
     }
 
     func bigAvatar() -> some View {
-        HeaderAvatarView(imageURL: imageURL, showLoading: false, forceRefresh: $forceRefresh) {
+        HeaderAvatarView(imageURL: imageURL, showLoading: true, forceRefresh: $forceRefresh) {
             EmptyView()
         }
         .frame(width: 105, height: 105)
@@ -30,7 +30,7 @@ struct AvatarPickerScrollableHeaderView: View {
     }
 
     func smallAvatar() -> some View {
-        HeaderAvatarView(imageURL: imageURL, showLoading: false, forceRefresh: $forceRefresh) {
+        HeaderAvatarView(imageURL: imageURL, showLoading: true, forceRefresh: $forceRefresh) {
             EmptyView()
         }
         .frame(width: 49, height: 49)

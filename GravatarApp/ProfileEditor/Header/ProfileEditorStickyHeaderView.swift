@@ -28,7 +28,7 @@ struct ProfileEditorStickyHeaderView: View {
     }
 
     func avatar() -> some View {
-        HeaderAvatarView(imageURL: imageURL, showLoading: false, forceRefresh: $forceRefresh) {
+        HeaderAvatarView(imageURL: imageURL, showLoading: true, forceRefresh: $forceRefresh) {
             EmptyView()
         }
         .frame(width: 44, height: 44)

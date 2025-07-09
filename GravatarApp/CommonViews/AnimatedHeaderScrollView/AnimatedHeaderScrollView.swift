@@ -35,10 +35,9 @@ struct AnimatedHeaderScrollView<ContentView, ScrollableHeader, StickyHeader, Men
 
             stickyHeader(stickyHeaderOpacity, safeAreaInset)
                 .contentHeightReader($stickyHeaderHeight)
-                .allowsHitTesting(false)
                 .ignoresSafeArea(.container)
                 .if(animationBehavior == .automatic) { view in
-                    view.animation(.snappy(duration: 0.15), value: stickyHeaderOpacity)
+                    view.animation(.snappy(duration: 0.3), value: stickyHeaderOpacity)
                 }
 
             HStack {
