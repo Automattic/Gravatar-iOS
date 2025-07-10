@@ -10,8 +10,7 @@ struct AvatarPickerViewSnapshotTests {
     func emptyAvatarGrid() async throws {
         let viewModel = AvatarPickerViewModel(
             userSession: UserSession(profile: .testProfile, accessToken: "token", context: .testContext),
-            urlSession: URLSessionMock(),
-            disableAnimations: true
+            urlSession: URLSessionMock()
         )
         let view = AvatarPickerView(avatarPickerModel: viewModel, onLogout: {})
             .frame(width: ViewImageConfig.iPhone13Pro.size?.width ?? 0, height: ViewImageConfig.iPhone13Pro.size?.height ?? 0)
@@ -29,8 +28,7 @@ struct AvatarPickerViewSnapshotTests {
     func noAvatarSelected() async throws {
         let viewModel = AvatarPickerViewModel(
             userSession: UserSession(profile: .testProfile, accessToken: "token", context: .testContext),
-            urlSession: URLSessionMock(),
-            disableAnimations: true
+            urlSession: URLSessionMock()
         )
         await viewModel.fetchAvatars()
         if let selectedAvatar = viewModel.grid.selectedAvatar {
