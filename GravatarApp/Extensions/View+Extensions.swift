@@ -50,8 +50,7 @@ extension View {
     }
 
     func addToastContainer(manager: ToastManager) -> some View {
-        ZStack {
-            self
+        self.overlay {
             ToastContainerView(toastManager: manager)
                 .padding(.horizontal, 16)
         }
