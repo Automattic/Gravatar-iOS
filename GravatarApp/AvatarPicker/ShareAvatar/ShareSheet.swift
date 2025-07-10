@@ -18,7 +18,7 @@ struct ShareSheet: UIViewControllerRepresentable {
         return controller
     }
 
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
+    func updateUIViewController(_: UIViewController, context: Context) {
         // No need to update dynamically
     }
 }
