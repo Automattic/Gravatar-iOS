@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Use `ShareLink` after iOS 16+.
 struct ShareSheet: UIViewControllerRepresentable {
     let items: [Any]
     let activities: [UIActivity]? = nil
