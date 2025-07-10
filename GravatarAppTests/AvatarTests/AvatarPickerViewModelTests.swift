@@ -234,7 +234,7 @@ final class AvatarPickerViewModelTests {
             session.shouldSimulateNoNetworkConnection = false
             networkMonitor.isConnected = true
             // Make the clock tick!
-            try await Task.sleep(for: .milliseconds(10))
+            try await Task.sleep(for: .milliseconds(100))
         }
     }
 
