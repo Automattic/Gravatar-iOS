@@ -11,7 +11,7 @@ class AvatarPickerViewModel: ObservableObject {
 
     private var avatarSelectionTask: Task<AvatarDetails?, Never>?
 
-    @ObservedObject var toastManager: ToastManager = .init()
+    private let toastManager: ToastManager
 
     private var selectedAvatarResult: Result<String, Error>? {
         didSet {
@@ -43,7 +43,8 @@ class AvatarPickerViewModel: ObservableObject {
         avatarService: AvatarService? = nil,
         imageDownloader: ImageDownloader? = nil,
         networkMonitor: any NetworkMonitor = SystemNetworkMonitor.shared,
-        urlSession: URLSessionProtocol = GravatarURLSession.shared
+        urlSession: URLSessionProtocol = GravatarURLSession.shared,
+        toastManager: ToastManager = ToastManager()
     ) {
         self.userSession = userSession
         self.profileService = profileService ?? Gravatar.ProfileService(urlSession: urlSession)
@@ -51,6 +52,7 @@ class AvatarPickerViewModel: ObservableObject {
         self.imageDownloader = imageDownloader ?? ImageDownloadService(urlSession: urlSession)
         self.networkMonitor = networkMonitor
         self.profileHash = userSession.profile.hash
+        self.toastManager = toastManager
 
         setupCombine()
     }

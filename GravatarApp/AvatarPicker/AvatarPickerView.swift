@@ -63,7 +63,6 @@ struct AvatarPickerView: View {
                 }
             }
         }
-        .addToastContainer(manager: avatarPickerModel.toastManager)
         .avatarDeletionDialog(avatar: $avatarToDelete, deleteAction: { avatar in
             Task {
                 await avatarPickerModel.delete(avatar)

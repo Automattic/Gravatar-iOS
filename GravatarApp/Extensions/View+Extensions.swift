@@ -52,7 +52,6 @@ extension View {
     func addToastContainer(manager: ToastManager) -> some View {
         self.overlay {
             ToastContainerView(toastManager: manager)
-                .padding(.horizontal, 16)
         }
     }
 }

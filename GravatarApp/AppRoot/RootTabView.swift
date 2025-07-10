@@ -5,6 +5,7 @@ import SwiftUI
 struct RootTabView: View {
     @StateObject private var avatarPickerViewModel: AvatarPickerViewModel
     @StateObject private var editProfileViewModel: EditProfileViewModel
+    @StateObject private var toastManager: ToastManager
 
     let session: UserSession
 
@@ -14,23 +15,30 @@ struct RootTabView: View {
         self.session = userSession
         self.onLogout = onLogout
 
-        _avatarPickerViewModel = StateObject(wrappedValue: AvatarPickerViewModel(userSession: userSession))
+        let toastManager = ToastManager()
+        _toastManager = StateObject(wrappedValue: toastManager)
+
+        _avatarPickerViewModel = StateObject(wrappedValue: AvatarPickerViewModel(userSession: userSession, toastManager: toastManager))
         _editProfileViewModel = StateObject(wrappedValue: EditProfileViewModel(userSession: userSession))
     }
 
     var body: some View {
         TabView {
-            // MARK: - First tab
+            Group {
+                // MARK: - First tab
 
-            GravatarTab(avatarPickerViewModel: avatarPickerViewModel, onLogout: onLogout)
+                GravatarTab(avatarPickerViewModel: avatarPickerViewModel, onLogout: onLogout)
 
-            // MARK: - Second tab
+                // MARK: - Second tab
 
-            ProfileTab(editProfileViewModel: editProfileViewModel)
+                ProfileTab(editProfileViewModel: editProfileViewModel)
 
-            // MARK: - Third tab
+                // MARK: - Third tab
 
-            ShareTab()
+                ShareTab()
+            }
+            // Needed to be added inside the TabView for the toast to follow the bottom safe area guide.
+            .addToastContainer(manager: toastManager)
         }
         .environmentObject(session)
         .onAppear {
