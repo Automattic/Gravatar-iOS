@@ -11,11 +11,13 @@ struct ProfileEditContentView: View {
         static let footerFont: Font = .footnote
         static let textBackgroundColor: UIColor = .tertiarySystemFill
         static let fieldVerticalPadding: CGFloat = 10
+        static let focusedTextBorderColor: UIColor = .rgba(27, 78, 196)
     }
 
     @ObservedObject var viewModel: EditProfileViewModel
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
+    @FocusState private var focusedField: ProfileField?
 
     var body: some View {
         content()
@@ -64,32 +66,32 @@ struct ProfileEditContentView: View {
     @ViewBuilder
     private func personal() -> some View {
         inputField(
-            for: ProfileEditLocalization.displayName,
+            .displayName,
             value: $viewModel.fields.displayName
         )
         inputField(
-            for: ProfileEditLocalization.firstName,
+            .firstName,
             value: $viewModel.fields.firstName
         )
         inputField(
-            for: ProfileEditLocalization.lastName,
+            .lastName,
             value: $viewModel.fields.lastName
         )
         inputField(
-            for: ProfileEditLocalization.pronunciation,
+            .pronunciation,
             footerText: AttributedString(ProfileEditLocalization.pronunciationFooterText),
             value: $viewModel.fields.pronunciation
         )
         inputField(
-            for: ProfileEditLocalization.pronouns,
+            .pronouns,
             value: $viewModel.fields.pronouns
         )
         inputField(
-            for: ProfileEditLocalization.location,
+            .location,
             value: $viewModel.fields.location
         )
         inputField(
-            for: ProfileEditLocalization.aboutMe,
+            .aboutMe,
             footerText: AttributedString(ProfileEditLocalization.aboutMeFooterText),
             value: $viewModel.fields.aboutMe,
             isLarge: true
@@ -100,11 +102,11 @@ struct ProfileEditContentView: View {
     private func professional() -> some View {
         sectionHeader(title: ProfileEditLocalization.professionalSectionHeader)
         inputField(
-            for: ProfileEditLocalization.jobTitle,
+            .jobTitle,
             value: $viewModel.fields.jobTitle
         )
         inputField(
-            for: ProfileEditLocalization.company,
+            .company,
             value: $viewModel.fields.company
         )
     }
@@ -117,13 +119,13 @@ struct ProfileEditContentView: View {
     }
 
     private func inputField(
-        for title: String,
+        _ field: ProfileField,
         footerText: AttributedString? = nil,
         value: Binding<String>,
         isLarge: Bool = false
     ) -> some View {
         VStack(alignment: .leading, spacing: .DS.Padding.single) {
-            Text(title)
+            Text(field.localizedTitle)
                 .font(Constants.textTitleFont)
                 .multilineTextAlignment(.leading)
                 .accessibilityHidden(true)
@@ -134,11 +136,12 @@ struct ProfileEditContentView: View {
                     .padding(.horizontal, .DS.Padding.single)
                     .frame(height: dynamicTypeSize >= .accessibility1 ? 150 : 120)
                     .disabled(viewModel.isSaving)
-                    .accessibilityLabel(title)
+                    .accessibilityLabel(field.localizedTitle)
                     .padding(.vertical, 0)
                     .background(Color(uiColor: Constants.textBackgroundColor))
                     .scrollContentBackground(.hidden)
                     .cornerRadius(Constants.textInputCornerRadius)
+                    .focused($focusedField, equals: field)
             } else {
                 TextField(
                     "",
@@ -147,9 +150,10 @@ struct ProfileEditContentView: View {
                 .font(Constants.textInputFont)
                 .padding(.DS.Padding.split)
                 .disabled(viewModel.isSaving)
-                .accessibilityLabel(title)
+                .accessibilityLabel(field.localizedTitle)
                 .background(Color(uiColor: Constants.textBackgroundColor))
                 .cornerRadius(Constants.textInputCornerRadius)
+                .focused($focusedField, equals: field)
             }
 
             if let footerText {
