@@ -2,8 +2,7 @@ import SwiftUI
 
 struct SimpleMessageView: View {
     private enum Constants {
-        static let backgroundLight: UIColor = .label
-        static let backgroundDark: UIColor = .rgba(225, 225, 225)
+        static let backgroundColor = UIColor(light: .label, dark: .rgba(225, 225, 225))
     }
 
     @Environment(\.colorScheme) var colorScheme: ColorScheme
@@ -22,7 +21,7 @@ struct SimpleMessageView: View {
     }
 
     var backgroundColor: Color {
-        colorScheme == .dark ? Color(uiColor: Constants.backgroundDark) : Color(uiColor: Constants.backgroundLight)
+        Color(Constants.backgroundColor)
     }
 
     var foregroundColor: Color {
