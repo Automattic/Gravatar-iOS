@@ -11,6 +11,8 @@ class AvatarPickerViewModel: ObservableObject {
 
     private var avatarSelectionTask: Task<AvatarDetails?, Never>?
 
+    @ObservedObject var toastManager: ToastManager = .init()
+
     private var selectedAvatarResult: Result<String, Error>? {
         didSet {
             if selectedAvatarResult?.value() != nil {
@@ -340,6 +342,37 @@ class AvatarPickerViewModel: ObservableObject {
     private func handleUnrecoverableClientError(_ error: Error) {
         self.grid.setAvatars([])
         self.gridResponseStatus = .failure(error)
+    }
+}
+
+// MARK: - Download image to file
+
+extension AvatarPickerViewModel {
+    func fetchAndSaveToFile(avatar: AvatarImageModel) async -> URL? {
+        guard let image = await fetchOriginalSizeAvatar(for: avatar) else { return nil }
+        do {
+            return try image.saveToFile()
+        } catch {
+            toastManager.showToast(Localized.avatarShareFail, type: .error)
+        }
+        return nil
+    }
+
+    private func fetchOriginalSizeAvatar(for avatar: AvatarImageModel) async -> UIImage? {
+        guard let avatarURL = avatar.shareURL else { return nil }
+        do {
+            grid.setState(to: .loading, onAvatarWithID: avatar.id)
+            let result = try await imageDownloader.fetchImage(with: avatarURL, forceRefresh: false, processingMethod: .common())
+            grid.setState(to: .loaded, onAvatarWithID: avatar.id)
+            return result.image
+        } catch ImageFetchingError.responseError(reason: let reason) where reason.urlSessionErrorLocalizedDescription != nil {
+            grid.setState(to: .loaded, onAvatarWithID: avatar.id)
+            toastManager.showToast(reason.urlSessionErrorLocalizedDescription ?? Localized.avatarShareFail, type: .error)
+        } catch {
+            grid.setState(to: .loaded, onAvatarWithID: avatar.id)
+            toastManager.showToast(Localized.avatarShareFail, type: .error)
+        }
+        return nil
     }
 }
 

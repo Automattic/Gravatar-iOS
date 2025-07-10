@@ -8,6 +8,7 @@ struct AvatarPickerView: View {
 
     @State private var forceRefreshHeader: Bool = false
     @State private var avatarToDelete: AvatarImageModel?
+    @State private var shareSheetItem: AvatarShareItem?
 
     var headerAvatarURL: URL? {
         AvatarURL(
@@ -62,11 +63,13 @@ struct AvatarPickerView: View {
                 }
             }
         }
+        .addToastContainer(manager: avatarPickerModel.toastManager)
         .avatarDeletionDialog(avatar: $avatarToDelete, deleteAction: { avatar in
             Task {
                 await avatarPickerModel.delete(avatar)
             }
         })
+        .avatarShareSheet(item: $shareSheetItem)
     }
 
     func gridView() -> some View {
@@ -98,6 +101,12 @@ struct AvatarPickerView: View {
             }
         case .delete:
             avatarToDelete = avatar
+        case .share:
+            Task {
+                if let fileURL = await avatarPickerModel.fetchAndSaveToFile(avatar: avatar) {
+                    shareSheetItem = AvatarShareItem(id: avatar.id, fileURL: fileURL)
+                }
+            }
         default:
             print("Action not implemented")
         }

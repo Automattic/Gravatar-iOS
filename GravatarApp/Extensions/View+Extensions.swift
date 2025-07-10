@@ -48,4 +48,12 @@ extension View {
             .padding(.DS.Padding.split)
             .borders(colorScheme: colorScheme)
     }
+
+    func addToastContainer(manager: ToastManager) -> some View {
+        ZStack {
+            self
+            ToastContainerView(toastManager: manager)
+                .padding(.horizontal, 16)
+        }
+    }
 }
