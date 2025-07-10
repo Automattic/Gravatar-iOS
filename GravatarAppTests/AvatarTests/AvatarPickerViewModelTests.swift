@@ -161,7 +161,7 @@ final class AvatarPickerViewModelTests {
         #expect(model.grid.selectedAvatar != nil)
 
         await confirmation { confirmation in
-            model.$selectedAvatarURL.sink { url in
+            model.$selectedAvatarURL.dropFirst(1).sink { url in
                 #expect(url == nil)
                 confirmation.confirm()
             }.store(in: &cancellables)
