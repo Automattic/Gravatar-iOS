@@ -48,4 +48,10 @@ extension View {
             .padding(.DS.Padding.split)
             .borders(colorScheme: colorScheme)
     }
+
+    func addToastContainer(manager: ToastManager) -> some View {
+        self.overlay {
+            ToastContainerView(toastManager: manager)
+        }
+    }
 }

@@ -14,9 +14,9 @@ struct ToastContainerView: View {
             }
         }
         .frame(idealWidth: .infinity)
+        .padding(.horizontal, .DS.Padding.single)
+        .padding(.bottom, .DS.Padding.split)
         .animation(.spring(), value: toastManager.toasts)
-        .edgesIgnoringSafeArea(.bottom)
-        .padding(.bottom, .DS.Padding.half)
     }
 }
 

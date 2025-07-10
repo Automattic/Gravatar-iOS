@@ -69,6 +69,15 @@ struct AvatarImageModel: Hashable, Identifiable, Sendable {
 }
 
 extension AvatarImageModel {
+    var shareURL: URL? {
+        guard case .remote(let url) = source else {
+            return nil
+        }
+        return URLComponents(string: url)?.replacingQueryItem(name: "size", value: "max").url
+    }
+}
+
+extension AvatarImageModel {
     init(with avatar: AvatarDetails) {
         id = avatar.imageID
         let avatarGridItemSize = Int(.maxAvatarWidth * UITraitCollection.current.displayScale)

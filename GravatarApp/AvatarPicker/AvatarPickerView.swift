@@ -7,6 +7,7 @@ struct AvatarPickerView: View {
     let onLogout: () -> Void
 
     @State private var avatarToDelete: AvatarImageModel?
+    @State private var shareSheetItem: AvatarShareItem?
 
     var headerAvatarURL: URL? {
         AvatarURL(
@@ -66,6 +67,7 @@ struct AvatarPickerView: View {
                 await avatarPickerModel.delete(avatar)
             }
         })
+        .avatarShareSheet(item: $shareSheetItem)
     }
 
     func gridView() -> some View {
@@ -100,6 +102,12 @@ struct AvatarPickerView: View {
             }
         case .delete:
             avatarToDelete = avatar
+        case .share:
+            Task {
+                if let fileURL = await avatarPickerModel.fetchAndSaveToFile(avatar: avatar) {
+                    shareSheetItem = AvatarShareItem(id: avatar.id, fileURL: fileURL)
+                }
+            }
         default:
             print("Action not implemented")
         }
