@@ -32,7 +32,7 @@ class AvatarPickerViewModel: ObservableObject {
     @Published var profileHash: String
 
     @Published var shouldDisplayNoSelectedAvatarWarning: Bool = false
-
+    private(set) var connectivityRefreshTask: Task<Void, Never>? // for unit testing
     private var cancellables = Set<AnyCancellable>()
 
     init(
@@ -91,7 +91,7 @@ class AvatarPickerViewModel: ObservableObject {
 
         networkMonitor.hasNetworkConnection.dropFirst().sink { [weak self] newValue in
             if newValue && self?.gridResponseStatus?.error() != nil {
-                Task {
+                self?.connectivityRefreshTask = Task {
                     await self?.fetchAvatars()
                 }
             }

@@ -222,7 +222,7 @@ final class AvatarPickerViewModelTests {
 
         #expect(model.gridResponseStatus?.error() != nil)
 
-        try await confirmation(expectedCount: 1) { @MainActor confirmation in
+        await confirmation(expectedCount: 1) { @MainActor confirmation in
             model.$gridResponseStatus.dropFirst().sink { result in
                 #expect(result?.error() == nil)
                 #expect(result?.value() != nil)
@@ -232,8 +232,7 @@ final class AvatarPickerViewModelTests {
 
             session.shouldSimulateNoNetworkConnection = false
             networkMonitor.isConnected = true
-            // Make the clock tick!
-            try await Task.sleep(for: .milliseconds(100))
+            await model.connectivityRefreshTask?.value
         }
     }
 
