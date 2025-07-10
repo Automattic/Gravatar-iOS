@@ -5,6 +5,7 @@ import SwiftUI
 struct RootTabView: View {
     @StateObject private var avatarPickerViewModel: AvatarPickerViewModel
     @StateObject private var editProfileViewModel: EditProfileViewModel
+    @StateObject private var overlayManager = OverlayManager()
 
     let session: UserSession
 
@@ -19,26 +20,40 @@ struct RootTabView: View {
     }
 
     var body: some View {
-        TabView {
-            // MARK: - First tab
+        ZStack {
+            TabView {
+                // MARK: - First tab
 
-            GravatarTab(avatarPickerViewModel: avatarPickerViewModel, onLogout: onLogout)
+                GravatarTab(avatarPickerViewModel: avatarPickerViewModel, onLogout: onLogout)
 
-            // MARK: - Second tab
+                // MARK: - Second tab
 
-            ProfileTab(editProfileViewModel: editProfileViewModel)
+                ProfileTab(editProfileViewModel: editProfileViewModel)
 
-            // MARK: - Third tab
+                // MARK: - Third tab
 
-            ShareTab()
-        }
-        .environmentObject(session)
-        .onAppear {
-            Task {
-                await avatarPickerViewModel.fetchAvatars()
+                ShareTab()
             }
-        }
-        .transition(.opacity)
+            .environmentObject(session)
+            .environmentObject(overlayManager)
+            .onAppear {
+                Task {
+                    await avatarPickerViewModel.fetchAvatars()
+                }
+            }
+            .transition(.opacity)
+
+            if overlayManager.isPresented, let content = overlayManager.content {
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        overlayManager.dismiss()
+                    }
+                content
+                    .transition(.scale)
+                    .zIndex(100)
+            }
+        }.animation(.snappy, value: overlayManager.isPresented)
     }
 }
 

@@ -8,6 +8,9 @@ struct AvatarPickerView: View {
 
     @State private var forceRefreshHeader: Bool = false
     @State private var avatarToDelete: AvatarImageModel?
+    @State private var altTextAvatarEdit: AvatarImageModel?
+
+    @EnvironmentObject var overlayManaegr: OverlayManager
 
     var headerAvatarURL: URL? {
         AvatarURL(
@@ -67,6 +70,9 @@ struct AvatarPickerView: View {
                 await avatarPickerModel.delete(avatar)
             }
         })
+        .altTextEditor(avatarModel: $altTextAvatarEdit) { _ in
+            altTextAvatarEdit = nil
+        }
     }
 
     func gridView() -> some View {
@@ -98,6 +104,14 @@ struct AvatarPickerView: View {
             }
         case .delete:
             avatarToDelete = avatar
+        case .altText:
+            overlayManaegr.present {
+                AltTextEditorView(avatar: avatar) { _ in
+                    overlayManaegr.dismiss()
+                } onCancel: {
+                        overlayManaegr.dismiss()
+                }
+            }
         default:
             print("Action not implemented")
         }
