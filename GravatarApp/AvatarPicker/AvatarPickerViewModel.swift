@@ -195,9 +195,6 @@ class AvatarPickerViewModel: ObservableObject {
     }
 
     func delete(_ avatar: AvatarImageModel) async -> Bool {
-        defer {
-            selectedAvatarURL = grid.selectedAvatar?.url
-        }
         let previouslySelectedAvatar = grid.selectedAvatar
 
         let deletedIndex = withAnimation {
@@ -205,10 +202,6 @@ class AvatarPickerViewModel: ObservableObject {
         }
 
         guard let deletedIndex else { return false }
-
-        if selectedAvatarURL != grid.selectedAvatar?.url {
-            selectedAvatarURL = grid.selectedAvatar?.url
-        }
 
         return await postDeletion(
             of: avatar,
@@ -226,6 +219,7 @@ class AvatarPickerViewModel: ObservableObject {
     ) async -> Bool {
         do {
             try await avatarService.delete(imageID: avatar.id, accessToken: token)
+            selectedAvatarURL = grid.selectedAvatar?.url
             return true
         } catch APIError.responseError(let reason) where reason.httpStatusCode == 404 {
             return true // no-op. We delete a not-found avatar from the UI.
