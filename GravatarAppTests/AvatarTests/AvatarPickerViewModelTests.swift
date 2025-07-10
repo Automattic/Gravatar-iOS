@@ -130,7 +130,7 @@ final class AvatarPickerViewModelTests {
         let selectedAvatar = model.grid.selectedAvatar!
 
         await confirmation { confirmation in
-            model.$selectedAvatarURL.dropFirst(2).sink { url in
+            model.$selectedAvatarURL.dropFirst(1).sink { url in
                 #expect(url == nil)
                 confirmation.confirm()
             }.store(in: &cancellables)
@@ -222,7 +222,7 @@ final class AvatarPickerViewModelTests {
 
         #expect(model.gridResponseStatus?.error() != nil)
 
-        try await confirmation(expectedCount: 1) { @MainActor confirmation in
+        await confirmation(expectedCount: 1) { @MainActor confirmation in
             model.$gridResponseStatus.dropFirst().sink { result in
                 #expect(result?.error() == nil)
                 #expect(result?.value() != nil)
@@ -232,8 +232,7 @@ final class AvatarPickerViewModelTests {
 
             session.shouldSimulateNoNetworkConnection = false
             networkMonitor.isConnected = true
-            // Make the clock tick!
-            try await Task.sleep(for: .milliseconds(10))
+            await model.connectivityRefreshTask?.value
         }
     }
 

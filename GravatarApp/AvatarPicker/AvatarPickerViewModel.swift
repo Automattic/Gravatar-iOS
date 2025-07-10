@@ -34,7 +34,7 @@ class AvatarPickerViewModel: ObservableObject {
     @Published var profileHash: String
 
     @Published var shouldDisplayNoSelectedAvatarWarning: Bool = false
-
+    private(set) var connectivityRefreshTask: Task<Void, Never>? // for unit testing
     private var cancellables = Set<AnyCancellable>()
 
     init(
@@ -79,13 +79,23 @@ class AvatarPickerViewModel: ObservableObject {
                 selectedAvatarURL == nil && loadedAvatarCount > 0
             }
             .sink { [weak self] shouldShowWarning in
-                self?.shouldDisplayNoSelectedAvatarWarning = shouldShowWarning
+                withAnimation(.snappy) {
+                    self?.shouldDisplayNoSelectedAvatarWarning = shouldShowWarning
+                }
+            }
+            .store(in: &cancellables)
+
+        $selectedAvatarURL
+            .dropFirst()
+            .removeDuplicates()
+            .sink { [weak self] _ in
+                self?.forceRefreshAvatar = true
             }
             .store(in: &cancellables)
 
         networkMonitor.hasNetworkConnection.dropFirst().sink { [weak self] newValue in
             if newValue && self?.gridResponseStatus?.error() != nil {
-                Task {
+                self?.connectivityRefreshTask = Task {
                     await self?.fetchAvatars()
                 }
             }
@@ -191,9 +201,6 @@ class AvatarPickerViewModel: ObservableObject {
     }
 
     func delete(_ avatar: AvatarImageModel) async -> Bool {
-        defer {
-            selectedAvatarURL = grid.selectedAvatar?.url
-        }
         let previouslySelectedAvatar = grid.selectedAvatar
 
         let deletedIndex = withAnimation {
@@ -201,10 +208,6 @@ class AvatarPickerViewModel: ObservableObject {
         }
 
         guard let deletedIndex else { return false }
-
-        if selectedAvatarURL != grid.selectedAvatar?.url {
-            selectedAvatarURL = grid.selectedAvatar?.url
-        }
 
         return await postDeletion(
             of: avatar,
@@ -222,8 +225,10 @@ class AvatarPickerViewModel: ObservableObject {
     ) async -> Bool {
         do {
             try await avatarService.delete(imageID: avatar.id, accessToken: token)
+            selectedAvatarURL = grid.selectedAvatar?.url
             return true
         } catch APIError.responseError(let reason) where reason.httpStatusCode == 404 {
+            selectedAvatarURL = grid.selectedAvatar?.url
             return true // no-op. We delete a not-found avatar from the UI.
         } catch APIError.responseError(reason: let reason) where reason.urlSessionErrorLocalizedDescription != nil {
             handleError(message: reason.urlSessionErrorLocalizedDescription ?? Localized.avatarDeletionError)

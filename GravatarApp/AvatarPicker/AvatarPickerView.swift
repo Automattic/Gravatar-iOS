@@ -6,7 +6,6 @@ struct AvatarPickerView: View {
     @ObservedObject var avatarPickerModel: AvatarPickerViewModel
     let onLogout: () -> Void
 
-    @State private var forceRefreshHeader: Bool = false
     @State private var avatarToDelete: AvatarImageModel?
     @State private var shareSheetItem: AvatarShareItem?
 
@@ -23,14 +22,14 @@ struct AvatarPickerView: View {
                 AvatarPickerScrollableHeaderView(
                     topSafeArea: topSafeArea,
                     imageURL: headerAvatarURL,
-                    forceRefresh: $forceRefreshHeader
+                    forceRefresh: $avatarPickerModel.forceRefreshAvatar
                 )
             } stickyHeader: { opacity, safeAreaInsets in
                 AvatarPickerStickyHeaderView(
                     opacity: opacity,
                     safeAreaInsets: safeAreaInsets,
                     imageURL: headerAvatarURL,
-                    forceRefresh: $forceRefreshHeader
+                    forceRefresh: $avatarPickerModel.forceRefreshAvatar
                 )
             } content: {
                 Group {
@@ -72,13 +71,17 @@ struct AvatarPickerView: View {
     }
 
     func gridView() -> some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: .DS.Padding.split) {
             VStack(alignment: .leading, spacing: 0) {
-                Text("Previous avatars")
+                Text(Localized.avatarGridTitle)
                     .font(.headline)
-                Text("Tap for options")
+                Text(Localized.avatarGridSubtext)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
+            }
+            if avatarPickerModel.shouldDisplayNoSelectedAvatarWarning {
+                SimpleMessageView(message: Localized.noSelectedAvatar)
+                    .frame(idealWidth: .infinity)
             }
             AvatarGrid(
                 grid: avatarPickerModel.grid,
@@ -96,7 +99,6 @@ struct AvatarPickerView: View {
         case .select:
             Task {
                 _ = await avatarPickerModel.selectAvatar(with: avatar.id)
-                forceRefreshHeader = true
             }
         case .delete:
             avatarToDelete = avatar
@@ -120,6 +122,24 @@ struct AvatarPickerView: View {
                 await avatarPickerModel.retryUpload(of: avatarID)
             }
         }
+    }
+
+    enum Localized {
+        static let avatarGridTitle = NSLocalizedString(
+            "AvatarPicker.Grid.title",
+            value: "Previous avatars",
+            comment: "Title of the avatars grid"
+        )
+        static let avatarGridSubtext = NSLocalizedString(
+            "AvatarPicker.Grid.subtext",
+            value: "Tap for options",
+            comment: "A subtext that appears below the avatars grid title"
+        )
+        static let noSelectedAvatar = NSLocalizedString(
+            "AvatarPicker.Grid.NoSelectedAvatar",
+            value: "No avatar selected. Showing the default avatar.",
+            comment: "A warning message that appears above the avatars grid when there's no selected avatar."
+        )
     }
 }
 
