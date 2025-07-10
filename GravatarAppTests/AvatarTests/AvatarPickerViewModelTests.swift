@@ -23,7 +23,8 @@ final class AvatarPickerViewModelTests {
             profileService: ProfileService(urlSession: session),
             avatarService: AvatarService(urlSession: session),
             imageDownloader: imageDownloader,
-            networkMonitor: networkMonitor ?? TestNetworkMonitor()
+            networkMonitor: networkMonitor ?? TestNetworkMonitor(),
+            disableAnimations: true
         )
     }
 

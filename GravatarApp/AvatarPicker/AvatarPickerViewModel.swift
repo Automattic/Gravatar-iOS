@@ -34,6 +34,7 @@ class AvatarPickerViewModel: ObservableObject {
     @Published var shouldDisplayNoSelectedAvatarWarning: Bool = false
 
     private var cancellables = Set<AnyCancellable>()
+    private let disableAnimations: Bool
 
     init(
         userSession: UserSession,
@@ -41,7 +42,8 @@ class AvatarPickerViewModel: ObservableObject {
         avatarService: AvatarService? = nil,
         imageDownloader: ImageDownloader? = nil,
         networkMonitor: any NetworkMonitor = SystemNetworkMonitor.shared,
-        urlSession: URLSessionProtocol = GravatarURLSession.shared
+        urlSession: URLSessionProtocol = GravatarURLSession.shared,
+        disableAnimations: Bool = false
     ) {
         self.userSession = userSession
         self.profileService = profileService ?? Gravatar.ProfileService(urlSession: urlSession)
@@ -49,6 +51,7 @@ class AvatarPickerViewModel: ObservableObject {
         self.imageDownloader = imageDownloader ?? ImageDownloadService(urlSession: urlSession)
         self.networkMonitor = networkMonitor
         self.profileHash = userSession.profile.hash
+        self.disableAnimations = disableAnimations
 
         setupCombine()
     }
@@ -75,7 +78,10 @@ class AvatarPickerViewModel: ObservableObject {
                 selectedAvatarURL == nil && loadedAvatarCount > 0
             }
             .sink { [weak self] shouldShowWarning in
-                self?.shouldDisplayNoSelectedAvatarWarning = shouldShowWarning
+                guard let self else { return }
+                withAnimation(self.disableAnimations ? nil : .snappy) {
+                    self.shouldDisplayNoSelectedAvatarWarning = shouldShowWarning
+                }
             }
             .store(in: &cancellables)
 
@@ -137,7 +143,7 @@ class AvatarPickerViewModel: ObservableObject {
 
     func fetchAvatars() async {
         defer {
-            withAnimation(.smooth) {
+            withAnimation(self.disableAnimations ? nil : .smooth) {
                 isAvatarsLoading = false
             }
         }
@@ -148,7 +154,7 @@ class AvatarPickerViewModel: ObservableObject {
                 profileID: .hashID(userSession.profile.hash),
                 token: userSession.accessToken
             )
-            withAnimation(.smooth) {
+            withAnimation(self.disableAnimations ? nil : .smooth) {
                 grid.setAvatars(images.map(AvatarImageModel.init))
             }
             if let selectedAvatar = grid.selectedAvatar {
@@ -179,7 +185,7 @@ class AvatarPickerViewModel: ObservableObject {
                 accessToken: userSession.accessToken,
                 altText: altText
             )
-            withAnimation {
+            withAnimation(self.disableAnimations ? nil : .default) {
                 grid.replaceModel(withID: avatar.id, with: .init(with: updatedAvatar))
             }
             return true
@@ -197,7 +203,7 @@ class AvatarPickerViewModel: ObservableObject {
     func delete(_ avatar: AvatarImageModel) async -> Bool {
         let previouslySelectedAvatar = grid.selectedAvatar
 
-        let deletedIndex = withAnimation {
+        let deletedIndex = withAnimation(self.disableAnimations ? nil : .default) {
             grid.deleteModel(avatar.id)
         }
 
@@ -232,7 +238,7 @@ class AvatarPickerViewModel: ObservableObject {
         return false
 
         func handleError(message: String) {
-            withAnimation {
+            withAnimation(self.disableAnimations ? nil : .default) {
                 grid.insert(avatar, at: deletingAvatarIndex)
                 grid.selectAvatar(previouslySelectedAvatar)
                 selectedAvatarURL = previouslySelectedAvatar?.url
@@ -265,7 +271,7 @@ class AvatarPickerViewModel: ObservableObject {
     }
 
     func deleteFailed(_ id: String) {
-        withAnimation {
+        withAnimation(self.disableAnimations ? nil : .default) {
             _ = grid.deleteModel(id)
         }
     }
