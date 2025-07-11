@@ -24,4 +24,26 @@ struct ProfileEditContentViewTests {
             ]
         )
     }
+
+    @MainActor
+    @Test("Unsaved changes appear correctly")
+    func profileEditContentViewUnsavedChanges() async throws {
+        let editProfileViewModel: EditProfileViewModel = .init(
+            userSession: .init(profile: .full, accessToken: "testToken", context: .testContext),
+            urlSession: URLSessionMock()
+        )
+        let view = ProfileEditContentView(viewModel: editProfileViewModel)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(width: ViewImageConfig.iPhone13Pro.size?.width ?? 0)
+
+        editProfileViewModel.fields.displayName = "New Text"
+        editProfileViewModel.fields.aboutMe = "New Text"
+        assertSnapshots(
+            of: view,
+            as: [
+                .testStrategy(userInterfaceStyle: .light, layout: .sizeThatFits),
+                .testStrategy(userInterfaceStyle: .dark, layout: .sizeThatFits),
+            ]
+        )
+    }
 }
