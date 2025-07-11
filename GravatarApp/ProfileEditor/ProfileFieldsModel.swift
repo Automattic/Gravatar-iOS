@@ -48,6 +48,18 @@ class ProfileFieldsModel: ObservableObject {
         self.lastName = lastName
     }
 
+    func trimWhitespaces() {
+        displayName = displayName.trimmingCharacters(in: .whitespacesAndNewlines)
+        aboutMe = aboutMe.trimmingCharacters(in: .whitespacesAndNewlines)
+        pronunciation = pronunciation.trimmingCharacters(in: .whitespacesAndNewlines)
+        pronouns = pronouns.trimmingCharacters(in: .whitespacesAndNewlines)
+        location = location.trimmingCharacters(in: .whitespacesAndNewlines)
+        jobTitle = jobTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+        company = company.trimmingCharacters(in: .whitespacesAndNewlines)
+        firstName = firstName.trimmingCharacters(in: .whitespacesAndNewlines)
+        lastName = lastName.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     func updateRequest() -> UpdateProfileRequest {
         UpdateProfileRequest(
             firstName: firstName,

@@ -138,7 +138,7 @@ struct ProfileEditContentView: View {
                     .disabled(viewModel.isSaving)
                     .accessibilityLabel(field.localizedTitle)
                     .padding(.vertical, 0)
-                    .background(Color(uiColor: Constants.textBackgroundColor))
+                    .backgroundColor(field, value: value, viewModel: viewModel)
                     .scrollContentBackground(.hidden)
                     .cornerRadius(Constants.textInputCornerRadius)
                     .focused($focusedField, equals: field)
@@ -152,7 +152,7 @@ struct ProfileEditContentView: View {
                 .padding(.DS.Padding.split)
                 .disabled(viewModel.isSaving)
                 .accessibilityLabel(field.localizedTitle)
-                .background(Color(uiColor: Constants.textBackgroundColor))
+                .backgroundColor(field, value: value, viewModel: viewModel)
                 .cornerRadius(Constants.textInputCornerRadius)
                 .focused($focusedField, equals: field)
                 .focusedBorder(focusedField: $focusedField, field: field)
@@ -171,7 +171,6 @@ struct ProfileEditContentView: View {
 }
 
 extension View {
-    @ViewBuilder
     fileprivate func focusedBorder(
         focusedField: FocusState<ProfileField?>.Binding,
         field: ProfileField
@@ -181,6 +180,19 @@ extension View {
             borderColor: Color(uiColor: ProfileEditContentView.Constants.focusedTextBorderColor),
             borderWidth: focusedField.wrappedValue == field ? 2 : 0
         )
+    }
+
+    fileprivate func backgroundColor(
+        _ field: ProfileField,
+        value: Binding<String>,
+        viewModel: EditProfileViewModel
+    ) -> some View {
+        self
+            .background(
+                viewModel.hasUnsavedChanges(field, value: value) ?
+                    Color(uiColor: ProfileEditContentView.Constants.focusedTextBorderColor).opacity(0.1) :
+                    Color(uiColor: ProfileEditContentView.Constants.textBackgroundColor)
+            )
     }
 }
 

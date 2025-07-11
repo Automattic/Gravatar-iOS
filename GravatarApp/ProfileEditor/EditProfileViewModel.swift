@@ -45,6 +45,7 @@ class EditProfileViewModel: ObservableObject {
         }
         do {
             isSaving = true
+            fields.trimWhitespaces()
             let request = fields.updateRequest()
             let profile = try await profileService.updateProfile(with: request, token: userSession.accessToken)
             Task { @MainActor in
@@ -61,5 +62,28 @@ class EditProfileViewModel: ObservableObject {
             let profile = try await profileService.fetchOwnProfile(token: userSession.accessToken)
             userSession.updateProfile(profile)
         } catch {}
+    }
+
+    func hasUnsavedChanges(_ field: ProfileField, value: Binding<String>) -> Bool {
+        switch field {
+        case .displayName:
+            value.wrappedValue != userSession.profile.displayName
+        case .location:
+            value.wrappedValue != userSession.profile.location
+        case .company:
+            value.wrappedValue != userSession.profile.company
+        case .aboutMe:
+            value.wrappedValue != userSession.profile.description
+        case .firstName:
+            value.wrappedValue != (userSession.profile.firstName ?? "")
+        case .lastName:
+            value.wrappedValue != (userSession.profile.lastName ?? "")
+        case .pronouns:
+            value.wrappedValue != userSession.profile.pronouns
+        case .pronunciation:
+            value.wrappedValue != userSession.profile.pronunciation
+        case .jobTitle:
+            value.wrappedValue != userSession.profile.jobTitle
+        }
     }
 }
