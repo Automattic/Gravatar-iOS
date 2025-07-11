@@ -138,7 +138,7 @@ struct ProfileEditContentView: View {
                     .disabled(viewModel.isSaving)
                     .accessibilityLabel(field.localizedTitle)
                     .padding(.vertical, 0)
-                    .backgroundColor(field, value: value, viewModel: viewModel)
+                    .backgroundColor(field, value: value.wrappedValue, viewModel: viewModel)
                     .scrollContentBackground(.hidden)
                     .cornerRadius(Constants.textInputCornerRadius)
                     .focused($focusedField, equals: field)
@@ -152,7 +152,7 @@ struct ProfileEditContentView: View {
                 .padding(.DS.Padding.split)
                 .disabled(viewModel.isSaving)
                 .accessibilityLabel(field.localizedTitle)
-                .backgroundColor(field, value: value, viewModel: viewModel)
+                .backgroundColor(field, value: value.wrappedValue, viewModel: viewModel)
                 .cornerRadius(Constants.textInputCornerRadius)
                 .focused($focusedField, equals: field)
                 .focusedBorder(focusedField: $focusedField, field: field)
@@ -184,12 +184,12 @@ extension View {
 
     fileprivate func backgroundColor(
         _ field: ProfileField,
-        value: Binding<String>,
+        value: String,
         viewModel: EditProfileViewModel
     ) -> some View {
         self
             .background(
-                viewModel.hasUnsavedChanges(field, value: value) ?
+                viewModel.hasDifference(in: field) ?
                     Color(uiColor: ProfileEditContentView.Constants.focusedTextBorderColor).opacity(0.1) :
                     Color(uiColor: ProfileEditContentView.Constants.textBackgroundColor)
             )

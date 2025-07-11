@@ -13,8 +13,11 @@ final class EditProfileViewModelTests {
     func hasUnsavedChanges(field: ProfileField) async throws {
         let model = newModel()
         let initialValue = model.fields.value(for: field)
-        #expect(model.hasUnsavedChanges(field, value: .constant(initialValue ?? "")) == false, "No changes")
-        #expect(model.hasUnsavedChanges(field, value: .constant("\(initialValue ?? "")_edit")) == true, "There has to be unsaved changes")
+        #expect(model.hasDifference(in: field) == false, "No changes")
+        #expect(model.hasUnsavedChanges == false)
+        model.fields.setValue("\(initialValue)_edit", for: field)
+        #expect(model.hasDifference(in: field) == true, "There has to be unsaved changes")
+        #expect(model.hasUnsavedChanges == true)
     }
 
     @MainActor
@@ -40,52 +43,15 @@ final class EditProfileViewModelTests {
     }
 
     @MainActor
-    @Test("The whitespaces are trimmed before saving")
-    func whitespaceTrimBeforeSave() async throws {
-        let mockSession = ProfileSaveSessionMock()
-        let model = newModel(session: mockSession)
-        for field in ProfileField.allCases {
-            let initialValue = model.fields.value(for: field)
-            let newValue = " \n\t" + (initialValue ?? "") + " \n\t" // add some whitespaces
-            model.fields.setValue(newValue, for: field)
-        }
-        await model.save()
-
-        // get the request body
-        guard let body = mockSession.savedRequest?.httpBody,
-              let jsonObject = try? JSONSerialization.jsonObject(with: body, options: []) as? [String: Any]
-        else {
-            #expect(Bool(false), "request is empty")
-            return
-        }
-
-        // check if values are trimmed
-        for key in jsonObject.keys {
-            if let value = jsonObject[key] as? String {
-                #expect(value == value.trimmingCharacters(in: .whitespacesAndNewlines))
-            }
-        }
-    }
-
-    @MainActor
-    private func newModel(session: URLSessionProtocol = URLSessionMock()) -> EditProfileViewModel {
+    private func newModel(
+        userSession: UserSession? = nil,
+        session: URLSessionProtocol = URLSessionMock()
+    ) -> EditProfileViewModel {
         let model = EditProfileViewModel(
-            userSession: UserSession(profile: .full, accessToken: "token", context: .testContext),
+            userSession: userSession ?? UserSession(profile: .full, accessToken: "token", context: .testContext),
             urlSession: session,
             networkMonitor: TestNetworkMonitor()
         )
         return model
-    }
-}
-
-private class ProfileSaveSessionMock: URLSessionProtocol, @unchecked Sendable {
-    var savedRequest: URLRequest?
-    func data(for request: URLRequest) async throws -> (Data, URLResponse) {
-        savedRequest = request
-        return (Bundle.fullProfileJsonData, HTTPURLResponse.successResponse())
-    }
-
-    func upload(for request: URLRequest, from bodyData: Data) async throws -> (Data, URLResponse) {
-        (Bundle.postAvatarUploadJsonData, HTTPURLResponse.successResponse())
     }
 }

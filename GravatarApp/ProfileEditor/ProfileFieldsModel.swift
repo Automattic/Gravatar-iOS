@@ -48,18 +48,6 @@ class ProfileFieldsModel: ObservableObject {
         self.lastName = lastName
     }
 
-    func trimWhitespaces() {
-        displayName = displayName.trimmingCharacters(in: .whitespacesAndNewlines)
-        aboutMe = aboutMe.trimmingCharacters(in: .whitespacesAndNewlines)
-        pronunciation = pronunciation.trimmingCharacters(in: .whitespacesAndNewlines)
-        pronouns = pronouns.trimmingCharacters(in: .whitespacesAndNewlines)
-        location = location.trimmingCharacters(in: .whitespacesAndNewlines)
-        jobTitle = jobTitle.trimmingCharacters(in: .whitespacesAndNewlines)
-        company = company.trimmingCharacters(in: .whitespacesAndNewlines)
-        firstName = firstName.trimmingCharacters(in: .whitespacesAndNewlines)
-        lastName = lastName.trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
     func updateRequest() -> UpdateProfileRequest {
         UpdateProfileRequest(
             firstName: firstName,
@@ -74,38 +62,35 @@ class ProfileFieldsModel: ObservableObject {
         )
     }
 
-    func isEqual(to profile: Profile) -> Bool {
-        firstName == profile.firstName
-            && lastName == profile.lastName
-            && displayName == profile.displayName
-            && aboutMe == profile.description
-            && pronunciation == profile.pronunciation
-            && pronouns == profile.pronouns
-            && location == profile.location
-            && jobTitle == profile.jobTitle
-            && company == profile.company
+    func hasDifference(comparedTo profile: Profile) -> Bool {
+        for field in ProfileField.allCases {
+            if hasDifference(in: field, comparedTo: profile) {
+                return true
+            }
+        }
+        return false
     }
 
-    func value(for field: ProfileField) -> String? {
+    func hasDifference(in field: ProfileField, comparedTo profile: Profile) -> Bool {
         switch field {
         case .displayName:
-            displayName
-        case .aboutMe:
-            aboutMe
-        case .pronunciation:
-            pronunciation
-        case .pronouns:
-            pronouns
+            displayName != profile.displayName
         case .location:
-            location
-        case .firstName:
-            firstName
-        case .lastName:
-            lastName
+            location != profile.location
         case .company:
-            company
+            company != profile.company
+        case .aboutMe:
+            aboutMe != profile.description
+        case .firstName:
+            firstName != (profile.firstName ?? "")
+        case .lastName:
+            lastName != (profile.lastName ?? "")
+        case .pronouns:
+            pronouns != profile.pronouns
+        case .pronunciation:
+            pronunciation != profile.pronunciation
         case .jobTitle:
-            jobTitle
+            jobTitle != profile.jobTitle
         }
     }
 
@@ -129,6 +114,29 @@ class ProfileFieldsModel: ObservableObject {
             company = value
         case .jobTitle:
             jobTitle = value
+        }
+    }
+
+    func value(for field: ProfileField) -> String {
+        switch field {
+        case .displayName:
+            displayName
+        case .aboutMe:
+            aboutMe
+        case .pronunciation:
+            pronunciation
+        case .pronouns:
+            pronouns
+        case .location:
+            location
+        case .firstName:
+            firstName
+        case .lastName:
+            lastName
+        case .company:
+            company
+        case .jobTitle:
+            jobTitle
         }
     }
 }
