@@ -85,4 +85,50 @@ class ProfileFieldsModel: ObservableObject {
             && jobTitle == profile.jobTitle
             && company == profile.company
     }
+
+    func value(for field: ProfileField) -> String? {
+        switch field {
+        case .displayName:
+            displayName
+        case .aboutMe:
+            aboutMe
+        case .pronunciation:
+            pronunciation
+        case .pronouns:
+            pronouns
+        case .location:
+            location
+        case .firstName:
+            firstName
+        case .lastName:
+            lastName
+        case .company:
+            company
+        case .jobTitle:
+            jobTitle
+        }
+    }
+
+    func setValue(_ value: String, for field: ProfileField) {
+        switch field {
+        case .displayName:
+            displayName = value
+        case .aboutMe:
+            aboutMe = value
+        case .pronunciation:
+            pronunciation = value
+        case .pronouns:
+            pronouns = value
+        case .location:
+            location = value
+        case .firstName:
+            firstName = value
+        case .lastName:
+            lastName = value
+        case .company:
+            company = value
+        case .jobTitle:
+            jobTitle = value
+        }
+    }
 }
