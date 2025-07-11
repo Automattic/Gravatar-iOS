@@ -11,25 +11,46 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
     let stickyHeader: (CGFloat, EdgeInsets) -> StickyHeader
     let content: () -> ContentView
     let buttonMenuItems: () -> MenuItems
+    let onRefresh: () async -> Void
+
+    private let refreshOffsetThreshold: CGFloat = 80
 
     @State private var scrollableHeaderHeight: CGFloat = 0
     @State private var stickyHeaderHeight: CGFloat = 0
 
     @State private var scrollOffset: CGFloat = 0
     @State private var safeAreaInset: EdgeInsets = .init()
+    @State private var isRefreshing: Bool = false
+    // Force to release the scroll bounce before another refresh can be triggered
+    @State private var canRefreshAgain: Bool = true
+
+    private func loadingViewEffectValue(nominal: CGFloat, progressRatio: CGFloat) -> CGFloat {
+        isRefreshing ? nominal : (canRefreshAgain && scrollOffset > 0 ? scrollOffset / progressRatio : 0)
+    }
 
     var body: some View {
         ZStack(alignment: .top) {
             ScrollView {
                 OffsetReaderView(scrollOffset: $scrollOffset)
                 VStack(alignment: .center) {
-                    scrollableHeader(safeAreaInset.top)
+                    scrollableHeader(safeAreaInset.top + (isRefreshing ? 44 : 0))
                         .contentHeightReader($scrollableHeaderHeight)
                         .ignoresSafeArea(.container, edges: .horizontal)
                     content()
                 }
             }
+            .animation(.snappy, value: isRefreshing)
             .ignoresSafeArea(.container, edges: .top)
+            .safeAreaInset(edge: .top) {
+                RefreshControl(
+                    animated: isRefreshing,
+                    opacity: loadingViewEffectValue(nominal: 1, progressRatio: refreshOffsetThreshold)
+                )
+                .scaleEffect(loadingViewEffectValue(nominal: 0.7, progressRatio: 80))
+                .rotationEffect(.radians(loadingViewEffectValue(nominal: 0, progressRatio: 20)))
+                .animation(.interpolatingSpring, value: isRefreshing)
+
+            }
 
             stickyHeader(stickyHeaderOpacity, safeAreaInset)
                 .contentHeightReader($stickyHeaderHeight)
@@ -58,6 +79,26 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
                     safeAreaInset = geo.safeAreaInsets
                 }
         })
+        .onChange(of: scrollOffset) { _, newValue in
+            if canRefreshAgain == false, newValue <= 0 {
+                canRefreshAgain = true
+            }
+            guard isRefreshing == false, canRefreshAgain == true else { return }
+            isRefreshing = newValue > refreshOffsetThreshold
+        }
+        .onChange(of: isRefreshing) { oldValue, newValue in
+            if oldValue == false && newValue && canRefreshAgain {
+                canRefreshAgain = false
+                Task {
+                    await doRefresh()
+                }
+            }
+        }
+    }
+
+    func doRefresh() async {
+        await onRefresh()
+        isRefreshing = false
     }
 
     private var stickyHeaderOpacity: Double {
@@ -115,6 +156,8 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
             systemImage: "iphone.and.arrow.forward.outward",
             role: .destructive
         ) {}
+    } onRefresh: {
+        try? await Task.sleep(for: .seconds(2))
     }
 }
 
@@ -153,6 +196,8 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
             systemImage: "iphone.and.arrow.forward.outward",
             role: .destructive
         ) {}
+    } onRefresh: {
+        try? await Task.sleep(for: .seconds(2))
     }
 }
 #endif

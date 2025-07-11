@@ -39,6 +39,8 @@ struct ProfileEditorView: View {
                     role: .destructive
                 ) {}
             }
+        } onRefresh: {
+            await viewModel.fetchProfile()
         }
     }
 }

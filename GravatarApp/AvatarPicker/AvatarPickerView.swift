@@ -37,7 +37,7 @@ struct AvatarPickerView: View {
                         // TODO: Temporally render error message for development puposes.
                         Text(String(describing: error))
                     }
-                    if avatarPickerModel.isAvatarsLoading {
+                    if avatarPickerModel.grid.isEmpty && avatarPickerModel.isAvatarsLoading {
                         ProgressView()
                             .padding()
                         Spacer()
@@ -60,6 +60,8 @@ struct AvatarPickerView: View {
                 ) {
                     onLogout()
                 }
+            } onRefresh: {
+                await avatarPickerModel.refresh()
             }
         }
         .avatarDeletionDialog(avatar: $avatarToDelete, deleteAction: { avatar in
