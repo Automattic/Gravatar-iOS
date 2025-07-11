@@ -36,9 +36,6 @@ struct BouncyImageBackgroundHeaderView<Content>: View where Content: View {
                 VStack {
                     Spacer()
                     content()
-//                        .if(topSafeArea == 0, transform: { view in
-//                            view.padding(.top)
-//                        })
                         .padding(.bottom)
                         .contentHeightReader($contentHeight)
                 }
