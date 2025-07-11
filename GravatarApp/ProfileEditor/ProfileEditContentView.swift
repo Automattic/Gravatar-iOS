@@ -3,7 +3,7 @@ import Gravatar
 import SwiftUI
 
 struct ProfileEditContentView: View {
-    private enum Constants {
+    fileprivate enum Constants {
         static let textTitleFont: Font = .callout
         static let textInputFont: Font = .body
         static let textInputCornerRadius: CGFloat = 8
@@ -142,6 +142,7 @@ struct ProfileEditContentView: View {
                     .scrollContentBackground(.hidden)
                     .cornerRadius(Constants.textInputCornerRadius)
                     .focused($focusedField, equals: field)
+                    .focusedBorder(focusedField: $focusedField, field: field)
             } else {
                 TextField(
                     "",
@@ -154,6 +155,7 @@ struct ProfileEditContentView: View {
                 .background(Color(uiColor: Constants.textBackgroundColor))
                 .cornerRadius(Constants.textInputCornerRadius)
                 .focused($focusedField, equals: field)
+                .focusedBorder(focusedField: $focusedField, field: field)
             }
 
             if let footerText {
@@ -169,11 +171,15 @@ struct ProfileEditContentView: View {
 }
 
 extension View {
-    private func inputBorders(colorScheme: ColorScheme) -> some View {
+    @ViewBuilder
+    fileprivate func focusedBorder(
+        focusedField: FocusState<ProfileField?>.Binding,
+        field: ProfileField
+    ) -> some View {
         self.shape(
-            RoundedRectangle(cornerRadius: 2),
-            borderColor: Color(uiColor: .label).opacity(colorScheme == .dark ? 0.30 : 0.15),
-            borderWidth: 1
+            RoundedRectangle(cornerRadius: ProfileEditContentView.Constants.textInputCornerRadius),
+            borderColor: Color(uiColor: ProfileEditContentView.Constants.focusedTextBorderColor),
+            borderWidth: focusedField.wrappedValue == field ? 2 : 0
         )
     }
 }
