@@ -7,7 +7,7 @@ struct AvatarPickerStickyHeaderView: View {
     @Binding var forceRefresh: Bool
 
     var body: some View {
-        BouncyImageBackgroundHeaderView(topSafeArea: safeAreaInsets.top, imageURL: imageURL, forceRefresh: $forceRefresh) {
+        BouncyImageBackgroundHeaderView(topPadding: safeAreaInsets.top, imageURL: imageURL, forceRefresh: $forceRefresh) {
             HStack(alignment: .center) {
                 bigAvatar()
 

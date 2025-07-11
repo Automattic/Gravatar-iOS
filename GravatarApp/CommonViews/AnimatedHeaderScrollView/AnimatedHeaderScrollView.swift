@@ -14,6 +14,7 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
     let onRefresh: () async -> Void
 
     private let refreshOffsetThreshold: CGFloat = 80
+    private let defaultTopPadding: CGFloat = .DS.Padding.double
 
     @State private var scrollableHeaderHeight: CGFloat = 0
     @State private var stickyHeaderHeight: CGFloat = 0
@@ -28,12 +29,16 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
         isRefreshing ? nominal : (canRefreshAgain && scrollOffset > 0 ? scrollOffset / progressRatio : 0)
     }
 
+    private var scrollableHeaderTopPadding: CGFloat {
+        (safeAreaInset.top == 0 ? defaultTopPadding : safeAreaInset.top) + (isRefreshing ? 44 : 0)
+    }
+
     var body: some View {
         ZStack(alignment: .top) {
             ScrollView {
                 OffsetReaderView(scrollOffset: $scrollOffset)
                 VStack(alignment: .center) {
-                    scrollableHeader(safeAreaInset.top + (isRefreshing ? 44 : 0))
+                    scrollableHeader(scrollableHeaderTopPadding)
                         .contentHeightReader($scrollableHeaderHeight)
                         .ignoresSafeArea(.container, edges: .horizontal)
                     content()
@@ -49,6 +54,7 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
                 .scaleEffect(loadingViewEffectValue(nominal: 0.7, progressRatio: 80))
                 .rotationEffect(.radians(loadingViewEffectValue(nominal: 0, progressRatio: 20)))
                 .animation(.interpolatingSpring, value: isRefreshing)
+                .padding(.top, safeAreaInset.top == 0 ? defaultTopPadding : 0)
             }
 
             stickyHeader(stickyHeaderOpacity, safeAreaInset)
@@ -66,7 +72,7 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
                     EllipsisButton(action: {})
                 }
             }
-            .padding(.top, safeAreaInset.top == 0 ? 16 : 0)
+            .padding(.top, safeAreaInset.top == 0 ? defaultTopPadding : 0)
             .padding(.trailing, safeAreaInset.trailing == 0 ? 16 : 0)
         }
         .background(GeometryReader { geo in
@@ -126,9 +132,9 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
 #Preview("Avatar Picker Header") {
     let imageURL = URL(string: "https://1.gravatar.com/avatar/1?size=256")
 
-    AnimatedHeaderScrollView(animationBehavior: .automatic) { topSafeArea in
+    AnimatedHeaderScrollView(animationBehavior: .automatic) { topPadding in
         AvatarPickerScrollableHeaderView(
-            topSafeArea: topSafeArea,
+            topPadding: topPadding,
             imageURL: imageURL,
             forceRefresh: .constant(false)
         )
@@ -164,10 +170,10 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
 #Preview("Profile editor Header") {
     let imageURL = URL(string: "https://1.gravatar.com/avatar/1?size=256")
 
-    AnimatedHeaderScrollView(animationBehavior: .interactive) { topSafeArea in
+    AnimatedHeaderScrollView(animationBehavior: .interactive) { topPadding in
         ProfileEditorScrollableHeaderView(
             profile: .testProfile,
-            topSafeArea: topSafeArea,
+            topPadding: topPadding,
             imageURL: imageURL,
             forceRefresh: .constant(false)
         )

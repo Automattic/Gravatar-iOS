@@ -2,7 +2,7 @@ import GravatarUI
 import SwiftUI
 
 struct BouncyImageBackgroundHeaderView<Content>: View where Content: View {
-    let topSafeArea: CGFloat
+    let topPadding: CGFloat
     let imageURL: URL?
     @Binding var forceRefresh: Bool
 
@@ -11,7 +11,7 @@ struct BouncyImageBackgroundHeaderView<Content>: View where Content: View {
     @State private var contentHeight: CGFloat = 0
 
     private var viewHeight: CGFloat {
-        contentHeight + topSafeArea
+        contentHeight + topPadding
     }
 
     var body: some View {
@@ -36,9 +36,9 @@ struct BouncyImageBackgroundHeaderView<Content>: View where Content: View {
                 VStack {
                     Spacer()
                     content()
-                        .if(topSafeArea == 0, transform: { view in
-                            view.padding(.top)
-                        })
+//                        .if(topSafeArea == 0, transform: { view in
+//                            view.padding(.top)
+//                        })
                         .padding(.bottom)
                         .contentHeightReader($contentHeight)
                 }
@@ -56,7 +56,7 @@ struct BouncyImageBackgroundHeaderView<Content>: View where Content: View {
     GeometryReader { geo in
         ScrollView {
             BouncyImageBackgroundHeaderView(
-                topSafeArea: geo.safeAreaInsets.top,
+                topPadding: geo.safeAreaInsets.top,
                 imageURL: imageURL,
                 forceRefresh: .constant(false)
             ) {

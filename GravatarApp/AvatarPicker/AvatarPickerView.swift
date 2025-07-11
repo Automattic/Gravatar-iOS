@@ -18,9 +18,9 @@ struct AvatarPickerView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            AnimatedHeaderScrollView(animationBehavior: .automatic) { topSafeArea in
+            AnimatedHeaderScrollView(animationBehavior: .automatic) { topPadding in
                 AvatarPickerScrollableHeaderView(
-                    topSafeArea: topSafeArea,
+                    topPadding: topPadding,
                     imageURL: headerAvatarURL,
                     forceRefresh: $avatarPickerModel.forceRefreshAvatar
                 )

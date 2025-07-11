@@ -3,13 +3,13 @@ import SwiftUI
 
 struct ProfileEditorScrollableHeaderView: View {
     let profile: Profile
-    let topSafeArea: CGFloat
+    let topPadding: CGFloat
     let imageURL: URL?
     @Binding var forceRefresh: Bool
 
     var body: some View {
         BouncyImageBackgroundHeaderView(
-            topSafeArea: topSafeArea,
+            topPadding: topPadding,
             imageURL: imageURL,
             forceRefresh: $forceRefresh
         ) {
@@ -69,7 +69,7 @@ struct ProfileEditorScrollableHeaderView: View {
         VStack {
             ProfileEditorScrollableHeaderView(
                 profile: .testProfile,
-                topSafeArea: geo.safeAreaInsets.top,
+                topPadding: geo.safeAreaInsets.top,
                 imageURL: imageURL,
                 forceRefresh: .constant(false)
             )
