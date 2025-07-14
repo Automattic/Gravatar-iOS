@@ -6,6 +6,7 @@ import SwiftUI
 class EditProfileViewModel: ObservableObject {
     private let profileService: ProfileService
     let userSession: UserSession
+    private let toastManager: ToastManager
     private var cancellables = Set<AnyCancellable>()
 
     @Published var isSaving: Bool = false
@@ -21,6 +22,7 @@ class EditProfileViewModel: ObservableObject {
 
     init(
         userSession: UserSession,
+        toastManager: ToastManager = ToastManager(),
         urlSession: URLSessionProtocol = GravatarURLSession.shared,
         networkMonitor: any NetworkMonitor = SystemNetworkMonitor.shared
     ) {
@@ -28,6 +30,7 @@ class EditProfileViewModel: ObservableObject {
         self.profileService = .init(urlSession: urlSession)
 
         self.fields = .init(profile: userSession.profile)
+        self.toastManager = toastManager
 
         setupCombine()
     }
@@ -50,9 +53,12 @@ class EditProfileViewModel: ObservableObject {
             Task { @MainActor in
                 userSession.updateProfile(profile)
             }
-            // TODO: Show success toast
+            toastManager.showToast(ProfileEditLocalization.profileSavedSuccessMessage)
+        } catch APIError.responseError(reason: let reason) {
+            let message = reason.urlSessionErrorLocalizedDescription ?? ProfileEditLocalization.profileSavedErrorMessage
+            toastManager.showToast(message, type: .error)
         } catch {
-            // TODO: Show error toast
+            toastManager.showToast(ProfileEditLocalization.profileSavedErrorMessage, type: .error)
         }
     }
 

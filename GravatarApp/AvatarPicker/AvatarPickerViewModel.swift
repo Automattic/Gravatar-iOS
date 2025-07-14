@@ -132,11 +132,13 @@ class AvatarPickerViewModel: ObservableObject {
             )
             grid.replaceModel(withID: avatarID, with: .init(with: selectedAvatar))
             selectedAvatarResult = .success(selectedAvatar.imageID)
+            toastManager.showToast(Localized.avatarUpdateSuccess)
             return selectedAvatar
         } catch APIError.responseError(let reason) where reason.cancelled {
             // NoOp.
         } catch {
             grid.selectAvatar(withID: selectedAvatarResult?.value())
+            showToast(for: error, fallbackText: Localized.avatarUpdateFail)
         }
         return nil
     }
@@ -164,6 +166,7 @@ class AvatarPickerViewModel: ObservableObject {
             gridResponseStatus = .success(())
         } catch {
             gridResponseStatus = .failure(error)
+            showToast(for: error, fallbackText: <#T##String#>)
         }
     }
 
@@ -238,6 +241,7 @@ class AvatarPickerViewModel: ObservableObject {
         return false
 
         func handleError(message: String) {
+            toastManager.showToast(message, type: .error)
             withAnimation {
                 grid.insert(avatar, at: deletingAvatarIndex)
                 grid.selectAvatar(previouslySelectedAvatar)
@@ -350,6 +354,16 @@ class AvatarPickerViewModel: ObservableObject {
         self.grid.setAvatars([])
         self.gridResponseStatus = .failure(error)
     }
+
+    func showToast(for error: Error, fallbackText: String) {
+        let message: String = switch error {
+        case APIError.responseError(reason: let reason):
+            reason.urlSessionErrorLocalizedDescription ?? fallbackText
+        default:
+            fallbackText
+        }
+        toastManager.showToast(message, type: .error)
+    }
 }
 
 // MARK: - Download image to file
@@ -404,11 +418,6 @@ extension AvatarPickerViewModel {
             "AvatarPickerViewModel.Update.Fail",
             value: "Oops, something didn't quite work out while trying to change your avatar.",
             comment: "This error message shows when the user attempts to pick a different avatar and fails."
-        )
-        static let profileUpdateFail = NSLocalizedString(
-            "Profile.Update.Fail",
-            value: "Oops, something didn't quite work out while trying to update your profile.",
-            comment: "This error message shows when the user attempts to update fields of their profile and it fails."
         )
         static let imageTooBigError = NSLocalizedString(
             "AvatarPicker.Upload.Error.ImageTooBig.Error",
