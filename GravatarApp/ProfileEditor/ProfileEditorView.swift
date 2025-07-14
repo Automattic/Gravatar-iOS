@@ -42,6 +42,70 @@ struct ProfileEditorView: View {
         } onRefresh: {
             await viewModel.fetchProfile()
         }
+        .safeAreaInset(edge: .bottom, alignment: .center, spacing: nil) {
+            Group {
+                if viewModel.hasUnsavedChanges {
+                    SaveToolbar(viewModel: viewModel)
+                } else {
+                    Spacer().frame(height: 80)
+                }
+            }.animation(.smooth(duration: 0.3), value: viewModel.hasUnsavedChanges)
+        }
+    }
+}
+
+struct SaveToolbar: View {
+    @ObservedObject var viewModel: EditProfileViewModel
+
+    var body: some View {
+        HStack {
+            if viewModel.isSaving {
+                Text("Unsaved changes").font(.headline)
+                Spacer()
+            } else {
+                Text("Unsaved changes").font(.headline)
+                Spacer()
+                Button {
+                    Task {
+                        await viewModel.save()
+                    }
+                } label: {
+                    Text("Cancel")
+                }
+                .buttonStyle(ActionButtonStyle(style: .secondary))
+
+                Button {
+
+                } label: {
+                    Text("Save")
+                }
+                .environment(\.colorScheme, .light)
+                .buttonStyle(ActionButtonStyle(style: .primary))
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(Color.DS.bluishColor)
+        .transition(.move(edge: .bottom))
+        .environment(\.colorScheme, .dark)
+    }
+}
+
+struct ActionButtonStyle: ButtonStyle {
+    enum Style {
+        case primary
+        case secondary
+    }
+    let style: Style
+
+    func makeBody(configuration: ButtonStyle.Configuration) -> some View {
+        configuration.label
+            .font(.subheadline)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 12)
+            .background(style == .primary ? Color.primary: Color(uiColor: .quaternaryLabel))
+            .foregroundStyle(style == .primary ? Color(uiColor: .systemBackground) : Color.primary)
+            .clipShape(.capsule)
     }
 }
 
@@ -52,5 +116,18 @@ struct ProfileEditorView: View {
             userSession: UserSession(profile: .testProfile, accessToken: "", context: .testContext)
         )
     )
+}
+
+#Preview("With TabBar") {
+    TabView {
+        ProfileEditorView(
+            viewModel: .init(
+                userSession: UserSession(profile: .testProfile, accessToken: "", context: .testContext)
+            )
+        )
+        .tabItem {
+            Label("Profile", systemImage: "brain.filled.head.profile")
+        }
+    }
 }
 #endif
