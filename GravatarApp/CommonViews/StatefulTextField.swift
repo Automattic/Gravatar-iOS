@@ -23,6 +23,9 @@ struct StatefulTextField: View {
     let isDisabled: () -> Bool
     /// If the text has unsaved changes
     let hasUnsavedChanges: () -> Bool
+    /// To mock the focused state for unit testing
+    var forceFocusedState: Bool = false
+
     @FocusState private var isFocused: Bool
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
@@ -41,7 +44,7 @@ struct StatefulTextField: View {
                 .scrollContentBackground(.hidden)
                 .cornerRadius(Constants.textInputCornerRadius)
                 .focused($isFocused)
-                .focusedBorder(isFocused: isFocused)
+                .focusedBorder(isFocused: shouldShowFocusedBorder)
                 .focusedValue(\.focusedField, isFocused ? fieldIdentifier : nil)
         } else {
             TextField(
@@ -55,9 +58,13 @@ struct StatefulTextField: View {
             .backgroundColor(hasUsavedChanges: hasUnsavedChanges())
             .cornerRadius(Constants.textInputCornerRadius)
             .focused($isFocused)
-            .focusedBorder(isFocused: isFocused)
+            .focusedBorder(isFocused: shouldShowFocusedBorder)
             .focusedValue(\.focusedField, isFocused ? fieldIdentifier : nil)
         }
+    }
+
+    private var shouldShowFocusedBorder: Bool {
+        isFocused || forceFocusedState
     }
 }
 
