@@ -18,9 +18,9 @@ struct AvatarPickerView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            AnimatedHeaderScrollView(animationBehavior: .automatic) { topSafeArea in
+            AnimatedHeaderScrollView(animationBehavior: .automatic) { topPadding in
                 AvatarPickerScrollableHeaderView(
-                    topSafeArea: topSafeArea,
+                    topPadding: topPadding,
                     imageURL: headerAvatarURL,
                     forceRefresh: $avatarPickerModel.forceRefreshAvatar
                 )
@@ -37,7 +37,7 @@ struct AvatarPickerView: View {
                         // TODO: Temporally render error message for development puposes.
                         Text(String(describing: error))
                     }
-                    if avatarPickerModel.isAvatarsLoading {
+                    if avatarPickerModel.grid.isEmpty && avatarPickerModel.isAvatarsLoading {
                         ProgressView()
                             .padding()
                         Spacer()
@@ -60,6 +60,8 @@ struct AvatarPickerView: View {
                 ) {
                     onLogout()
                 }
+            } onRefresh: {
+                await avatarPickerModel.refresh()
             }
         }
         .avatarDeletionDialog(avatar: $avatarToDelete, deleteAction: { avatar in

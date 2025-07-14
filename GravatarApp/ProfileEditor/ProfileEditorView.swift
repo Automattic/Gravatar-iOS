@@ -14,10 +14,10 @@ struct ProfileEditorView: View {
     }
 
     var body: some View {
-        AnimatedHeaderScrollView(animationBehavior: .interactive) { topSafeArea in
+        AnimatedHeaderScrollView(animationBehavior: .interactive) { topPadding in
             ProfileEditorScrollableHeaderView(
                 profile: viewModel.userSession.profile,
-                topSafeArea: topSafeArea,
+                topPadding: topPadding,
                 imageURL: headerAvatarURL,
                 forceRefresh: $forceRefresh
             )
@@ -39,6 +39,8 @@ struct ProfileEditorView: View {
                     role: .destructive
                 ) {}
             }
+        } onRefresh: {
+            await viewModel.fetchProfile()
         }
     }
 }

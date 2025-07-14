@@ -1,13 +1,13 @@
 import SwiftUI
 
 struct AvatarPickerScrollableHeaderView: View {
-    let topSafeArea: CGFloat
+    let topPadding: CGFloat
     let imageURL: URL?
     @Binding var forceRefresh: Bool
 
     var body: some View {
         BouncyImageBackgroundHeaderView(
-            topSafeArea: topSafeArea,
+            topPadding: topPadding,
             imageURL: imageURL,
             forceRefresh: $forceRefresh
         ) {
@@ -44,7 +44,7 @@ struct AvatarPickerScrollableHeaderView: View {
     GeometryReader { geo in
         VStack {
             AvatarPickerScrollableHeaderView(
-                topSafeArea: geo.safeAreaInsets.top,
+                topPadding: geo.safeAreaInsets.top,
                 imageURL: imageURL,
                 forceRefresh: .constant(false)
             )
