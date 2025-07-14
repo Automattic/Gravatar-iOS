@@ -17,7 +17,7 @@ struct ProfileEditContentView: View {
     @ObservedObject var viewModel: EditProfileViewModel
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
-    @FocusState private var focusedField: ProfileField?
+    @FocusedValue(\.focusedField) private var focusedField
 
     var body: some View {
         content()
@@ -129,34 +129,15 @@ struct ProfileEditContentView: View {
                 .font(Constants.textTitleFont)
                 .multilineTextAlignment(.leading)
                 .accessibilityHidden(true)
-            if isLarge {
-                TextEditor(text: value)
-                    .font(Constants.textInputFont)
-                    .multilineTextAlignment(.leading)
-                    .padding(.horizontal, .DS.Padding.single)
-                    .frame(height: dynamicTypeSize >= .accessibility1 ? 150 : 120)
-                    .disabled(viewModel.isSaving)
-                    .accessibilityLabel(field.localizedTitle)
-                    .padding(.vertical, 0)
-                    .backgroundColor(field, value: value.wrappedValue, viewModel: viewModel)
-                    .scrollContentBackground(.hidden)
-                    .cornerRadius(Constants.textInputCornerRadius)
-                    .focused($focusedField, equals: field)
-                    .focusedBorder(focusedField: $focusedField, field: field)
-            } else {
-                TextField(
-                    "",
-                    text: value
-                )
-                .font(Constants.textInputFont)
-                .padding(.DS.Padding.split)
-                .disabled(viewModel.isSaving)
-                .accessibilityLabel(field.localizedTitle)
-                .backgroundColor(field, value: value.wrappedValue, viewModel: viewModel)
-                .cornerRadius(Constants.textInputCornerRadius)
-                .focused($focusedField, equals: field)
-                .focusedBorder(focusedField: $focusedField, field: field)
-            }
+
+            StatefulTextField(
+                isLarge: isLarge,
+                accessibilityLabel: field.localizedTitle,
+                fieldIdentifier: field.rawValue,
+                value: value,
+                isDisabled: { viewModel.isSaving },
+                hasUnsavedChanges: { viewModel.hasDifference(in: field) }
+            )
 
             if let footerText {
                 Text(footerText)
@@ -167,32 +148,6 @@ struct ProfileEditContentView: View {
         }
         .padding(.vertical, Constants.fieldVerticalPadding)
         .frame(maxWidth: .infinity)
-    }
-}
-
-extension View {
-    fileprivate func focusedBorder(
-        focusedField: FocusState<ProfileField?>.Binding,
-        field: ProfileField
-    ) -> some View {
-        self.shape(
-            RoundedRectangle(cornerRadius: ProfileEditContentView.Constants.textInputCornerRadius),
-            borderColor: Color(uiColor: ProfileEditContentView.Constants.focusedTextBorderColor),
-            borderWidth: focusedField.wrappedValue == field ? 2 : 0
-        )
-    }
-
-    fileprivate func backgroundColor(
-        _ field: ProfileField,
-        value: String,
-        viewModel: EditProfileViewModel
-    ) -> some View {
-        self
-            .background(
-                viewModel.hasDifference(in: field) ?
-                    Color(uiColor: ProfileEditContentView.Constants.focusedTextBorderColor).opacity(0.1) :
-                    Color(uiColor: ProfileEditContentView.Constants.textBackgroundColor)
-            )
     }
 }
 

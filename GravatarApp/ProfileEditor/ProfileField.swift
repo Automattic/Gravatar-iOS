@@ -1,6 +1,6 @@
 import Foundation
 
-enum ProfileField: Hashable, CaseIterable {
+enum ProfileField: String, Hashable, CaseIterable {
     case displayName
     case aboutMe
     case pronunciation
