@@ -11,25 +11,53 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
     let stickyHeader: (CGFloat, EdgeInsets) -> StickyHeader
     let content: () -> ContentView
     let buttonMenuItems: () -> MenuItems
+    let onRefresh: () async -> Void
+
+    private let refreshOffsetThreshold: CGFloat = 80
+    private let defaultTopPadding: CGFloat = .DS.Padding.double
 
     @State private var scrollableHeaderHeight: CGFloat = 0
     @State private var stickyHeaderHeight: CGFloat = 0
 
     @State private var scrollOffset: CGFloat = 0
     @State private var safeAreaInset: EdgeInsets = .init()
+    @State private var isRefreshing: Bool = false
+    // Force to release the scroll bounce before another refresh can be triggered
+    @State private var canRefreshAgain: Bool = true
+
+    private func loadingViewEffectValue(nominal: CGFloat, progressRatio: CGFloat) -> CGFloat {
+        isRefreshing ? nominal : (canRefreshAgain && scrollOffset > 0 ? scrollOffset / progressRatio : 0)
+    }
+
+    private var scrollableHeaderTopPadding: CGFloat {
+        (safeAreaInset.top == 0 ? defaultTopPadding : safeAreaInset.top) + (isRefreshing ? 44 : 0)
+    }
 
     var body: some View {
         ZStack(alignment: .top) {
             ScrollView {
                 OffsetReaderView(scrollOffset: $scrollOffset)
                 VStack(alignment: .center) {
-                    scrollableHeader(safeAreaInset.top)
+                    scrollableHeader(scrollableHeaderTopPadding)
                         .contentHeightReader($scrollableHeaderHeight)
                         .ignoresSafeArea(.container, edges: .horizontal)
                     content()
                 }
             }
+            .animation(.snappy, value: isRefreshing)
             .ignoresSafeArea(.container, edges: .top)
+            .safeAreaInset(edge: .top) {
+                RefreshControl(
+                    animated: isRefreshing,
+                    opacity: loadingViewEffectValue(nominal: 1, progressRatio: refreshOffsetThreshold)
+                )
+                .environment(\.colorScheme, .light)
+                .scaleEffect(loadingViewEffectValue(nominal: 0.7, progressRatio: 80))
+                .rotationEffect(.radians(loadingViewEffectValue(nominal: 0, progressRatio: 20)))
+                .animation(.interpolatingSpring, value: isRefreshing)
+                .padding(.top, safeAreaInset.top == 0 ? defaultTopPadding : 0)
+            }
+            .scrollDismissesKeyboard(.interactively)
 
             stickyHeader(stickyHeaderOpacity, safeAreaInset)
                 .contentHeightReader($stickyHeaderHeight)
@@ -46,7 +74,7 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
                     EllipsisButton(action: {})
                 }
             }
-            .padding(.top, safeAreaInset.top == 0 ? 16 : 0)
+            .padding(.top, safeAreaInset.top == 0 ? defaultTopPadding : 0)
             .padding(.trailing, safeAreaInset.trailing == 0 ? 16 : 0)
         }
         .background(GeometryReader { geo in
@@ -58,6 +86,26 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
                     safeAreaInset = geo.safeAreaInsets
                 }
         })
+        .onChange(of: scrollOffset) { _, newValue in
+            if canRefreshAgain == false, newValue <= 0 {
+                canRefreshAgain = true
+            }
+            guard isRefreshing == false, canRefreshAgain == true else { return }
+            isRefreshing = newValue > refreshOffsetThreshold
+        }
+        .onChange(of: isRefreshing) { oldValue, newValue in
+            if oldValue == false && newValue && canRefreshAgain {
+                canRefreshAgain = false
+                Task {
+                    await doRefresh()
+                }
+            }
+        }
+    }
+
+    func doRefresh() async {
+        await onRefresh()
+        isRefreshing = false
     }
 
     private var stickyHeaderOpacity: Double {
@@ -86,9 +134,9 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
 #Preview("Avatar Picker Header") {
     let imageURL = URL(string: "https://1.gravatar.com/avatar/1?size=256")
 
-    AnimatedHeaderScrollView(animationBehavior: .automatic) { topSafeArea in
+    AnimatedHeaderScrollView(animationBehavior: .automatic) { topPadding in
         AvatarPickerScrollableHeaderView(
-            topSafeArea: topSafeArea,
+            topPadding: topPadding,
             imageURL: imageURL,
             forceRefresh: .constant(false)
         )
@@ -115,6 +163,8 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
             systemImage: "iphone.and.arrow.forward.outward",
             role: .destructive
         ) {}
+    } onRefresh: {
+        try? await Task.sleep(for: .seconds(2))
     }
 }
 
@@ -122,10 +172,10 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
 #Preview("Profile editor Header") {
     let imageURL = URL(string: "https://1.gravatar.com/avatar/1?size=256")
 
-    AnimatedHeaderScrollView(animationBehavior: .interactive) { topSafeArea in
+    AnimatedHeaderScrollView(animationBehavior: .interactive) { topPadding in
         ProfileEditorScrollableHeaderView(
             profile: .testProfile,
-            topSafeArea: topSafeArea,
+            topPadding: topPadding,
             imageURL: imageURL,
             forceRefresh: .constant(false)
         )
@@ -153,6 +203,8 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
             systemImage: "iphone.and.arrow.forward.outward",
             role: .destructive
         ) {}
+    } onRefresh: {
+        try? await Task.sleep(for: .seconds(2))
     }
 }
 #endif

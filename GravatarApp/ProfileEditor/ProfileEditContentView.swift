@@ -3,7 +3,7 @@ import Gravatar
 import SwiftUI
 
 struct ProfileEditContentView: View {
-    private enum Constants {
+    fileprivate enum Constants {
         static let textTitleFont: Font = .callout
         static let textInputFont: Font = .body
         static let textInputCornerRadius: CGFloat = 8
@@ -11,11 +11,13 @@ struct ProfileEditContentView: View {
         static let footerFont: Font = .footnote
         static let textBackgroundColor: UIColor = .tertiarySystemFill
         static let fieldVerticalPadding: CGFloat = 10
+        static let focusedTextBorderColor: UIColor = .rgba(27, 78, 196)
     }
 
     @ObservedObject var viewModel: EditProfileViewModel
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
+    @FocusedValue(\.focusedField) private var focusedField
 
     var body: some View {
         content()
@@ -64,32 +66,32 @@ struct ProfileEditContentView: View {
     @ViewBuilder
     private func personal() -> some View {
         inputField(
-            for: ProfileEditLocalization.displayName,
+            .displayName,
             value: $viewModel.fields.displayName
         )
         inputField(
-            for: ProfileEditLocalization.firstName,
+            .firstName,
             value: $viewModel.fields.firstName
         )
         inputField(
-            for: ProfileEditLocalization.lastName,
+            .lastName,
             value: $viewModel.fields.lastName
         )
         inputField(
-            for: ProfileEditLocalization.pronunciation,
+            .pronunciation,
             footerText: AttributedString(ProfileEditLocalization.pronunciationFooterText),
             value: $viewModel.fields.pronunciation
         )
         inputField(
-            for: ProfileEditLocalization.pronouns,
+            .pronouns,
             value: $viewModel.fields.pronouns
         )
         inputField(
-            for: ProfileEditLocalization.location,
+            .location,
             value: $viewModel.fields.location
         )
         inputField(
-            for: ProfileEditLocalization.aboutMe,
+            .aboutMe,
             footerText: AttributedString(ProfileEditLocalization.aboutMeFooterText),
             value: $viewModel.fields.aboutMe,
             isLarge: true
@@ -100,11 +102,11 @@ struct ProfileEditContentView: View {
     private func professional() -> some View {
         sectionHeader(title: ProfileEditLocalization.professionalSectionHeader)
         inputField(
-            for: ProfileEditLocalization.jobTitle,
+            .jobTitle,
             value: $viewModel.fields.jobTitle
         )
         inputField(
-            for: ProfileEditLocalization.company,
+            .company,
             value: $viewModel.fields.company
         )
     }
@@ -117,40 +119,25 @@ struct ProfileEditContentView: View {
     }
 
     private func inputField(
-        for title: String,
+        _ field: ProfileField,
         footerText: AttributedString? = nil,
         value: Binding<String>,
         isLarge: Bool = false
     ) -> some View {
         VStack(alignment: .leading, spacing: .DS.Padding.single) {
-            Text(title)
+            Text(field.localizedTitle)
                 .font(Constants.textTitleFont)
                 .multilineTextAlignment(.leading)
                 .accessibilityHidden(true)
-            if isLarge {
-                TextEditor(text: value)
-                    .font(Constants.textInputFont)
-                    .multilineTextAlignment(.leading)
-                    .padding(.horizontal, .DS.Padding.single)
-                    .frame(height: dynamicTypeSize >= .accessibility1 ? 150 : 120)
-                    .disabled(viewModel.isSaving)
-                    .accessibilityLabel(title)
-                    .padding(.vertical, 0)
-                    .background(Color(uiColor: Constants.textBackgroundColor))
-                    .scrollContentBackground(.hidden)
-                    .cornerRadius(Constants.textInputCornerRadius)
-            } else {
-                TextField(
-                    "",
-                    text: value
-                )
-                .font(Constants.textInputFont)
-                .padding(.DS.Padding.split)
-                .disabled(viewModel.isSaving)
-                .accessibilityLabel(title)
-                .background(Color(uiColor: Constants.textBackgroundColor))
-                .cornerRadius(Constants.textInputCornerRadius)
-            }
+
+            StatefulTextField(
+                isLarge: isLarge,
+                accessibilityLabel: field.localizedTitle,
+                fieldIdentifier: field.rawValue,
+                value: value,
+                isDisabled: { viewModel.isSaving },
+                hasUnsavedChanges: { viewModel.hasDifference(in: field) }
+            )
 
             if let footerText {
                 Text(footerText)
@@ -161,16 +148,6 @@ struct ProfileEditContentView: View {
         }
         .padding(.vertical, Constants.fieldVerticalPadding)
         .frame(maxWidth: .infinity)
-    }
-}
-
-extension View {
-    private func inputBorders(colorScheme: ColorScheme) -> some View {
-        self.shape(
-            RoundedRectangle(cornerRadius: 2),
-            borderColor: Color(uiColor: .label).opacity(colorScheme == .dark ? 0.30 : 0.15),
-            borderWidth: 1
-        )
     }
 }
 

@@ -11,7 +11,7 @@ struct ProfileEditorStickyHeaderView: View {
 
     var body: some View {
         BouncyImageBackgroundHeaderView(
-            topSafeArea: safeAreaInsets.top,
+            topPadding: safeAreaInsets.top,
             imageURL: imageURL,
             forceRefresh: $forceRefresh
         ) {
