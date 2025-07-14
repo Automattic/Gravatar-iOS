@@ -61,6 +61,13 @@ class EditProfileViewModel: ObservableObject {
         }
     }
 
+    func fetchProfile() async {
+        do {
+            let profile = try await profileService.fetchOwnProfile(token: userSession.accessToken)
+            userSession.updateProfile(profile)
+        } catch {}
+    }
+
     func hasDifference(in field: ProfileField) -> Bool {
         fields.hasDifference(in: field, comparedTo: userSession.profile)
     }
