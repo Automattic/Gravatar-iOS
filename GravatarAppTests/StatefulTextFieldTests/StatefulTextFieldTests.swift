@@ -4,19 +4,20 @@ import SnapshotTesting
 import SwiftUICore
 import Testing
 
-@Suite(.snapshots(record: .all, diffTool: .ksdiff))
+@Suite(.snapshots(record: .failed, diffTool: .ksdiff))
 struct StatefulTextFieldTests {
-
     @MainActor
     @Test(arguments: [
         Config(isLarge: false, isDisabled: false, hasUnsavedChanges: false, isFocused: false),
         Config(isLarge: false, isDisabled: true, hasUnsavedChanges: false, isFocused: false),
         Config(isLarge: false, isDisabled: false, hasUnsavedChanges: true, isFocused: false),
         Config(isLarge: false, isDisabled: false, hasUnsavedChanges: true, isFocused: true),
+        Config(isLarge: false, isDisabled: false, hasUnsavedChanges: false, isFocused: true),
         Config(isLarge: true, isDisabled: false, hasUnsavedChanges: false, isFocused: false),
         Config(isLarge: true, isDisabled: true, hasUnsavedChanges: false, isFocused: false),
         Config(isLarge: true, isDisabled: false, hasUnsavedChanges: true, isFocused: false),
         Config(isLarge: true, isDisabled: false, hasUnsavedChanges: true, isFocused: true),
+        Config(isLarge: true, isDisabled: false, hasUnsavedChanges: false, isFocused: true),
     ])
     func differentStates(config: Config) async throws {
         let view = StatefulTextField(

@@ -40,11 +40,11 @@ struct StatefulTextField: View {
                 .disabled(isDisabled())
                 .accessibilityLabel(accessibilityLabel)
                 .padding(.vertical, 0)
-                .backgroundColor(hasUsavedChanges: hasUnsavedChanges())
+                .background(backgroundColor)
                 .scrollContentBackground(.hidden)
                 .cornerRadius(Constants.textInputCornerRadius)
                 .focused($isFocused)
-                .focusedBorder(isFocused: shouldShowFocusedBorder)
+                .focusedBorder(isFocused: shouldShowFocusedStyle)
                 .focusedValue(\.focusedField, isFocused ? fieldIdentifier : nil)
         } else {
             TextField(
@@ -55,16 +55,26 @@ struct StatefulTextField: View {
             .padding(.DS.Padding.split)
             .disabled(isDisabled())
             .accessibilityLabel(accessibilityLabel)
-            .backgroundColor(hasUsavedChanges: hasUnsavedChanges())
+            .background(backgroundColor)
             .cornerRadius(Constants.textInputCornerRadius)
             .focused($isFocused)
-            .focusedBorder(isFocused: shouldShowFocusedBorder)
+            .focusedBorder(isFocused: shouldShowFocusedStyle)
             .focusedValue(\.focusedField, isFocused ? fieldIdentifier : nil)
         }
     }
 
-    private var shouldShowFocusedBorder: Bool {
+    private var shouldShowFocusedStyle: Bool {
         isFocused || forceFocusedState
+    }
+
+    private var backgroundColor: Color {
+        if hasUnsavedChanges() {
+            Color(uiColor: Constants.focusedTextBorderColor).opacity(0.1)
+        } else if shouldShowFocusedStyle {
+            .clear
+        } else {
+            Color(uiColor: Constants.textBackgroundColor)
+        }
     }
 }
 
@@ -77,17 +87,6 @@ extension View {
             borderColor: Color(uiColor: StatefulTextFieldConstants.focusedTextBorderColor),
             borderWidth: isFocused ? 2 : 0
         )
-    }
-
-    fileprivate func backgroundColor(
-        hasUsavedChanges: Bool
-    ) -> some View {
-        self
-            .background(
-                hasUsavedChanges ?
-                    Color(uiColor: StatefulTextFieldConstants.focusedTextBorderColor).opacity(0.1) :
-                    Color(uiColor: StatefulTextFieldConstants.textBackgroundColor)
-            )
     }
 }
 
