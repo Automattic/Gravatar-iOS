@@ -6,6 +6,7 @@ import SwiftUI
 class EditProfileViewModel: ObservableObject {
     private let profileService: ProfileService
     let userSession: UserSession
+    private let toastManager: ToastManager
     private var cancellables = Set<AnyCancellable>()
 
     @Published var isSaving: Bool = false
@@ -21,12 +22,14 @@ class EditProfileViewModel: ObservableObject {
 
     init(
         userSession: UserSession,
+        toastManager: ToastManager = ToastManager(),
         urlSession: URLSessionProtocol = GravatarURLSession.shared,
         networkMonitor: any NetworkMonitor = SystemNetworkMonitor.shared
     ) {
         self.userSession = userSession
         self.profileService = .init(urlSession: urlSession)
         self.fields = .init(profile: userSession.profile)
+        self.toastManager = toastManager
 
         setupCombine()
     }
@@ -55,9 +58,9 @@ class EditProfileViewModel: ObservableObject {
             fields = .init(profile: profile)
             // Update the rest of the app:
             userSession.updateProfile(profile)
-            // TODO: Show success toast
+            toastManager.showToast(ProfileEditLocalization.profileSavedSuccessMessage)
         } catch {
-            // TODO: Show error toast
+            showToast(for: error, fallbackText: ProfileEditLocalization.profileSavedErrorMessage)
         }
     }
 
@@ -65,10 +68,22 @@ class EditProfileViewModel: ObservableObject {
         do {
             let profile = try await profileService.fetchOwnProfile(token: userSession.accessToken)
             userSession.updateProfile(profile)
-        } catch {}
+        } catch {
+            showToast(for: error, fallbackText: ProfileEditLocalization.profileRefreshErrorMessage)
+        }
     }
 
     func hasDifference(in field: ProfileField) -> Bool {
         fields.hasDifference(in: field, comparedTo: userSession.profile)
+    }
+
+    func showToast(for error: Error, fallbackText: String) {
+        let message: String = switch error {
+        case APIError.responseError(reason: let reason):
+            reason.urlSessionErrorLocalizedDescription ?? fallbackText
+        default:
+            fallbackText
+        }
+        toastManager.showToast(message, type: .error)
     }
 }

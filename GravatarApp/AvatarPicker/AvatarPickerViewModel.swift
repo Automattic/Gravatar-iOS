@@ -132,11 +132,13 @@ class AvatarPickerViewModel: ObservableObject {
             )
             grid.replaceModel(withID: avatarID, with: .init(with: selectedAvatar))
             selectedAvatarResult = .success(selectedAvatar.imageID)
+            toastManager.showToast(Localized.avatarUpdateSuccess)
             return selectedAvatar
         } catch APIError.responseError(let reason) where reason.cancelled {
             // NoOp.
         } catch {
             grid.selectAvatar(withID: selectedAvatarResult?.value())
+            showToast(for: error, fallbackText: Localized.avatarUpdateFail)
         }
         return nil
     }
@@ -164,6 +166,7 @@ class AvatarPickerViewModel: ObservableObject {
             gridResponseStatus = .success(())
         } catch {
             gridResponseStatus = .failure(error)
+            showToast(for: error, fallbackText: Localized.avatarsRequestError)
         }
     }
 
@@ -238,6 +241,7 @@ class AvatarPickerViewModel: ObservableObject {
         return false
 
         func handleError(message: String) {
+            toastManager.showToast(message, type: .error)
             withAnimation {
                 grid.insert(avatar, at: deletingAvatarIndex)
                 grid.selectAvatar(previouslySelectedAvatar)
@@ -350,6 +354,16 @@ class AvatarPickerViewModel: ObservableObject {
         self.grid.setAvatars([])
         self.gridResponseStatus = .failure(error)
     }
+
+    func showToast(for error: Error, fallbackText: String) {
+        let message: String = switch error {
+        case APIError.responseError(reason: let reason):
+            reason.urlSessionErrorLocalizedDescription ?? fallbackText
+        default:
+            fallbackText
+        }
+        toastManager.showToast(message, type: .error)
+    }
 }
 
 // MARK: - Download image to file
@@ -392,23 +406,13 @@ extension AvatarPickerViewModel {
         )
         static let avatarUpdateSuccess = NSLocalizedString(
             "AvatarPickerViewModel.Update.Success",
-            value: "Avatar updated! It may take a few minutes to appear everywhere.",
+            value: "Avatar updated.",
             comment: "This confirmation message shows when the user picks a different avatar."
-        )
-        static let profileUpdateSuccess = NSLocalizedString(
-            "Profile.Update.Success",
-            value: "Profile updated successfully",
-            comment: "This confirmation message shows when the user updates fields of their profile."
         )
         static let avatarUpdateFail = NSLocalizedString(
             "AvatarPickerViewModel.Update.Fail",
-            value: "Oops, something didn't quite work out while trying to change your avatar.",
+            value: "Unable to change your avatar. Try again.",
             comment: "This error message shows when the user attempts to pick a different avatar and fails."
-        )
-        static let profileUpdateFail = NSLocalizedString(
-            "Profile.Update.Fail",
-            value: "Oops, something didn't quite work out while trying to update your profile.",
-            comment: "This error message shows when the user attempts to update fields of their profile and it fails."
         )
         static let imageTooBigError = NSLocalizedString(
             "AvatarPicker.Upload.Error.ImageTooBig.Error",
@@ -417,12 +421,12 @@ extension AvatarPickerViewModel {
         )
         static let avatarDeletionError = NSLocalizedString(
             "AvatarPickerViewModel.Delete.Error",
-            value: "Oops, there was an error deleting the image.",
+            value: "Couldn't delete the image. Try again.",
             comment: "This error message shows when the user attempts to delete an avatar and fails."
         )
         static let avatarShareFail = NSLocalizedString(
             "AvatarPickerViewModel.Share.Fail",
-            value: "Oops, something didn't quite work out while trying to share your avatar.",
+            value: "Couldn't share your avatar. Try again.",
             comment: "This error message shows when the user attempts to share an avatar and fails."
         )
         static let avatarAltTextSuccess = NSLocalizedString(
@@ -435,15 +439,10 @@ extension AvatarPickerViewModel {
             value: "Oops, something didn't quite work out while trying to update the alt text.",
             comment: "This error message shows when the user attempts to change the alt text of an avatar and fails."
         )
-        static let avatarRatingUpdateSuccess = NSLocalizedString(
-            "AvatarPickerViewModel.RatingUpdate.Success",
-            value: "Avatar rating was changed successfully.",
-            comment: "This confirmation message shows when the user picks a different avatar rating and the change was applied successfully."
-        )
-        static let avatarRatingError = NSLocalizedString(
-            "AvatarPickerViewModel.Rating.Error",
-            value: "Oops, something didn't quite work out while trying to rate your avatar.",
-            comment: "This error message shows when the user attempts to change the rating of an avatar and fails."
+        static let avatarsRequestError = NSLocalizedString(
+            "AvatarPickerViewModel.AvatarsRequest.Error",
+            value: "Unable to get your avatars. Try again.",
+            comment: "This error message shows when the avatars request fails."
         )
     }
 }
