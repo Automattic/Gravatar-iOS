@@ -30,6 +30,7 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
                 }
             }
             .ignoresSafeArea(.container, edges: .top)
+            .scrollDismissesKeyboard(.interactively)
 
             stickyHeader(stickyHeaderOpacity, safeAreaInset)
                 .contentHeightReader($stickyHeaderHeight)
