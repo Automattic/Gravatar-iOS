@@ -51,6 +51,7 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
                     animated: isRefreshing,
                     opacity: loadingViewEffectValue(nominal: 1, progressRatio: refreshOffsetThreshold)
                 )
+                .environment(\.colorScheme, .light)
                 .scaleEffect(loadingViewEffectValue(nominal: 0.7, progressRatio: 80))
                 .rotationEffect(.radians(loadingViewEffectValue(nominal: 0, progressRatio: 20)))
                 .animation(.interpolatingSpring, value: isRefreshing)
