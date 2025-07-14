@@ -69,7 +69,7 @@ class EditProfileViewModel: ObservableObject {
             let profile = try await profileService.fetchOwnProfile(token: userSession.accessToken)
             userSession.updateProfile(profile)
         } catch {
-            showToast(for: error, fallbackText: ProfileEditLocalization.profileSavedErrorMessage)
+            showToast(for: error, fallbackText: ProfileEditLocalization.profileRefreshErrorMessage)
         }
     }
 

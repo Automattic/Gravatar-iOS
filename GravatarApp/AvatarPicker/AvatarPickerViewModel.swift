@@ -406,17 +406,12 @@ extension AvatarPickerViewModel {
         )
         static let avatarUpdateSuccess = NSLocalizedString(
             "AvatarPickerViewModel.Update.Success",
-            value: "Avatar updated! It may take a few minutes to appear everywhere.",
+            value: "Avatar updated.",
             comment: "This confirmation message shows when the user picks a different avatar."
-        )
-        static let profileUpdateSuccess = NSLocalizedString(
-            "Profile.Update.Success",
-            value: "Profile updated successfully",
-            comment: "This confirmation message shows when the user updates fields of their profile."
         )
         static let avatarUpdateFail = NSLocalizedString(
             "AvatarPickerViewModel.Update.Fail",
-            value: "Oops, something didn't quite work out while trying to change your avatar.",
+            value: "Unable to change your avatar. Try again.",
             comment: "This error message shows when the user attempts to pick a different avatar and fails."
         )
         static let imageTooBigError = NSLocalizedString(
@@ -426,12 +421,12 @@ extension AvatarPickerViewModel {
         )
         static let avatarDeletionError = NSLocalizedString(
             "AvatarPickerViewModel.Delete.Error",
-            value: "Oops, there was an error deleting the image.",
+            value: "Couldn't delete the image. Try again.",
             comment: "This error message shows when the user attempts to delete an avatar and fails."
         )
         static let avatarShareFail = NSLocalizedString(
             "AvatarPickerViewModel.Share.Fail",
-            value: "Oops, something didn't quite work out while trying to share your avatar.",
+            value: "Couldn't share your avatar. Try again.",
             comment: "This error message shows when the user attempts to share an avatar and fails."
         )
         static let avatarAltTextSuccess = NSLocalizedString(
@@ -446,7 +441,7 @@ extension AvatarPickerViewModel {
         )
         static let avatarsRequestError = NSLocalizedString(
             "AvatarPickerViewModel.AvatarsRequest.Error",
-            value: "Something went wrong while getting your avatars",
+            value: "Unable to get your avatars. Try again.",
             comment: "This error message shows when the avatars request fails."
         )
     }
