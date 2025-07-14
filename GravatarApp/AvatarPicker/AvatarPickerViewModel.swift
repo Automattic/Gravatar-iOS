@@ -166,7 +166,7 @@ class AvatarPickerViewModel: ObservableObject {
             gridResponseStatus = .success(())
         } catch {
             gridResponseStatus = .failure(error)
-            showToast(for: error, fallbackText: <#T##String#>)
+            showToast(for: error, fallbackText: Localized.avatarsRequestError)
         }
     }
 
@@ -444,15 +444,10 @@ extension AvatarPickerViewModel {
             value: "Oops, something didn't quite work out while trying to update the alt text.",
             comment: "This error message shows when the user attempts to change the alt text of an avatar and fails."
         )
-        static let avatarRatingUpdateSuccess = NSLocalizedString(
-            "AvatarPickerViewModel.RatingUpdate.Success",
-            value: "Avatar rating was changed successfully.",
-            comment: "This confirmation message shows when the user picks a different avatar rating and the change was applied successfully."
-        )
-        static let avatarRatingError = NSLocalizedString(
-            "AvatarPickerViewModel.Rating.Error",
-            value: "Oops, something didn't quite work out while trying to rate your avatar.",
-            comment: "This error message shows when the user attempts to change the rating of an avatar and fails."
+        static let avatarsRequestError = NSLocalizedString(
+            "AvatarPickerViewModel.AvatarsRequest.Error",
+            value: "Something went wrong while getting your avatars",
+            comment: "This error message shows when the avatars request fails."
         )
     }
 }

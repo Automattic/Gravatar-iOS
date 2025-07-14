@@ -59,24 +59,31 @@ class EditProfileViewModel: ObservableObject {
             // Update the rest of the app:
             userSession.updateProfile(profile)
             toastManager.showToast(ProfileEditLocalization.profileSavedSuccessMessage)
-        } catch APIError.responseError(reason: let reason) {
-            let message = reason.urlSessionErrorLocalizedDescription ?? ProfileEditLocalization.profileSavedErrorMessage
-            toastManager.showToast(message, type: .error)
         } catch {
-            toastManager.showToast(ProfileEditLocalization.profileSavedErrorMessage, type: .error)
+            showToast(for: error, fallbackText: ProfileEditLocalization.profileSavedErrorMessage)
         }
-
-
     }
 
     func fetchProfile() async {
         do {
             let profile = try await profileService.fetchOwnProfile(token: userSession.accessToken)
             userSession.updateProfile(profile)
-        } catch {}
+        } catch {
+            showToast(for: error, fallbackText: ProfileEditLocalization.profileSavedErrorMessage)
+        }
     }
 
     func hasDifference(in field: ProfileField) -> Bool {
         fields.hasDifference(in: field, comparedTo: userSession.profile)
+    }
+
+    func showToast(for error: Error, fallbackText: String) {
+        let message: String = switch error {
+        case APIError.responseError(reason: let reason):
+            reason.urlSessionErrorLocalizedDescription ?? fallbackText
+        default:
+            fallbackText
+        }
+        toastManager.showToast(message, type: .error)
     }
 }
