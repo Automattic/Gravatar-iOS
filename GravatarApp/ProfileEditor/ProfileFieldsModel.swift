@@ -62,15 +62,35 @@ class ProfileFieldsModel: ObservableObject {
         )
     }
 
-    func isEqual(to profile: Profile) -> Bool {
-        firstName == profile.firstName
-            && lastName == profile.lastName
-            && displayName == profile.displayName
-            && aboutMe == profile.description
-            && pronunciation == profile.pronunciation
-            && pronouns == profile.pronouns
-            && location == profile.location
-            && jobTitle == profile.jobTitle
-            && company == profile.company
+    func hasDifference(comparedTo profile: Profile) -> Bool {
+        for field in ProfileField.allCases {
+            if hasDifference(in: field, comparedTo: profile) {
+                return true
+            }
+        }
+        return false
+    }
+
+    func hasDifference(in field: ProfileField, comparedTo profile: Profile) -> Bool {
+        switch field {
+        case .displayName:
+            displayName != profile.displayName
+        case .location:
+            location != profile.location
+        case .company:
+            company != profile.company
+        case .aboutMe:
+            aboutMe != profile.description
+        case .firstName:
+            firstName != (profile.firstName ?? "")
+        case .lastName:
+            lastName != (profile.lastName ?? "")
+        case .pronouns:
+            pronouns != profile.pronouns
+        case .pronunciation:
+            pronunciation != profile.pronunciation
+        case .jobTitle:
+            jobTitle != profile.jobTitle
+        }
     }
 }

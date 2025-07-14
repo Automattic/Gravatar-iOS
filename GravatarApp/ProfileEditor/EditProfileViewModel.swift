@@ -16,7 +16,7 @@ class EditProfileViewModel: ObservableObject {
     }
 
     var hasUnsavedChanges: Bool {
-        !fields.isEqual(to: userSession.profile)
+        fields.hasDifference(comparedTo: userSession.profile)
     }
 
     init(
@@ -26,7 +26,6 @@ class EditProfileViewModel: ObservableObject {
     ) {
         self.userSession = userSession
         self.profileService = .init(urlSession: urlSession)
-
         self.fields = .init(profile: userSession.profile)
 
         setupCombine()
@@ -34,7 +33,10 @@ class EditProfileViewModel: ObservableObject {
 
     private func setupCombine() {
         userSession.$profile.sink { [weak self] profile in
-            self?.fields = .init(profile: profile)
+            guard let self else { return }
+            if self.fields.hasDifference(comparedTo: profile) { // just to avoid unnecessary re-render
+                self.fields = .init(profile: profile)
+            }
         }
         .store(in: &cancellables)
     }
@@ -47,19 +49,19 @@ class EditProfileViewModel: ObservableObject {
             isSaving = true
             let request = fields.updateRequest()
             let profile = try await profileService.updateProfile(with: request, token: userSession.accessToken)
-            Task { @MainActor in
-                userSession.updateProfile(profile)
-            }
+            // BE trims whitespaces, thus, userSession.$profile doesn't notice any changes if the
+            // changes consist of just excess whitespaces.
+            // But the UI still has them. This makes sure the UI state is synced with server:
+            fields = .init(profile: profile)
+            // Update the rest of the app:
+            userSession.updateProfile(profile)
             // TODO: Show success toast
         } catch {
             // TODO: Show error toast
         }
     }
 
-    func fetchProfile() async {
-        do {
-            let profile = try await profileService.fetchOwnProfile(token: userSession.accessToken)
-            userSession.updateProfile(profile)
-        } catch {}
+    func hasDifference(in field: ProfileField) -> Bool {
+        fields.hasDifference(in: field, comparedTo: userSession.profile)
     }
 }
