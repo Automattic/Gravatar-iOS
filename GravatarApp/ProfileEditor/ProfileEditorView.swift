@@ -60,22 +60,22 @@ struct SaveToolbar: View {
     var body: some View {
         HStack {
             if viewModel.isSaving {
-                Text("Unsaved changes").font(.headline)
+                Text("Saving...").font(.headline)
                 Spacer()
             } else {
                 Text("Unsaved changes").font(.headline)
                 Spacer()
                 Button {
-                    Task {
-                        await viewModel.save()
-                    }
+
                 } label: {
                     Text("Cancel")
                 }
                 .buttonStyle(ActionButtonStyle(style: .secondary))
 
                 Button {
-
+                    Task {
+                        await viewModel.save()
+                    }
                 } label: {
                     Text("Save")
                 }
