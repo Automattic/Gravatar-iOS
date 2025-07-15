@@ -57,7 +57,7 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
                 .animation(.interpolatingSpring, value: isRefreshing)
                 .padding(.top, safeAreaInset.top == 0 ? defaultTopPadding : 0)
             }
-            .scrollDismissesKeyboard(.interactively)
+            .scrollDismissesKeyboard(.immediately)
 
             stickyHeader(stickyHeaderOpacity, safeAreaInset)
                 .contentHeightReader($stickyHeaderHeight)
