@@ -42,6 +42,21 @@ struct ProfileEditorView: View {
         } onRefresh: {
             await viewModel.fetchProfile()
         }
+        .safeAreaInset(edge: .bottom, alignment: .center, spacing: nil) {
+            Group {
+                if viewModel.hasUnsavedChanges {
+                    SaveToolbar(viewModel: viewModel)
+                } else {
+                    // Keep the save area of the same height of the toolbar
+                    // It will grow acordingly with different font sizes
+                    Button {} label: { Text("hidden") }
+                        .buttonStyle(.actionButton(style: .primary))
+                        .opacity(0)
+                        .padding()
+                }
+            }
+            .animation(.smooth(duration: 0.3), value: viewModel.hasUnsavedChanges)
+        }
     }
 }
 
@@ -52,5 +67,18 @@ struct ProfileEditorView: View {
             userSession: UserSession(profile: .testProfile, accessToken: "", context: .testContext)
         )
     )
+}
+
+#Preview("With TabBar") {
+    TabView {
+        ProfileEditorView(
+            viewModel: .init(
+                userSession: UserSession(profile: .testProfile, accessToken: "", context: .testContext)
+            )
+        )
+        .tabItem {
+            Label("Profile", systemImage: "brain.filled.head.profile")
+        }
+    }
 }
 #endif
