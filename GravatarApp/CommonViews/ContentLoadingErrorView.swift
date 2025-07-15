@@ -1,11 +1,6 @@
 import SwiftUI
 
 struct ContentLoadingErrorView: View {
-    enum Constants {
-        static let retryTextColor: UIColor = .init(light: .white, dark: .black)
-        static let retryBackgroundColor: UIColor = .init(light: .black, dark: .rgba(225, 225, 225))
-    }
-
     let title: String
     let description: String
     let buttonTitle: String
@@ -26,12 +21,8 @@ struct ContentLoadingErrorView: View {
 
             Button(action: buttonAction) {
                 Text(buttonTitle)
-                    .foregroundColor(Color(uiColor: Constants.retryTextColor))
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 12)
-                    .background(Color(uiColor: Constants.retryBackgroundColor))
-                    .clipShape(Capsule())
             }
+            .buttonStyle(.actionButton(style: .primary))
         }
     }
 }
