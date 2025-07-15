@@ -47,65 +47,16 @@ struct ProfileEditorView: View {
                 if viewModel.hasUnsavedChanges {
                     SaveToolbar(viewModel: viewModel)
                 } else {
-                    Spacer().frame(height: 80)
+                    // Keep the save area of the same height of the toolbar
+                    // It will grow acordingly with different font sizes
+                    Button {} label: { Text("hidden") }
+                        .buttonStyle(.actionButton(style: .primary))
+                        .opacity(0)
+                        .padding()
                 }
-            }.animation(.smooth(duration: 0.3), value: viewModel.hasUnsavedChanges)
-        }
-    }
-}
-
-struct SaveToolbar: View {
-    @ObservedObject var viewModel: EditProfileViewModel
-
-    var body: some View {
-        HStack {
-            if viewModel.isSaving {
-                Text("Saving...").font(.headline)
-                Spacer()
-            } else {
-                Text("Unsaved changes").font(.headline)
-                Spacer()
-                Button {
-
-                } label: {
-                    Text("Cancel")
-                }
-                .buttonStyle(ActionButtonStyle(style: .secondary))
-
-                Button {
-                    Task {
-                        await viewModel.save()
-                    }
-                } label: {
-                    Text("Save")
-                }
-                .environment(\.colorScheme, .light)
-                .buttonStyle(ActionButtonStyle(style: .primary))
             }
+            .animation(.smooth(duration: 0.3), value: viewModel.hasUnsavedChanges)
         }
-        .frame(maxWidth: .infinity)
-        .padding()
-        .background(Color.DS.bluishColor)
-        .transition(.move(edge: .bottom))
-        .environment(\.colorScheme, .dark)
-    }
-}
-
-struct ActionButtonStyle: ButtonStyle {
-    enum Style {
-        case primary
-        case secondary
-    }
-    let style: Style
-
-    func makeBody(configuration: ButtonStyle.Configuration) -> some View {
-        configuration.label
-            .font(.subheadline)
-            .padding(.horizontal, 24)
-            .padding(.vertical, 12)
-            .background(style == .primary ? Color.primary: Color(uiColor: .quaternaryLabel))
-            .foregroundStyle(style == .primary ? Color(uiColor: .systemBackground) : Color.primary)
-            .clipShape(.capsule)
     }
 }
 

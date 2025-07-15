@@ -123,4 +123,16 @@ enum ProfileEditLocalization {
         value: "Save",
         comment: "Title of the save button in the profile editing screen."
     )
+
+    static let cancelButtonTitle: String = NSLocalizedString(
+        "Profile.CancelButton.title",
+        value: "Cancel",
+        comment: "Title of the cancel button in the profile editing screen."
+    )
+
+    static let savingLabelText: String = NSLocalizedString(
+        "Profile.Saving.text",
+        value: "Saving...",
+        comment: "Text shown while saving changes in the profile editing screen."
+    )
 }

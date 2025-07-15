@@ -68,6 +68,10 @@ class EditProfileViewModel: ObservableObject {
         } catch {}
     }
 
+    func removeUnsavedChanges() {
+        fields = ProfileFieldsModel(profile: userSession.profile)
+    }
+
     func hasDifference(in field: ProfileField) -> Bool {
         fields.hasDifference(in: field, comparedTo: userSession.profile)
     }
