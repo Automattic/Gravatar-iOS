@@ -19,7 +19,7 @@ struct RootTabView: View {
         _toastManager = StateObject(wrappedValue: toastManager)
 
         _avatarPickerViewModel = StateObject(wrappedValue: AvatarPickerViewModel(userSession: userSession, toastManager: toastManager))
-        _editProfileViewModel = StateObject(wrappedValue: EditProfileViewModel(userSession: userSession))
+        _editProfileViewModel = StateObject(wrappedValue: EditProfileViewModel(userSession: userSession, toastManager: toastManager))
     }
 
     var body: some View {

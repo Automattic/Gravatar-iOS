@@ -135,4 +135,22 @@ enum ProfileEditLocalization {
         value: "Saving...",
         comment: "Text shown while saving changes in the profile editing screen."
     )
+
+    static let profileSavedSuccessMessage: String = NSLocalizedString(
+        "Profile.Save.successMessage",
+        value: "Profile saved.",
+        comment: "Message shown when the profile is saved successfully."
+    )
+
+    static let profileSavedErrorMessage: String = NSLocalizedString(
+        "Profile.Save.errorMessage",
+        value: "Unable to save your profile. Try again.",
+        comment: "Default message shown when there is an error saving the profile."
+    )
+
+    static let profileRefreshErrorMessage: String = NSLocalizedString(
+        "Profile.Refresh.errorMessage",
+        value: "Unable to refresh your profile. Try again.",
+        comment: "Default message shown when there is an error saving the profile."
+    )
 }
