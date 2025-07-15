@@ -14,24 +14,27 @@ struct CodeCallbackParser: CallbackParser {
     }
 
     func parse(from callbackURL: URL) async throws(OAuthError) -> AccessToken {
-        guard let code = parseCode(from: callbackURL) else {
-            throw OAuthError.couldNotParseAccessCode(callbackURL.absoluteString)
-        }
+        let response = parseCode(from: callbackURL)
 
-        return try await requestAccessToken(with: code)
+        if let code = response.code {
+            return try await requestAccessToken(with: code)
+        } else if let error = response.error, error == "access_denied" {
+            throw OAuthError.accessDenied
+        }
+        throw OAuthError.couldNotParseAccessCode(callbackURL.absoluteString)
     }
 
-    func parseCode(from callbackURL: URL) -> String? {
+    func parseCode(from callbackURL: URL) -> (code: String?, error: String?) {
         guard
             let components = URLComponents(string: callbackURL.absoluteString),
             let queryItems = components.queryItems
-        else { return nil }
+        else { return (nil, nil) }
 
         let parameters = queryItems.reduce(into: [String: String]()) { result, item in
             result[item.name] = item.value
         }
 
-        return parameters["code"]
+        return (parameters["code"], parameters["error"])
     }
 
     private func requestAccessToken(with code: String) async throws(OAuthError) -> AccessToken {

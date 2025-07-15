@@ -12,6 +12,10 @@ class WelcomeViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var userSession: UserSession?
 
+    /// This property will have a value only in the case an OAuth request succeed and the profile request fails.
+    /// Used to retry the Profile request.
+    var localAccessToken: String?
+
     private let profileService: any ProfileServiceProtocol
     private let oauthManager: OAuthManager
     private let analytics: Analytics
@@ -41,7 +45,10 @@ class WelcomeViewModel: ObservableObject {
             let profile = try await profileService.fetchOwnProfile(token: token)
             configureSession(profile: profile, accessToken: token)
         } catch {
-            profileFetchingError = error as? APIError
+            localAccessToken = token
+            withAnimation(.smooth(duration: 0.2)) {
+                profileFetchingError = error as? APIError
+            }
         }
     }
 
@@ -95,6 +102,7 @@ class WelcomeViewModel: ObservableObject {
         userDefaults.set(nil, forKey: .Gravatar.currentUserKey)
         try? context.delete(model: ProfileStore.self)
         context.saveNow()
+        localAccessToken = nil
 
         withAnimation {
             self.userSession = nil
@@ -103,14 +111,21 @@ class WelcomeViewModel: ObservableObject {
 
     func requestOAuthToken() async {
         analytics.track(WelcomeScreenEvent.authButtonPressed)
-        oauthError = nil
+        withAnimation(.smooth(duration: 0.2)) {
+            oauthError = nil
+            profileFetchingError = nil
+        }
+        localAccessToken = nil
         do {
             isLoading = true
             let token = try await oauthManager.requestAccessToken().token
             await fetchProfile(with: token)
             analytics.track(WelcomeScreenEvent.authSuccess)
         } catch {
-            self.oauthError = error
+            withAnimation {
+                self.oauthError = error
+            }
+
             isLoading = false
         }
     }

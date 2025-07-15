@@ -3,12 +3,20 @@ import AuthenticationServices
 public enum OAuthError: Error {
     case notConfigured
     case configurationError
+    case accessDenied
     case couldNotParseAccessCode(String)
     case oauthResponseError(String, ASWebAuthenticationSessionError.Code?)
-    case tokenRequestError(Error)
+    case tokenRequestError(URLError)
     case tokenResponseError(String)
     case decodingError(String)
     case unknown(Error)
+
+    public var isAccessDenied: Bool {
+        switch self {
+        case .accessDenied: true
+        default: false
+        }
+    }
 }
 
 extension OAuthError {
