@@ -1,10 +1,10 @@
 import SwiftUI
 
 extension ContentLoadingErrorView {
-    static func avatars(description: String = AvatarLoadingError.description, buttonAction: @escaping () -> Void) -> ContentLoadingErrorView {
+    static func avatars(buttonAction: @escaping () -> Void) -> ContentLoadingErrorView {
         .init(
             title: AvatarLoadingError.title,
-            description: description,
+            description: AvatarLoadingError.description,
             buttonTitle: AvatarLoadingError.buttonTitle,
             buttonAction: buttonAction
         )

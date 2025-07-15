@@ -33,21 +33,28 @@ struct AvatarPickerView: View {
                 )
             } content: {
                 Group {
-                    if let error = avatarPickerModel.gridResponseStatus?.error() {
-                        // TODO: Temporally render error message for development puposes.
-                        Text(String(describing: error))
-                    }
-                    if avatarPickerModel.grid.isEmpty && avatarPickerModel.isAvatarsLoading {
-                        ProgressView()
-                            .padding()
-                        Spacer()
-                    } else {
-                        ImagePickerSectionView(onImageSelected: { selectedImage in
-                            Task {
-                                await avatarPickerModel.upload(selectedImage)
+                    ImagePickerSectionView(onImageSelected: { selectedImage in
+                        Task {
+                            await avatarPickerModel.upload(selectedImage)
+                        }
+                    })
+                    .appPadding()
+                    if avatarPickerModel.grid.isEmpty {
+                        if avatarPickerModel.gridResponseStatus?.error() != nil {
+                            ContentLoadingErrorView.avatars {
+                                Task {
+                                    await avatarPickerModel.refresh()
+                                }
                             }
-                        })
-                        .appPadding()
+                            .padding(.top, .DS.Padding.medium)
+                            .padding(.horizontal, .DS.Padding.large)
+                        }
+                        if avatarPickerModel.isAvatarsLoading {
+                            ProgressView()
+                                .padding()
+                            Spacer()
+                        }
+                    } else {
                         gridView()
                             .transition(.opacity)
                     }
