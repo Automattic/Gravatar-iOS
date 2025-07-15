@@ -19,7 +19,7 @@ struct GravatarAppApp: App {
 
     var body: some Scene {
         WindowGroup {
-            WelcomeView(modelContext: modelContext)
+            WelcomeView(viewModel: WelcomeViewModel(context: modelContext))
                 .configureOAuth(
                     clientID: Secrets.clientID,
                     clientSecret: Secrets.clientSecret,

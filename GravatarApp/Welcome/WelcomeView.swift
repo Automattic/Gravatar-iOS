@@ -5,11 +5,9 @@ import SwiftUI
 
 struct WelcomeView: View {
     @StateObject private var viewModel: WelcomeViewModel
-    private var modelContext: ModelContext
 
-    init(modelContext: ModelContext) {
-        self.modelContext = modelContext
-        _viewModel = .init(wrappedValue: WelcomeViewModel(context: modelContext))
+    init(viewModel: WelcomeViewModel, userDefaults: UserDefaults = .standard) {
+        _viewModel = .init(wrappedValue: viewModel)
     }
 
     var body: some View {
@@ -20,7 +18,7 @@ struct WelcomeView: View {
                 loginView
             }
         }
-        .modelContext(modelContext)
+        .modelContext(viewModel.context)
         .onAppear {
             viewModel.softLogin()
         }
@@ -32,7 +30,7 @@ struct WelcomeView: View {
     }
 
     private func rootView(userSession: UserSession) -> some View {
-        RootTabView(userSession: userSession, context: modelContext) {
+        RootTabView(userSession: userSession, context: viewModel.context) {
             Task {
                 await viewModel.logout()
             }
@@ -129,7 +127,7 @@ struct WelcomeView: View {
         }
         .padding(.vertical, 12)
         .background(viewModel.isLoading ? Color(uiColor: .systemFill) : Color.DS.bluishColor)
-        .foregroundStyle(Color(uiColor: .systemBackground))
+        .foregroundStyle(Color.white)
         .clipShape(.capsule)
         .padding(.horizontal, 16)
     }
@@ -190,5 +188,5 @@ extension String {
 }
 
 #Preview {
-    WelcomeView(modelContext: .testContext)
+    WelcomeView(viewModel: .init(context: .testContext))
 }

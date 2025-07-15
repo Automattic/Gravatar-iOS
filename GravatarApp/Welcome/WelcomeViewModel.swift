@@ -6,7 +6,7 @@ import SwiftUI
 
 @MainActor
 class WelcomeViewModel: ObservableObject {
-    @Published var oauthError: Error?
+    @Published var oauthError: OAuthError?
     @Published var profileFetchingError: APIError?
 
     @Published var isLoading: Bool = false
@@ -15,12 +15,12 @@ class WelcomeViewModel: ObservableObject {
     /// This property will have a value only in the case an OAuth request succeed and the profile request fails.
     /// Used to retry the Profile request.
     var localAccessToken: String?
+    let context: ModelContext
 
     private let profileService: any ProfileServiceProtocol
     private let oauthManager: OAuthManager
     private let analytics: Analytics
     private let userDefaults: UserDefaults
-    private let context: ModelContext
 
     init(
         oauthManager: OAuthManager = .shared,
