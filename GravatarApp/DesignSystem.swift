@@ -29,6 +29,7 @@ struct ActionButtonStyle: ButtonStyle {
         case primary
         case secondary
     }
+
     let style: Style
 
     func makeBody(configuration: ButtonStyle.Configuration) -> some View {
@@ -36,7 +37,7 @@ struct ActionButtonStyle: ButtonStyle {
             .font(.subheadline)
             .padding(.horizontal, 24)
             .padding(.vertical, 12)
-            .background(style == .primary ? Color.primary: Color(uiColor: .quaternaryLabel))
+            .background(style == .primary ? Color.primary : Color(uiColor: .quaternaryLabel))
             .foregroundStyle(style == .primary ? Color(uiColor: .systemBackground) : Color.primary)
             .clipShape(.capsule)
     }
