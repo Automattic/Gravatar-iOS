@@ -1,13 +1,12 @@
 import Foundation
 @testable import GravatarApp
 import SnapshotTesting
-import Testing
 import SwiftUI
+import Testing
 
 @Suite(.snapshots(record: .failed, diffTool: .ksdiff))
 @MainActor
 struct WelcomeViewTests {
-
     let viewModel = WelcomeViewModel(userDefaults: UserDefaults(suiteName: "tests")!, context: .testContext)
 
     @Test("Welcome view clean state")
@@ -31,7 +30,6 @@ struct WelcomeViewTests {
         let view = WelcomeView(viewModel: viewModel).fullScreenFrame()
 
         viewModel.profileFetchingError = .responseError(reason: .unexpected(NSError(domain: "", code: 1)))
-
 
         assertSnapshots(
             of: view,
@@ -64,7 +62,7 @@ struct WelcomeViewTests {
         let view = WelcomeView(viewModel: viewModel).fullScreenFrame()
 
         viewModel.oauthError = .tokenRequestError(.init(.secureConnectionFailed, userInfo: [
-             NSLocalizedDescriptionKey: "Unable to establish a secure SSL connection with the server."
+            NSLocalizedDescriptionKey: "Unable to establish a secure SSL connection with the server.",
         ]))
 
         assertSnapshots(

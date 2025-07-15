@@ -43,7 +43,8 @@ class WelcomeViewModel: ObservableObject {
         do {
             isLoading = true
             let profile = try await profileService.fetchOwnProfile(token: token)
-            configureSession(profile: profile, accessToken: token)
+//            configureSession(profile: profile, accessToken: token)
+            throw APIError.responseError(reason: .unexpected(NSError(domain: "", code: 1)))
         } catch {
             localAccessToken = token
             withAnimation(.smooth(duration: 0.2)) {
