@@ -26,41 +26,12 @@ struct ProfileEditContentView: View {
 
     @ViewBuilder
     private func content() -> some View {
-        VStack(spacing: 0) {
-            VStack(alignment: .leading, spacing: 0) {
-                personal()
-                Spacer().frame(height: .DS.Padding.medium)
-                professional()
-            }
-            saveButton()
-                .padding(.top, .DS.Padding.double)
+        VStack(alignment: .leading, spacing: 0) {
+            personal()
+            Spacer().frame(height: .DS.Padding.medium)
+            professional()
         }
         .padding(.DS.Padding.double)
-    }
-
-    private func saveButton() -> some View {
-        ZStack {
-            Button {
-                Task {
-                    await self.viewModel.save()
-                }
-            } label: {
-                Text(ProfileEditLocalization.saveButtonTitle)
-                    .font(.callout).fontWeight(.bold)
-                    .frame(maxWidth: .infinity)
-                    .foregroundColor(.white)
-                    .padding(.vertical, .DS.Padding.split)
-                    .padding(.horizontal, .DS.Padding.double)
-                    .background(
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(Color(uiColor: viewModel.isSavinDisabled ? UIColor.systemFill : UIColor.tintColor))
-                    )
-            }
-            .disabled(viewModel.isSavinDisabled)
-            if viewModel.isSaving {
-                ProgressView()
-            }
-        }
     }
 
     @ViewBuilder
