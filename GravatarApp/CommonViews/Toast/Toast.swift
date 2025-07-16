@@ -2,10 +2,6 @@ import Gravatar
 import SwiftUI
 
 struct Toast: View {
-    private enum Constants {
-        static let backgroundColor = UIColor(light: .label, dark: .rgba(225, 225, 225))
-    }
-
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     private(set) var toast: ToastItem
     private(set) var dismissHandler: (ToastItem) -> Void
@@ -36,7 +32,7 @@ struct Toast: View {
     }
 
     var backgroundColor: Color {
-        Color(Constants.backgroundColor)
+        Color.DS.oppositeBackgroundColor
     }
 
     var foregroundColor: Color {

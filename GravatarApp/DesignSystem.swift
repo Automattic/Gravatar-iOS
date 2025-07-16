@@ -27,6 +27,7 @@ extension Color {
             light: UIColor(red: 0.11, green: 0.31, blue: 0.77, alpha: 1.00),
             dark: UIColor(red: 0.34, green: 0.52, blue: 0.93, alpha: 1.00)
         ))
+        static let oppositeBackgroundColor: Color = .init(uiColor: UIColor(light: .black, dark: .DS.almostWhite))
     }
 }
 
@@ -38,7 +39,7 @@ struct ActionButtonStyle: ButtonStyle {
         var backgroundColor: Color {
             switch self {
             case .primary:
-                Color(uiColor: UIColor(light: .black, dark: .DS.almostWhite))
+                Color.DS.oppositeBackgroundColor
             case .secondary:
                 Color(uiColor: .quaternaryLabel)
             }
