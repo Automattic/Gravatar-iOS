@@ -84,12 +84,13 @@ struct AvatarPickerAvatarView: View {
     }
 
     private func selectedCheckmarkView() -> some View {
-        ZStack {
+        ZStack(alignment: .bottomTrailing) {
             // We want an inner border, so we draw it in the overlay
             RoundedRectangle(cornerRadius: .avatarCornerRadius)
                 .stroke(Color.primary, lineWidth: .selectedBorderWidth)
                 .padding(1)
             CheckmarkCircleView()
+                .padding(10)
                 .transition(.scale)
         }
     }

@@ -92,10 +92,3 @@ struct AvatarImageModelTests {
         }
     }
 }
-
-extension AvatarImageModel {
-    /// This is meant to be used in previews and unit tests only.
-    static func preview_init(id: String, source: Source, state: State = .loaded, isSelected: Bool = false) -> Self {
-        AvatarImageModel(id: id, source: source, state: state, isSelected: isSelected, altText: "")
-    }
-}

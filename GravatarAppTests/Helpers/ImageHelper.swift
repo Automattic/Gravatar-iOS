@@ -5,6 +5,10 @@ enum ImageHelper {
         image(named: "test", type: "png")!
     }
 
+    static var testProfileImage: UIImage {
+        image(named: "test_profile", type: "jpg")!
+    }
+
     static var testImageData: Data {
         dataFromImage(named: "test", type: "png")!
     }
