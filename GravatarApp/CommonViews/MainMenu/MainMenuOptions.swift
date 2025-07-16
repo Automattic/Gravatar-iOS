@@ -1,5 +1,5 @@
-import SwiftUI
 import Gravatar
+import SwiftUI
 
 struct MainMenuOptions: View {
     @Environment(\.openURL) private var openURL
@@ -43,8 +43,6 @@ struct MainMenuOptions: View {
         }
     }
 }
-
-
 
 private enum Localized {
     static let visitProfileTitle: String = NSLocalizedString(

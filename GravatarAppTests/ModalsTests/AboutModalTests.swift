@@ -1,13 +1,13 @@
 import Foundation
 @testable import GravatarApp
 import SnapshotTesting
-import Testing
 import SwiftUI
+import Testing
 
 @Suite(.snapshots(record: .failed, diffTool: .ksdiff))
 @MainActor
 struct AboutModalTests {
-    init () async throws {
+    init() async throws {
         setenv("SNAPSHOT_TESTING", "1", 1)
     }
 

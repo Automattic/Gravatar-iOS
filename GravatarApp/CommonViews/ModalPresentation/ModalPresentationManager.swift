@@ -4,7 +4,7 @@ final class ModalPresentationManager: ObservableObject {
     @Published var content: (() -> AnyView)? = nil
     @Published var isShowingContent: Bool = false
 
-    func present<Content: View>(@ViewBuilder content: @escaping () -> Content) {
+    func present(@ViewBuilder content: @escaping () -> some View) {
         self.content = { AnyView(content()) }
         isShowingContent = true
     }
