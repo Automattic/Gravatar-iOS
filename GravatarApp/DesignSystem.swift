@@ -15,12 +15,19 @@ extension CGFloat {
     }
 }
 
+extension UIColor {
+    enum DS {
+        static let almostWhite: UIColor = .rgba(225, 225, 225)
+    }
+}
+
 extension Color {
     enum DS {
         static let bluishColor = Color(uiColor: UIColor(
             light: UIColor(red: 0.11, green: 0.31, blue: 0.77, alpha: 1.00),
             dark: UIColor(red: 0.34, green: 0.52, blue: 0.93, alpha: 1.00)
         ))
+        static let oppositeBackgroundColor: Color = .init(uiColor: UIColor(light: .black, dark: .DS.almostWhite))
     }
 }
 
@@ -28,6 +35,24 @@ struct ActionButtonStyle: ButtonStyle {
     enum Style {
         case primary
         case secondary
+
+        var backgroundColor: Color {
+            switch self {
+            case .primary:
+                Color.DS.oppositeBackgroundColor
+            case .secondary:
+                Color(uiColor: .quaternaryLabel)
+            }
+        }
+
+        var foregroundColor: Color {
+            switch self {
+            case .primary:
+                Color(uiColor: .systemBackground)
+            case .secondary:
+                Color.primary
+            }
+        }
     }
 
     let style: Style
@@ -37,8 +62,8 @@ struct ActionButtonStyle: ButtonStyle {
             .font(.subheadline)
             .padding(.horizontal, 24)
             .padding(.vertical, 12)
-            .background(style == .primary ? Color.primary : Color(uiColor: .quaternaryLabel))
-            .foregroundStyle(style == .primary ? Color(uiColor: .systemBackground) : Color.primary)
+            .background(style.backgroundColor)
+            .foregroundStyle(style.foregroundColor)
             .clipShape(.capsule)
     }
 }
