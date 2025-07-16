@@ -6,6 +6,7 @@ struct RootTabView: View {
     @StateObject private var avatarPickerViewModel: AvatarPickerViewModel
     @StateObject private var editProfileViewModel: EditProfileViewModel
     @StateObject private var toastManager: ToastManager
+    @StateObject private var modalManager = ModalPresentationManager()
 
     let session: UserSession
 
@@ -41,12 +42,13 @@ struct RootTabView: View {
             .addToastContainer(manager: toastManager)
         }
         .environmentObject(session)
+        .environmentObject(modalManager)
         .onAppear {
             Task {
                 await avatarPickerViewModel.fetchAvatars()
             }
         }
-        .transition(.opacity)
+        .modalPresentation(manager: modalManager)
     }
 }
 
