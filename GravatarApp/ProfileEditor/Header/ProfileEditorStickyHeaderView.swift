@@ -15,7 +15,7 @@ struct ProfileEditorStickyHeaderView: View {
             imageURL: imageURL,
             forceRefresh: $forceRefresh
         ) {
-            HStack(alignment: .top) {
+            HStack(alignment: .center) {
                 avatar()
 
                 profileInfo()
