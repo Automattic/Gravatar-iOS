@@ -33,23 +33,31 @@ struct AvatarPickerView: View {
                 )
             } content: {
                 Group {
-                    if let error = avatarPickerModel.gridResponseStatus?.error() {
-                        // TODO: Temporally render error message for development puposes.
-                        Text(String(describing: error))
+                    ImagePickerSectionView(onImageSelected: { selectedImage in
+                        Task {
+                            await avatarPickerModel.upload(selectedImage)
+                        }
+                    })
+                    .appPadding()
+                    if let gridResponseStatus = avatarPickerModel.gridResponseStatus {
+                        // Grid response has failed AND the grid is empty
+                        if gridResponseStatus.error() != nil && avatarPickerModel.grid.isEmpty {
+                            ContentLoadingErrorView.avatars {
+                                Task {
+                                    await avatarPickerModel.refresh()
+                                }
+                            }
+                            .padding(.top, .DS.Padding.medium)
+                            .padding(.horizontal, .DS.Padding.large)
+                        } else {
+                            gridView()
+                                .transition(.opacity)
+                        }
                     }
                     if avatarPickerModel.grid.isEmpty && avatarPickerModel.isAvatarsLoading {
                         ProgressView()
                             .padding()
                         Spacer()
-                    } else {
-                        ImagePickerSectionView(onImageSelected: { selectedImage in
-                            Task {
-                                await avatarPickerModel.upload(selectedImage)
-                            }
-                        })
-                        .appPadding()
-                        gridView()
-                            .transition(.opacity)
                     }
                 }
             } buttonMenuItems: {
@@ -77,7 +85,7 @@ struct AvatarPickerView: View {
             VStack(alignment: .leading, spacing: 0) {
                 Text(Localized.avatarGridTitle)
                     .font(.headline)
-                Text(Localized.avatarGridSubtext)
+                Text(avatarPickerModel.grid.isEmpty ? Localized.avatarGridEmptySubtext : Localized.avatarGridSubtext)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
@@ -134,8 +142,13 @@ struct AvatarPickerView: View {
         )
         static let avatarGridSubtext = NSLocalizedString(
             "AvatarPicker.Grid.subtext",
-            value: "Tap for options",
+            value: "Tap for options.",
             comment: "A subtext that appears below the avatars grid title"
+        )
+        static let avatarGridEmptySubtext = NSLocalizedString(
+            "AvatarPicker.Grid.Empty.label",
+            value: "Your avatars will show up here.",
+            comment: "A label displayed above an empty avatars grid."
         )
         static let noSelectedAvatar = NSLocalizedString(
             "AvatarPicker.Grid.NoSelectedAvatar",
