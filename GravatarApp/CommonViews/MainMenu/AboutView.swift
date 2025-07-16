@@ -7,7 +7,7 @@ struct AboutView: View {
         VStack(alignment: .leading) {
             title(Localized.aboutTitle)
             Text("v\(getAppVersion())")
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.primary.opacity(0.6))
             title(Localized.getHelpTitle)
             link("support.gravatar.com", url: "https://support.gravatar.com")
             link("support@gravatar.com", url: "mailto:support@gravatar.com")
@@ -35,7 +35,7 @@ struct AboutView: View {
 
     private func link(_ text: String, url: String) -> some View {
         Link(text, destination: URL(string: url)!)
-            .foregroundStyle(.secondary)
+            .foregroundStyle(Color.primary.opacity(0.6))
     }
 
     func getAppVersion() -> String {

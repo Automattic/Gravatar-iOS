@@ -19,7 +19,8 @@ extension View {
                 } else {
                     EmptyView()
                 }
-            }.animation(.smooth(duration: 0.35), value: manager.isShowingContent)
+            }
+            .animation(.smooth(duration: 0.3), value: manager.isShowingContent)
         }
     }
 }
@@ -28,7 +29,7 @@ private struct ModalPresentationTransition: Transition {
     func body(content: Content, phase: TransitionPhase) -> some View {
         content
             .opacity(phase.isIdentity ? 1 : 0)
-            .offset(y: phase.isIdentity ? 0 : 100)
+            .offset(y: phase.isIdentity ? 0 : 150)
             .scaleEffect(phase.isIdentity ? 1 : 0.5)
     }
 }

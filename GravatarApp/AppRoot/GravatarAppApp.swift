@@ -49,3 +49,9 @@ private func resetSwiftDataStore() {
         print("❌ Error deleting SwiftData store: Could not find store file.")
     }
 }
+
+extension ProcessInfo {
+    var isSnapshotTesting: Bool {
+        environment["SNAPSHOT_TESTING"] == "1"
+    }
+}
