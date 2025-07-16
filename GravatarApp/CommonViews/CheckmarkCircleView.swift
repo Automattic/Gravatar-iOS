@@ -25,7 +25,7 @@ struct CheckmarkCircleView: View {
         }
         .scaleEffect(scale)
         .onAppear {
-            withAnimation(.spring(.bouncy(extraBounce: 0.2))) {
+            withAnimation(.spring(.bouncy(extraBounce: 0.1))) {
                 scale = 1.0
             }
         }
