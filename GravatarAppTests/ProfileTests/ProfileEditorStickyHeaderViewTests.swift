@@ -13,7 +13,7 @@ struct ProfileEditorStickyHeaderViewTests {
         let view = ProfileEditorStickyHeaderView(
             profile: profile,
             opacity: 1,
-            safeAreaInsets: .zero,
+            safeAreaInsets: .init(top: 0, leading: 0, bottom: 0, trailing: 0),
             imageURL: URL(string: profile.avatarUrl),
             forceRefresh: .constant(false)
         )
