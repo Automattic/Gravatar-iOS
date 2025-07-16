@@ -20,6 +20,7 @@ struct AboutModalTests {
 
         let view = Color.clear
             .modalPresentation(manager: modalManager)
+            .modalBackground(Color(uiColor: .secondarySystemBackground))
 
         assertSnapshots(
             of: view,
