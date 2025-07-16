@@ -7,6 +7,8 @@ struct ProfileEditorScrollableHeaderView: View {
     let imageURL: URL?
     @Binding var forceRefresh: Bool
 
+    @Environment(\.openURL) var openURL
+
     var body: some View {
         BouncyImageBackgroundHeaderView(
             topPadding: topPadding,
@@ -45,7 +47,10 @@ struct ProfileEditorScrollableHeaderView: View {
     }
 
     func profileURLButton() -> some View {
-        Button {} label: {
+        Button {
+            guard let url = URL(string: profile.profileUrl) else { return }
+            openURL(url)
+        } label: {
             Label {
                 Text(profile.profileUrl.replacingOccurrences(of: "https://", with: ""))
                     .font(.subheadline)
