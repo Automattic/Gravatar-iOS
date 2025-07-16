@@ -53,13 +53,7 @@ struct AvatarPickerView: View {
                     }
                 }
             } buttonMenuItems: {
-                Button(
-                    "Logout",
-                    systemImage: "iphone.and.arrow.forward.outward",
-                    role: .destructive
-                ) {
-                    onLogout()
-                }
+                MainMenuOptions(profile: avatarPickerModel.userSession.profile)
             } onRefresh: {
                 await avatarPickerModel.refresh()
             }
