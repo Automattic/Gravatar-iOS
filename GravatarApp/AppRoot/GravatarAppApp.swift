@@ -6,20 +6,25 @@ import SwiftUI
 struct GravatarAppApp: App {
     var modelContext: ModelContext
     @State private var unrecoberableError: Error?
+    @StateObject private var welcomeViewModel: WelcomeViewModel
 
     init() {
         do {
-            self.modelContext = try ModelContext(ModelContainer(for: ProfileStore.self))
+            let context = try ModelContext(ModelContainer(for: ProfileStore.self))
+            self.modelContext = context
+            _welcomeViewModel = .init(wrappedValue: .init(context: context))
         } catch {
             print("Error creating model context: \(error)")
             resetSwiftDataStore()
-            modelContext = try! ModelContext(ModelContainer(for: ProfileStore.self))
+            let context = try! ModelContext(ModelContainer(for: ProfileStore.self))
+            self.modelContext = context
+            _welcomeViewModel = .init(wrappedValue: .init(context: context))
         }
     }
 
     var body: some Scene {
         WindowGroup {
-            WelcomeView(viewModel: WelcomeViewModel(context: modelContext))
+            WelcomeView(viewModel: welcomeViewModel)
                 .configureOAuth(
                     clientID: Secrets.clientID,
                     clientSecret: Secrets.clientSecret,

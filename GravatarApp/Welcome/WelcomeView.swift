@@ -4,7 +4,7 @@ import SwiftData
 import SwiftUI
 
 struct WelcomeView: View {
-    @StateObject private var viewModel: WelcomeViewModel
+    @ObservedObject private var viewModel: WelcomeViewModel
 
     init(viewModel: WelcomeViewModel, userDefaults: UserDefaults = .standard) {
         _viewModel = .init(wrappedValue: viewModel)
