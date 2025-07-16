@@ -1,8 +1,8 @@
 import SwiftUI
 
 private enum Constants {
-    static let circleSize: CGFloat = 33
-    static let checkmarkImageSize: CGFloat = 20
+    static let circleSize: CGFloat = 20
+    static let checkmarkImageSize: CGFloat = 10
 }
 
 struct CheckmarkCircleView: View {
@@ -15,8 +15,9 @@ struct CheckmarkCircleView: View {
                 .frame(width: Constants.circleSize, height: Constants.circleSize)
                 .overlay(
                     Circle()
-                        .stroke(Color.white, lineWidth: 2)
+                        .stroke(Color.white, lineWidth: 1)
                 )
+                .environment(\.colorScheme, .light)
 
             Image(systemName: "checkmark")
                 .foregroundColor(.white)
@@ -24,7 +25,7 @@ struct CheckmarkCircleView: View {
         }
         .scaleEffect(scale)
         .onAppear {
-            withAnimation(.spring(.bouncy)) {
+            withAnimation(.spring(.bouncy(extraBounce: 0.2))) {
                 scale = 1.0
             }
         }
