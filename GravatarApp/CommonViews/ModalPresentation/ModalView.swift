@@ -12,7 +12,8 @@ struct ModalView<Content: View>: View {
         }
         .scrollBounceBehavior(.basedOnSize)
         .background(.regularMaterial)
-        // Render background on snapshot tests
+        // Render solid color background only on snapshot tests.
+        // Background materials are not rended.
         .if(ProcessInfo.processInfo.isSnapshotTesting) { view in
             view.background(
                 Color(uiColor: .secondarySystemBackground)
