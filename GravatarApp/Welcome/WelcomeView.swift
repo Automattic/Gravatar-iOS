@@ -68,7 +68,8 @@ struct WelcomeView: View {
                     }
                 }
             }
-            .padding(.bottom, 16)
+            .padding(.bottom, .Global.contentBottomPadding)
+            .padding(.horizontal, .Global.contentHorizontalPadding)
         }
     }
 
@@ -129,7 +130,6 @@ struct WelcomeView: View {
         .background(viewModel.isLoading ? Color(uiColor: .systemFill) : Color.DS.bluishColor)
         .foregroundStyle(Color.white)
         .clipShape(.capsule)
-        .padding(.horizontal, 16)
     }
 }
 
