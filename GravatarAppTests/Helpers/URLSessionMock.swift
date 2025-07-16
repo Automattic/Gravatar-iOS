@@ -4,12 +4,14 @@ import GravatarUI
 
 final class URLSessionMock: URLSessionProtocol, @unchecked Sendable {
     static let internetLostErrorMessage: String = "The network connection was lost"
-    let returnErrorCode: Int?
+    var returnErrorCode: Int?
     var shouldSimulateNoNetworkConnection: Bool
+    var shouldFetchEmptyAvatarsGrid: Bool = false
 
-    init(returnErrorCode: Int? = nil, shouldSimulateNoNetworkConnection: Bool = false) {
+    init(returnErrorCode: Int? = nil, shouldSimulateNoNetworkConnection: Bool = false, shouldFetchEmptyAvatarsGrid: Bool = false) {
         self.returnErrorCode = returnErrorCode
         self.shouldSimulateNoNetworkConnection = shouldSimulateNoNetworkConnection
+        self.shouldFetchEmptyAvatarsGrid = shouldFetchEmptyAvatarsGrid
     }
 
     func data(for request: URLRequest) async throws -> (Data, URLResponse) {
@@ -40,7 +42,13 @@ final class URLSessionMock: URLSessionProtocol, @unchecked Sendable {
         if request.isProfilesRequest {
             return (Bundle.fullProfileJsonData, HTTPURLResponse.successResponse()) // Profile data
         } else if request.isAvatarsRequest == true {
-            return (Bundle.getAvatarsJsonData, HTTPURLResponse.successResponse()) // Avatars data
+            if shouldFetchEmptyAvatarsGrid {
+                if let data = "[]".data(using: .utf8) {
+                    return (data, HTTPURLResponse.successResponse())
+                }
+            } else {
+                return (Bundle.getAvatarsJsonData, HTTPURLResponse.successResponse()) // Avatars data
+            }
         }
 
         fatalError("Request not mocked: \(request.url?.absoluteString ?? "unknown request")")
