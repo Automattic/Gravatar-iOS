@@ -41,35 +41,39 @@ struct WelcomeView: View {
     var loginView: some View {
         VStack {
             Spacer()
-            Image(.gravatarLogo).resizable()
-                .aspectRatio(1, contentMode: .fit)
-                .frame(width: 116)
-                .foregroundStyle(Color.DS.bluishColor)
-            Text("Gravatar")
-                .font(.system(size: 50, weight: .heavy))
-            Text(verbatim: .loginSubtitle)
-                .font(.footnote)
-                .foregroundStyle(Color.secondary)
+            logoView
             Spacer()
-            if let error = viewModel.oauthError {
-                errorView(with: error)
-            } else if let error = viewModel.profileFetchingError {
-                errorView(with: error)
-            }
+            errorsSection
             VStack(spacing: 22) {
                 loginButton
                 if viewModel.profileFetchingError != nil {
-                    Button {
-                        Task {
-                            await viewModel.requestOAuthToken()
-                        }
-                    } label: {
-                        Text(verbatim: .loginAnotherAcountButtonTitle)
-                    }
+                    tryAnotherAccountButton
                 }
             }
             .padding(.bottom, .Global.contentBottomPadding)
             .padding(.horizontal, .Global.contentHorizontalPadding)
+        }
+    }
+
+    @ViewBuilder
+    var logoView: some View {
+        Image(.gravatarLogo).resizable()
+            .aspectRatio(1, contentMode: .fit)
+            .frame(width: 116)
+            .foregroundStyle(Color.DS.bluishColor)
+        Text("Gravatar")
+            .font(.system(size: 50, weight: .heavy))
+        Text(verbatim: .loginSubtitle)
+            .font(.footnote)
+            .foregroundStyle(Color.secondary)
+    }
+
+    @ViewBuilder
+    var errorsSection: some View {
+        if let error = viewModel.oauthError {
+            errorView(with: error)
+        } else if let error = viewModel.profileFetchingError {
+            errorView(with: error)
         }
     }
 
@@ -130,6 +134,15 @@ struct WelcomeView: View {
         .background(viewModel.isLoading ? Color(uiColor: .systemFill) : Color.DS.bluishColor)
         .foregroundStyle(Color.white)
         .clipShape(.capsule)
+    }
+
+    @ViewBuilder
+    var tryAnotherAccountButton: some View {
+        Button {
+            viewModel.cleanAllErrors()
+        } label: {
+            Text(verbatim: .loginAnotherAcountButtonTitle)
+        }
     }
 }
 

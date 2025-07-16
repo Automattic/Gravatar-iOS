@@ -109,12 +109,15 @@ class WelcomeViewModel: ObservableObject {
         }
     }
 
-    func requestOAuthToken() async {
-        analytics.track(WelcomeScreenEvent.authButtonPressed)
+    func cleanAllErrors() {
         withAnimation(.smooth(duration: 0.2)) {
             oauthError = nil
             profileFetchingError = nil
         }
+    }
+
+    func requestOAuthToken() async {
+        analytics.track(WelcomeScreenEvent.authButtonPressed)
         localAccessToken = nil
         do {
             isLoading = true
