@@ -13,12 +13,14 @@ struct ShareHeaderView: View {
     @State private var qrImage: UIImage?
 
     private let qrGenerator: QRGenerator
+    private let horizontalSectionSpacing: CGFloat = 22
 
     @State private var buttonsSectionWidth: CGFloat = 0
     @State private var windowWidth: CGFloat = 0
 
     var qrWidth: CGFloat {
-        min(windowWidth - buttonsSectionWidth - 32 - 22, 350)
+        let padding = CGFloat.Global.contentHorizontalPadding
+        return min(windowWidth - buttonsSectionWidth - padding * 2 - horizontalSectionSpacing, 350)
     }
 
     init(profile: Profile, topPadding: CGFloat, imageURL: URL?, forceRefresh: Binding<Bool>) {
@@ -36,19 +38,16 @@ struct ShareHeaderView: View {
             imageURL: imageURL,
             forceRefresh: $forceRefresh
         ) {
-            HStack(alignment: .top, spacing: 22) {
-                VStack(alignment:.leading, spacing: 16) {
+            HStack(alignment: .top, spacing: horizontalSectionSpacing) {
+                VStack(alignment:.leading, spacing: .Global.contentSectionSpacing) {
                     qrCode
-                    Text("Let others scan this QR code to share your contact information.")
-                    Text("buttonsWidth: \(buttonsSectionWidth)")
-                    Text("windowWidth: \(windowWidth)")
-                    Text("qrWidth: \(qrWidth)")
+                    Text(Localized.qrExplanation)
                 }
                 VStack(spacing: 8) {
                     buttonsSection
                 }.contentWidthtReader($buttonsSectionWidth)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .Global.contentHorizontalPadding)
         }
         .contentWidthtReader($windowWidth)
         .onAppear {
@@ -90,6 +89,13 @@ struct ShareHeaderView: View {
             Image(.enlargeIcon)
         }
     }
+}
+
+private enum Localized {
+    static let qrExplanation = NSLocalizedString(
+        "Share.Header.explanation",
+        value: "Let others scan this QR code to share your contact information.",
+        comment: "Message explaining what is the QR code for.")
 }
 
 #if DEBUG
