@@ -14,4 +14,3 @@ struct EllipsisButton: View {
 #Preview {
     EllipsisButton(action: {})
 }
-

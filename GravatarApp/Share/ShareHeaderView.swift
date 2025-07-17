@@ -45,7 +45,7 @@ struct ShareHeaderView: View {
             forceRefresh: $forceRefresh
         ) {
             HStack(alignment: .top, spacing: horizontalSectionSpacing) {
-                VStack(alignment:.leading, spacing: .Global.contentSectionSpacing) {
+                VStack(alignment: .leading, spacing: .Global.contentSectionSpacing) {
                     qrCode
                     Text(Localized.qrExplanation)
                 }
@@ -104,7 +104,8 @@ private enum Localized {
     static let qrExplanation = NSLocalizedString(
         "Share.Header.explanation",
         value: "Let others scan this QR code to share your contact information.",
-        comment: "Message explaining what is the QR code for.")
+        comment: "Message explaining what is the QR code for."
+    )
 }
 
 #if DEBUG
@@ -115,8 +116,8 @@ private enum Localized {
             ShareHeaderView(
                 profile: .testProfile,
                 topPadding:
-                    geo.safeAreaInsets.top == 0 ?
-                16 : geo.safeAreaInsets.top,
+                geo.safeAreaInsets.top == 0 ?
+                    16 : geo.safeAreaInsets.top,
                 imageURL: imageURL,
                 forceRefresh: .constant(false)
             )
