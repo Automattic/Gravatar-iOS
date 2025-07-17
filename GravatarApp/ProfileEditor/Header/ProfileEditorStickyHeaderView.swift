@@ -15,7 +15,7 @@ struct ProfileEditorStickyHeaderView: View {
             imageURL: imageURL,
             forceRefresh: $forceRefresh
         ) {
-            HStack(alignment: .top) {
+            HStack(alignment: .center) {
                 avatar()
 
                 profileInfo()
@@ -39,7 +39,7 @@ struct ProfileEditorStickyHeaderView: View {
     func profileInfo() -> some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(profile.displayName).font(.title3).fontWeight(.semibold)
-            if let profession = profile.professionFullDescription {
+            if let profession = profile.professionFullDescription, !profession.isEmpty {
                 Text(profession).font(.subheadline).foregroundStyle(.secondary)
             }
         }
