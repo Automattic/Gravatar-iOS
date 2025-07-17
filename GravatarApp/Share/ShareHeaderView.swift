@@ -20,7 +20,13 @@ struct ShareHeaderView: View {
 
     var qrWidth: CGFloat {
         let padding = CGFloat.Global.contentHorizontalPadding
-        return min(windowWidth - buttonsSectionWidth - padding * 2 - horizontalSectionSpacing, 350)
+        // We need to set a fixed size for the image for Bouncy to calculate the content
+        // height properly.
+        // We also set a maximum size to not have huge QR codes on iPad.
+        return min(
+            windowWidth - buttonsSectionWidth - padding * 2 - horizontalSectionSpacing,
+            350
+        )
     }
 
     init(profile: Profile, topPadding: CGFloat, imageURL: URL?, forceRefresh: Binding<Bool>) {
@@ -79,6 +85,9 @@ struct ShareHeaderView: View {
         } label: {
             EllipsisButton {}
         }
+        // skip forced dark mode coming from parent view (Bouncy)
+        .environment(\.colorScheme, UITraitCollection.current.userInterfaceStyle == .dark ? .dark : .light)
+
         CircularButton {} image: {
             Image(.shareIcon)
         }
