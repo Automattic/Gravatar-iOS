@@ -106,6 +106,7 @@ struct WelcomeView: View {
                     .multilineTextAlignment(.center)
             }
         }
+        .transition(.offset(y: 60).combined(with: .opacity))
         .padding(.horizontal)
     }
 
@@ -119,11 +120,15 @@ struct WelcomeView: View {
                 }
             }
         } label: {
-            Text(verbatim: viewModel.profileFetchingError == nil ?
-                .loginButtonTitle :
-                .tryAgainButtonTitle
-            )
-            .frame(maxWidth: .infinity)
+            if viewModel.profileFetchingError == nil {
+                Text(verbatim: .loginButtonTitle)
+                    .transition(.offset(y: -44).combined(with: .opacity))
+                    .frame(maxWidth: .infinity)
+            } else {
+                Text(verbatim: .tryAgainButtonTitle)
+                    .transition(.offset(y: 44).combined(with: .opacity))
+                    .frame(maxWidth: .infinity)
+            }
         }
         .overlay {
             if viewModel.isLoading {
@@ -143,6 +148,7 @@ struct WelcomeView: View {
         } label: {
             Text(verbatim: .loginAnotherAcountButtonTitle)
         }
+        .transition(.opacity.combined(with: .offset(y: 60)))
     }
 }
 
