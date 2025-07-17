@@ -13,9 +13,7 @@ class QRGenerator: @unchecked Sendable {
     }
 
     var contactQRCode: UIImage {
-        get  {
-             generateQRCode(from: "contact:\(profile.displayName)")
-        }
+        generateQRCode(from: "contact:\(profile.displayName)")
     }
 
     private func generateQRCode(from string: String) -> UIImage {

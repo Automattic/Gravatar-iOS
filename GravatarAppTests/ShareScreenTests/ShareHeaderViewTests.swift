@@ -10,7 +10,7 @@ struct ShareHeaderViewTests {
     func shareHeaderView() async throws {
         let imageURL = URL(string: "https://1.gravatar.com/avatar/1?size=256")
 
-        let view =  ScrollView {
+        let view = ScrollView {
             ShareHeaderView(
                 profile: .testProfile,
                 topPadding: 16,
