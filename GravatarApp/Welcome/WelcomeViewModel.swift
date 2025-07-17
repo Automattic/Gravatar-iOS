@@ -72,6 +72,13 @@ class WelcomeViewModel: ObservableObject {
         }
     }
 
+    func softLoginConfiguration(profile: Profile, accessToken: String) {
+        userSession = .init(profile: profile, accessToken: accessToken, context: context)
+        Task {
+            await analytics.setUserName(profile.userLogin)
+        }
+    }
+
     func softLogin() {
         guard
             let currentUserHash = userDefaults.string(forKey: .Gravatar.currentUserKey),
@@ -81,7 +88,7 @@ class WelcomeViewModel: ObservableObject {
         let descriptor = FetchDescriptor<ProfileStore>(predicate: #Predicate { $0.userHash == currentUserHash })
 
         if let profile = try? context.fetch(descriptor).first?.profile {
-            configureSession(profile: profile, accessToken: accessToken)
+            softLoginConfiguration(profile: profile, accessToken: accessToken)
         }
 
         Task {
