@@ -27,6 +27,11 @@ struct WelcomeView: View {
                 await viewModel.logout()
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .signOut)) { _ in
+            Task {
+                await viewModel.logout()
+            }
+        }
     }
 
     private func rootView(userSession: UserSession) -> some View {

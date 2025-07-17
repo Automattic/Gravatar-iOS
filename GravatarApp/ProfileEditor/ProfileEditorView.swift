@@ -32,13 +32,7 @@ struct ProfileEditorView: View {
         } content: {
             ProfileEditContentView(viewModel: viewModel)
         } buttonMenuItems: {
-            Button {} label: {
-                Button(
-                    "Logout (not implemented yet)",
-                    systemImage: "iphone.and.arrow.forward.outward",
-                    role: .destructive
-                ) {}
-            }
+            MainMenuOptions(profile: viewModel.userSession.profile)
         } onRefresh: {
             await viewModel.fetchProfile()
         }
