@@ -25,19 +25,22 @@ struct ShareContentView: View {
 
     @State var isFirstAppear = true
 
+    var headerAvatarURL: URL? {
+        AvatarURL(
+            with: .hashID(viewModel.userSession.profile.hash),
+            options: .init(preferredSize: .pixels(256))
+        )?.url
+    }
+
     var body: some View {
         GeometryReader { geometry in
             ScrollView {
                 ShareHeaderView(
-                    forceRefresh: $forceRefresh,
                     profile: userSession.profile,
-                    safeAreaInsets: $safeAreaInsets,
-                    width: geometry.size.width,
-                    maxHeight: geometry.size.height
+                    topPadding: geometry.safeAreaInsets.top,
+                    imageURL: headerAvatarURL,
+                    forceRefresh: $forceRefresh
                 )
-                // Sticky header on scroll bounce
-                .transformEffect(.init(translationX: 0, y: -max(0, -scrollOffset)))
-                .frame(width: geometry.size.width)
                 VStack(spacing: 16) {
                     ShareField(
                         title: Localized.emailFieldTitle,
@@ -59,26 +62,7 @@ struct ShareContentView: View {
                 .padding()
                 Spacer()
             }
-            .scrollOffsetReader($scrollOffset)
-            .scrollBounceBehavior(.basedOnSize)
             .ignoresSafeArea(.container, edges: [.top])
-            // Safe area reader
-            Color.clear
-                .onAppear {
-                    safeAreaInsets = geometry.safeAreaInsets
-                }
-                .onChange(of: geometry.frame(in: .global)) { _, _ in
-                    safeAreaInsets = geometry.safeAreaInsets
-                }
-        }
-        .onAppear {
-            guard !isFirstAppear else {
-                isFirstAppear = false
-                // Skip refresh on first appear, since the image loads from url.
-                return
-            }
-            // Refreshing in consecuent appear in case image selection has changed.
-            forceRefresh = true
         }
     }
 }

@@ -2,125 +2,121 @@ import Gravatar
 import SwiftUI
 
 struct ShareHeaderView: View {
-    @EnvironmentObject var userSession: UserSession
+    let profile: Profile
+    let topPadding: CGFloat
+    let imageURL: URL?
 
     @Binding var forceRefresh: Bool
 
-    let qrGenerator: QRGenerator
-    @State var qrImage: UIImage?
-    @State var contentHeight: CGFloat = 0
-    @State var contentWidth: CGFloat = 0
-    @Binding var safeAreaInsets: EdgeInsets
-    let windowWidth: CGFloat
-    let maxHeight: CGFloat
+    @Environment(\.openURL) var openURL
 
-    private var imageURL: URL? {
-        AvatarURL(
-            with: .hashID(userSession.profile.hash),
-            options: .init(preferredSize: .pixels(Int(contentWidth / 2)))
-        )?.url
+    @State private var qrImage: UIImage?
+
+    private let qrGenerator: QRGenerator
+    private let horizontalSectionSpacing: CGFloat = 22
+
+    @State private var buttonsSectionWidth: CGFloat = 0
+    @State private var windowWidth: CGFloat = 0
+
+    var qrWidth: CGFloat {
+        let padding = CGFloat.Global.contentHorizontalPadding
+        // We need to set a fixed size for the image for Bouncy to calculate the content
+        // height properly.
+        // We also set a maximum size to not have huge QR codes on iPad.
+        return min(
+            windowWidth - buttonsSectionWidth - padding * 2 - horizontalSectionSpacing,
+            350
+        )
     }
 
     init(
-        forceRefresh: Binding<Bool>,
         profile: Profile,
-        safeAreaInsets: Binding<EdgeInsets>,
-        width: CGFloat,
-        maxHeight: CGFloat
+        topPadding: CGFloat,
+        imageURL: URL?,
+        forceRefresh: Binding<Bool>,
     ) {
+        self.profile = profile
+        self.topPadding = topPadding
+        self.imageURL = imageURL
         self._forceRefresh = forceRefresh
         self.qrGenerator = QRGenerator(profile: profile)
-        self._safeAreaInsets = safeAreaInsets
-        self.windowWidth = width
-        self.maxHeight = maxHeight
     }
 
     var body: some View {
-        ZStack(alignment: .top) {
-            backgroundImageView(
-                imageURL: imageURL
+        BouncyImageBackgroundHeaderView(
+            topPadding: topPadding,
+            imageURL: imageURL,
+            forceRefresh: $forceRefresh
+        ) {
+            HStack(alignment: .top, spacing: horizontalSectionSpacing) {
+                VStack(alignment: .leading, spacing: .Global.contentSectionSpacing) {
+                    qrCode
+                    Text(Localized.qrExplanation)
+                }
+                VStack(spacing: 8) {
+                    buttonsSection
+                }.contentWidthtReader($buttonsSectionWidth)
+            }
+            .padding(.horizontal, .Global.contentHorizontalPadding)
+        }
+        .contentWidthtReader($windowWidth)
+    }
+
+    @ViewBuilder
+    var qrCode: some View {
+        Image(uiImage: qrGenerator.contactQRCode)
+            .resizable()
+            .frame(
+                width: qrWidth,
+                height: qrWidth
             )
-            .frame(height: contentHeight)
-            .clipped()
-            backgroundMaterial
-
-            VStack(spacing: 16) {
-                Text("Quickly share your public contact info by letting other scan this QR code.")
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(Color.white)
-                    .frame(width: windowWidth)
-                    .padding()
-
-                if let qrImage {
-                    Image(uiImage: qrImage)
-                        .resizable()
-                        .frame(
-                            maxWidth: min(windowWidth - 24, 400),
-                            maxHeight: min(windowWidth - 24, 400)
-                        )
-                        .scaledToFit()
-                        .cornerRadius(20)
-                        .padding(.bottom, 24)
-                } else {
-                    ProgressView()
-                }
-            }
-            .padding(.leading, safeAreaInsets.leading == 0 ? 24 : safeAreaInsets.leading)
-            .padding(.trailing, safeAreaInsets.trailing == 0 ? 24 : safeAreaInsets.trailing)
-            .padding(.top, safeAreaInsets.top == 0 ? 16 : safeAreaInsets.top)
-            .overlay(GeometryReader { geo in
-                Color.clear
-                    .onChange(of: geo.size) { _, newValue in
-                        contentHeight = newValue.height
-                    }
-            })
-            .frame(maxHeight: maxHeight)
-        }
-        .overlay(GeometryReader { geo in
-            Color.clear
-                .onChange(of: geo.size) { _, newValue in
-                    contentWidth = newValue.width
-                }
-        })
-        .onAppear {
-            Task {
-                qrImage = await qrGenerator.contactQRCode
-            }
-        }
+            .cornerRadius(8)
     }
 
-    private func backgroundImageView(imageURL: URL?) -> some View {
-        HeaderAvatarView(imageURL: imageURL, showLoading: false, forceRefresh: $forceRefresh) {
-            Color.clear
+    @ViewBuilder
+    var buttonsSection: some View {
+        Menu {
+            MainMenuOptions(profile: profile)
+        } label: {
+            EllipsisButton {}
         }
-        .scaledToFill()
-        .clipped()
-    }
+        // skip forced dark mode coming from parent view (Bouncy)
+        .environment(\.colorScheme, UITraitCollection.current.userInterfaceStyle == .dark ? .dark : .light)
 
-    private var backgroundMaterial: some View {
-        Color.clear
-            .ignoresSafeArea()
-            .background(.ultraThinMaterial)
-            .frame(width: contentWidth, height: contentHeight)
-            .environment(\.colorScheme, .dark)
+        CircularButton {} image: {
+            Image(.shareIcon)
+        }
+        CircularButton {} image: {
+            Image(.downloadIcon)
+        }
+        CircularButton {} image: {
+            Image(.enlargeIcon)
+        }
     }
+}
+
+private enum Localized {
+    static let qrExplanation = NSLocalizedString(
+        "Share.Header.explanation",
+        value: "Let others scan this QR code to share your contact information.",
+        comment: "Message explaining what is the QR code for."
+    )
 }
 
 #if DEBUG
 #Preview {
-    GeometryReader { geometry in
+    let imageURL = URL(string: "https://1.gravatar.com/avatar/1?size=256")
+    GeometryReader { geo in
         ScrollView {
             ShareHeaderView(
-                forceRefresh: .constant(false),
                 profile: .testProfile,
-                safeAreaInsets: .constant(geometry.safeAreaInsets),
-                width: geometry.size.width,
-                maxHeight: geometry.size.height
+                topPadding:
+                geo.safeAreaInsets.top == 0 ?
+                    16 : geo.safeAreaInsets.top,
+                imageURL: imageURL,
+                forceRefresh: .constant(false)
             )
-            .environmentObject(UserSession(profile: .testProfile, accessToken: "", context: .testContext))
-            .frame(width: geometry.size.width)
-        }
-        .ignoresSafeArea()
+        }.ignoresSafeArea()
     }
 }
 #endif

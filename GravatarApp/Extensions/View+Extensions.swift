@@ -13,6 +13,18 @@ extension View {
         )
     }
 
+    func contentWidthtReader(_ width: Binding<CGFloat>) -> some View {
+        self.background(
+            GeometryReader { geo in
+                Color.clear.onChange(of: geo.size) { _, value in
+                    width.wrappedValue = value.width
+                }.onAppear {
+                    width.wrappedValue = geo.size.width
+                }
+            }
+        )
+    }
+
     func scrollOffsetReader(_ offset: Binding<CGFloat>) -> some View {
         if #available(iOS 18.0, *) {
             return self.onScrollGeometryChange(for: CGFloat.self, of: { geometry in

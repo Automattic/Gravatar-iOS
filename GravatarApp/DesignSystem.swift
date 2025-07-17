@@ -19,6 +19,7 @@ extension CGFloat {
     enum Global {
         public static let contentHorizontalPadding: CGFloat = .DS.Padding.double
         public static let contentBottomPadding: CGFloat = .DS.Padding.double
+        public static let contentSectionSpacing: CGFloat = .DS.Padding.double
     }
 }
 
