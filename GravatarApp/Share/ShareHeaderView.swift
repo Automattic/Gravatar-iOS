@@ -29,12 +29,16 @@ struct ShareHeaderView: View {
         )
     }
 
-    init(profile: Profile, topPadding: CGFloat, imageURL: URL?, forceRefresh: Binding<Bool>) {
+    init(
+        profile: Profile,
+        topPadding: CGFloat,
+        imageURL: URL?,
+        forceRefresh: Binding<Bool>,
+    ) {
         self.profile = profile
         self.topPadding = topPadding
         self.imageURL = imageURL
         self._forceRefresh = forceRefresh
-
         self.qrGenerator = QRGenerator(profile: profile)
     }
 
@@ -56,26 +60,17 @@ struct ShareHeaderView: View {
             .padding(.horizontal, .Global.contentHorizontalPadding)
         }
         .contentWidthtReader($windowWidth)
-        .onAppear {
-            Task {
-                qrImage = await qrGenerator.contactQRCode
-            }
-        }
     }
 
     @ViewBuilder
     var qrCode: some View {
-        if let qrImage {
-            Image(uiImage: qrImage)
-                .resizable()
-                .frame(
-                    width: qrWidth,
-                    height: qrWidth
-                )
-                .cornerRadius(8)
-        } else {
-            ProgressView()
-        }
+        Image(uiImage: qrGenerator.contactQRCode)
+            .resizable()
+            .frame(
+                width: qrWidth,
+                height: qrWidth
+            )
+            .cornerRadius(8)
     }
 
     @ViewBuilder
