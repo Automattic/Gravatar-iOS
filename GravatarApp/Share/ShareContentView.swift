@@ -55,6 +55,7 @@ struct ShareContentView: View {
                         selected: viewModel.share.$contactForm
                     )
                 }
+                .readableContentWidth()
                 .padding()
                 Spacer()
             }
