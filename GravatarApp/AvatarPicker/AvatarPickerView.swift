@@ -60,6 +60,7 @@ struct AvatarPickerView: View {
                         Spacer()
                     }
                 }
+                .readableContentWidth()
             } buttonMenuItems: {
                 MainMenuOptions(profile: avatarPickerModel.userSession.profile)
             } onRefresh: {

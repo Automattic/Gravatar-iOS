@@ -31,6 +31,7 @@ struct ProfileEditorView: View {
             )
         } content: {
             ProfileEditContentView(viewModel: viewModel)
+                .readableContentWidth()
         } buttonMenuItems: {
             MainMenuOptions(profile: viewModel.userSession.profile)
         } onRefresh: {
