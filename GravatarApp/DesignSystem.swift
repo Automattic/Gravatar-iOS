@@ -15,6 +15,13 @@ extension CGFloat {
     }
 }
 
+extension CGFloat {
+    enum Global {
+        public static let contentHorizontalPadding: CGFloat = .DS.Padding.double
+        public static let contentBottomPadding: CGFloat = .DS.Padding.double
+    }
+}
+
 extension UIColor {
     enum DS {
         static let almostWhite: UIColor = .rgba(225, 225, 225)
