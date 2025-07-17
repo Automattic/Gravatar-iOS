@@ -4,25 +4,21 @@ import SwiftData
 import SwiftUI
 
 struct WelcomeView: View {
-    @StateObject private var viewModel: WelcomeViewModel
-    private var modelContext: ModelContext
+    @ObservedObject private var viewModel: WelcomeViewModel
 
-    init(modelContext: ModelContext) {
-        self.modelContext = modelContext
-        _viewModel = .init(wrappedValue: WelcomeViewModel(context: modelContext))
+    init(viewModel: WelcomeViewModel, userDefaults: UserDefaults = .standard) {
+        _viewModel = .init(wrappedValue: viewModel)
     }
 
     var body: some View {
         Group {
             if let userSession = viewModel.userSession {
                 rootView(userSession: userSession)
-            } else if viewModel.hasUser || viewModel.isLoading {
-                ProgressView()
             } else {
                 loginView
             }
         }
-        .modelContext(modelContext)
+        .modelContext(viewModel.context)
         .onAppear {
             viewModel.softLogin()
         }
@@ -39,7 +35,7 @@ struct WelcomeView: View {
     }
 
     private func rootView(userSession: UserSession) -> some View {
-        RootTabView(userSession: userSession, context: modelContext) {
+        RootTabView(userSession: userSession, context: viewModel.context) {
             Task {
                 await viewModel.logout()
             }
@@ -50,30 +46,114 @@ struct WelcomeView: View {
     var loginView: some View {
         VStack {
             Spacer()
-            Text("Gravatar")
-                .font(.largeTitle)
+            logoView
             Spacer()
-            Button("Login") {
-                Task {
-                    await viewModel.requestOAuthToken()
+            errorsSection
+            VStack(spacing: 22) {
+                loginButton
+                if viewModel.profileFetchingError != nil {
+                    tryAnotherAccountButton
                 }
-            }.buttonStyle(.borderedProminent)
-            Spacer()
-            if let error = viewModel.oauthError {
-                errorView(with: error)
-            } else if let error = viewModel.profileFetchingError {
-                errorView(with: error)
             }
+            .padding(.bottom, .Global.contentBottomPadding)
+            .padding(.horizontal, .Global.contentHorizontalPadding)
+        }
+    }
+
+    @ViewBuilder
+    var logoView: some View {
+        Image(.gravatarLogo).resizable()
+            .aspectRatio(1, contentMode: .fit)
+            .frame(width: 116)
+            .foregroundStyle(Color.DS.bluishColor)
+        Text("Gravatar")
+            .font(.system(size: 50, weight: .heavy))
+        Text(verbatim: .loginSubtitle)
+            .font(.footnote)
+            .foregroundStyle(Color.secondary)
+    }
+
+    @ViewBuilder
+    var errorsSection: some View {
+        if let error = viewModel.oauthError {
+            errorView(with: error)
+        } else if let error = viewModel.profileFetchingError {
+            errorView(with: error)
         }
     }
 
     @ViewBuilder
     func errorView(with error: Error) -> some View {
-        Text(String(describing: error)).onAppear {
-            // Temporary for dev purposes
-            print("Error: \(error)")
+        switch error {
+        case let error as OAuthError where error.isAccessDenied:
+            errorView(title: .oauthDeniedErrorMessage)
+        case OAuthError.tokenRequestError(let urlError):
+            // If the connection is not secure, OAuth will return a URLError.
+            errorView(title: .oauthGenericErrorMessage, subtitle: urlError.localizedDescription)
+        case APIError.responseError(reason: let reason) where reason.urlSessionErrorLocalizedDescription != nil:
+            errorView(title: .profileErrorTitle, subtitle: reason.urlSessionErrorLocalizedDescription)
+        case is APIError:
+            errorView(title: .profileErrorTitle, subtitle: .profileErrorMessage)
+        default:
+            EmptyView()
         }
-        Spacer()
+    }
+
+    func errorView(title: String, subtitle: String? = nil) -> some View {
+        VStack {
+            Text(title)
+                .font(.subheadline)
+                .fontWeight(.semibold)
+            if let subtitle {
+                Text(subtitle)
+                    .font(.footnote)
+                    .foregroundStyle(Color.secondary)
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .transition(.offset(y: 60).combined(with: .opacity))
+        .padding(.horizontal)
+    }
+
+    var loginButton: some View {
+        Button {
+            Task {
+                if viewModel.profileFetchingError != nil, let token = viewModel.localAccessToken {
+                    await viewModel.fetchProfile(with: token)
+                } else {
+                    await viewModel.requestOAuthToken()
+                }
+            }
+        } label: {
+            if viewModel.profileFetchingError == nil {
+                Text(verbatim: .loginButtonTitle)
+                    .transition(.offset(y: -44).combined(with: .opacity))
+                    .frame(maxWidth: .infinity)
+            } else {
+                Text(verbatim: .tryAgainButtonTitle)
+                    .transition(.offset(y: 44).combined(with: .opacity))
+                    .frame(maxWidth: .infinity)
+            }
+        }
+        .overlay {
+            if viewModel.isLoading {
+                ProgressView()
+            }
+        }
+        .padding(.vertical, 12)
+        .background(viewModel.isLoading ? Color(uiColor: .systemFill) : Color.DS.bluishColor)
+        .foregroundStyle(Color.white)
+        .clipShape(.capsule)
+    }
+
+    @ViewBuilder
+    var tryAnotherAccountButton: some View {
+        Button {
+            viewModel.cleanAllErrors()
+        } label: {
+            Text(verbatim: .loginAnotherAcountButtonTitle)
+        }
+        .transition(.opacity.combined(with: .offset(y: 60)))
     }
 }
 
@@ -81,8 +161,56 @@ extension String {
     enum Gravatar {
         static let currentUserKey = "com.gravatar.currentUser"
     }
+
+    static let loginSubtitle = NSLocalizedString(
+        "Welcome.Logo.subtitle",
+        value: "Your globally recognized avatar.",
+        comment: "Subtitle for the login screen"
+    )
+
+    static let loginButtonTitle = NSLocalizedString(
+        "Welcome.Login.MainButton.title",
+        value: "Login",
+        comment: "Title for the main login button."
+    )
+
+    static let tryAgainButtonTitle = NSLocalizedString(
+        "Welcome.Login.TryAgainButton.title",
+        value: "Try again",
+        comment: "Title for the button to try again after a login failure."
+    )
+
+    static let loginAnotherAcountButtonTitle = NSLocalizedString(
+        "Welcome.Login.AnotherAccountButton.title",
+        value: "Try with another account",
+        comment: "Title for the button to login with another account."
+    )
+
+    static let oauthDeniedErrorMessage = NSLocalizedString(
+        "Welcome.Error.OAuth.Denied.message",
+        value: "You need to log in to Gravatar.com.",
+        comment: "Message for the error when OAuth is denied by the user."
+    )
+
+    static let oauthGenericErrorMessage = NSLocalizedString(
+        "Welcome.Error.OAuth.Generic.message",
+        value: "Unable to request access.",
+        comment: "Generic error message when OAuth fails."
+    )
+
+    static let profileErrorTitle = NSLocalizedString(
+        "Welcome.Error.Profile.title",
+        value: "Unable to load your profile.",
+        comment: "Title for the error when the profile fetch fails."
+    )
+
+    static let profileErrorMessage = NSLocalizedString(
+        "Welcome.Error.Profile.Generic.message",
+        value: "There was an unknown issue loading your profile.",
+        comment: "Generic error message when the profile fetch fails for an unkonwn reason."
+    )
 }
 
 #Preview {
-    WelcomeView(modelContext: .testContext)
+    WelcomeView(viewModel: .init(context: .testContext))
 }
