@@ -1,6 +1,6 @@
 import Gravatar
-import SwiftUI
 import QuickLook
+import SwiftUI
 
 struct ShareContentView: View {
     @ObservedObject var viewModel: ShareViewModel
@@ -42,7 +42,11 @@ struct ShareContentView: View {
             placeholder: Localized.emailFieldTitle,
             selected: viewModel.share.$email
         )
+        .textContentType(.emailAddress)
         .keyboardType(.emailAddress)
+        .autocorrectionDisabled()
+        .autocapitalization(.none)
+
         ShareTextField(
             text: viewModel.$storedPhoneNumber,
             placeholder: Localized.phoneNumberFieldTitle,

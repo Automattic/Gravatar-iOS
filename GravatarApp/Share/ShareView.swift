@@ -1,6 +1,6 @@
 import Gravatar
-import SwiftUI
 import QuickLook
+import SwiftUI
 
 struct ShareView: View {
     @ObservedObject var viewModel: ShareViewModel

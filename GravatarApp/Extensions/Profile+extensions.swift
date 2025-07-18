@@ -32,6 +32,6 @@ extension Profile {
     }
 
     var fullName: String? {
-        [firstName, lastName].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " ")
+        [firstName, lastName].compactMap(\.self).filter { !$0.isEmpty }.joined(separator: " ")
     }
 }
