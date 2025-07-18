@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ShareField: View {
-    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.isEnabled) var isEnabled
 
     let title: String
     let value: String
@@ -9,20 +9,20 @@ struct ShareField: View {
     @Binding var selected: Bool
 
     var body: some View {
-        HStack {
+        Toggle(isOn: $selected) {
             VStack(alignment: .leading) {
                 Text(title)
-                    .font(.subheadline)
-                Toggle(isOn: $selected) {
-                    TextField("", text: .constant(value))
-                        .styleTextField(colorScheme: colorScheme)
-                        .disabled(true)
-                }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text(value)
             }
+            .opacity(isEnabled ? 1 : 0.5)
         }
+        .disabled(!isEnabled)
     }
 }
 
 #Preview {
     ShareField(title: "Public email", value: "some@email.com", selected: .constant(false))
+        .padding()
 }

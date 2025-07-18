@@ -54,6 +54,15 @@ extension View {
         }
     }
 
+    @ViewBuilder
+    func `if`<T>(_ condition: T?, transform: (Self, T) -> some View) -> some View {
+        if let condition {
+            transform(self, condition)
+        } else {
+            self
+        }
+    }
+
     func styleTextField(colorScheme: ColorScheme) -> some View {
         self
             .font(.subheadline)
