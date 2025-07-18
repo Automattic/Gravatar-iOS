@@ -5,57 +5,34 @@ import QuickLook
 struct ShareContentView: View {
     @ObservedObject var viewModel: ShareViewModel
 
-    @State var forceRefresh: Bool = false
-
-    var headerAvatarURL: URL? {
-        AvatarURL(
-            with: .hashID(viewModel.userSession.profile.hash),
-            options: .init(preferredSize: .pixels(256))
-        )?.url
-    }
-
     var body: some View {
-        GeometryReader { geometry in
-            ScrollView {
-                ShareHeaderView(
-                    profile: viewModel.userSession.profile,
-                    topPadding: geometry.safeAreaInsets.top,
-                    imageURL: headerAvatarURL,
-                    forceRefresh: $forceRefresh
-                )
+        VStack(spacing: 16) {
+            sectionTitle(
+                text: Localized.privateFieldsSectionTitle,
+                image: .lock
+            )
 
-                VStack(spacing: 16) {
-                    sectionTitle(
-                        text: Localized.privateFieldsSectionTitle,
-                        image: .lock
-                    )
+            privateSection
 
-                    privateSection
+            Divider()
+                .padding(.top)
 
-                    Divider()
-                        .padding(.top)
+            sectionTitle(
+                text: Localized.gravatarFieldsSectionTitle,
+                image: .gravatarLogo,
+                imageColor: .DS.bluishColor
+            )
+            .padding(.vertical)
 
-                    sectionTitle(
-                        text: Localized.gravatarFieldsSectionTitle,
-                        image: .gravatarLogo,
-                        imageColor: .DS.bluishColor
-                    )
-                    .padding(.vertical)
+            gravatarFieldsSection(profile: viewModel.userSession.profile)
 
-                    gravatarFieldsSection(profile: viewModel.userSession.profile)
+            Divider()
+                .padding(.bottom)
 
-                    Divider()
-                        .padding(.bottom)
-
-                    previewSection
-                }
-                .padding()
-                .readableContentWidth()
-            }
-            .ignoresSafeArea(.container, edges: [.top, .horizontal])
-            .scrollDismissesKeyboard(.interactively)
+            previewSection
         }
-        .quickLookPreview($viewModel.contactPreviewURL)
+        .padding()
+        .readableContentWidth()
     }
 
     @ViewBuilder
@@ -134,13 +111,15 @@ struct ShareContentView: View {
 
 #if DEBUG
 #Preview {
-    ShareContentView(
-        viewModel: .init(userSession: .init(
-            profile: .testProfile,
-            accessToken: "",
-            context: .testContext
-        ))
-    )
+    ScrollView {
+        ShareContentView(
+            viewModel: .init(userSession: .init(
+                profile: .testProfile,
+                accessToken: "",
+                context: .testContext
+            ))
+        )
+    }
 }
 #endif
 

@@ -5,6 +5,7 @@ import SwiftUI
 struct RootTabView: View {
     @StateObject private var avatarPickerViewModel: AvatarPickerViewModel
     @StateObject private var editProfileViewModel: EditProfileViewModel
+    @StateObject private var shareViewModel: ShareViewModel
     @StateObject private var toastManager: ToastManager
     @StateObject private var modalManager = ModalPresentationManager()
 
@@ -21,6 +22,7 @@ struct RootTabView: View {
 
         _avatarPickerViewModel = StateObject(wrappedValue: AvatarPickerViewModel(userSession: userSession, toastManager: toastManager))
         _editProfileViewModel = StateObject(wrappedValue: EditProfileViewModel(userSession: userSession, toastManager: toastManager))
+        _shareViewModel = StateObject(wrappedValue: ShareViewModel(userSession: userSession))
     }
 
     var body: some View {
@@ -36,7 +38,7 @@ struct RootTabView: View {
 
                 // MARK: - Third tab
 
-                ShareTab()
+                ShareTab(viewModel: shareViewModel)
             }
             // Needed to be added inside the TabView for the toast to follow the bottom safe area guide.
             .addToastContainer(manager: toastManager)
@@ -80,12 +82,12 @@ struct ProfileTab: View {
 }
 
 struct ShareTab: View {
-    @EnvironmentObject var userSession: UserSession
+    @ObservedObject var viewModel: ShareViewModel
 
     var body: some View {
         NavigationStack {
             BackgroundColorView(color: .secondarySystemBackground) {
-                ShareContentView(viewModel: ShareViewModel(userSession: userSession))
+                ShareView(viewModel: viewModel)
             }
         }
         .background(Color(uiColor: .secondarySystemBackground))
