@@ -6,7 +6,7 @@ struct ShareContentView: View {
     @ObservedObject var viewModel: ShareViewModel
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: .Global.verticalSectionSpacing) {
             sectionTitle(
                 text: Localized.privateFieldsSectionTitle,
                 image: .lock

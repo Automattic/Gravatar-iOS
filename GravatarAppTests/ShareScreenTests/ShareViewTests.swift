@@ -1,3 +1,4 @@
+import Foundation
 @testable import GravatarApp
 import SnapshotTesting
 import Testing
@@ -5,6 +6,13 @@ import Testing
 @Suite(.snapshots(record: .failed, diffTool: .ksdiff))
 @MainActor
 struct ShareViewTests {
+    init() async throws {
+        // Remove data stored in `@AppStorage()`
+        if let bundleID = Bundle.main.bundleIdentifier {
+            UserDefaults.standard.removePersistentDomain(forName: bundleID)
+        }
+    }
+
     @Test
     func shareContent() async throws {
         let view = ShareContentView(viewModel: .init(userSession: .init(profile: .full, accessToken: "", context: .testContext)))
