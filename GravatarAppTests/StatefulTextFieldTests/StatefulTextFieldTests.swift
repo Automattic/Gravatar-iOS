@@ -22,13 +22,12 @@ struct StatefulTextFieldTests {
     func differentStates(config: Config) async throws {
         let view = StatefulTextField(
             isLarge: config.isLarge,
-            accessibilityLabel: "label",
             fieldIdentifier: "identifier",
             value: .constant("input text"),
-            isDisabled: { config.isDisabled },
             hasUnsavedChanges: { config.hasUnsavedChanges },
             forceFocusedState: config.isFocused
         )
+        .disabled(config.isDisabled)
         .fixedSize(horizontal: false, vertical: true)
         .frame(width: ViewImageConfig.iPhone13Pro.size?.width ?? 0)
         .padding()

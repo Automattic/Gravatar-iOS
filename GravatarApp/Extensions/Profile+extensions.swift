@@ -7,11 +7,13 @@ extension Profile {
         let rawProfile: [String: Any] = [
             "hash": "hash",
             "display_name": "John Appleseed",
+            "first_name": "John",
+            "last_name": "Appleseed",
             "profile_url": "https://gravatar.com/johnappleseed",
             "avatar_url": "",
             "avatar_alt_text": "",
             "location": "Vestal, NY",
-            "description": "",
+            "description": "Some long description which will hopefully generate multiline labels all around the app.",
             "job_title": "Software Engineer",
             "company": "Automattic",
             "verified_accounts": [],
@@ -27,5 +29,9 @@ extension Profile {
 extension Profile {
     var professionFullDescription: String? {
         [jobTitle, company].filter { !$0.isEmpty }.joined(separator: ", ")
+    }
+
+    var fullName: String? {
+        [firstName, lastName].compactMap(\.self).filter { !$0.isEmpty }.joined(separator: " ")
     }
 }

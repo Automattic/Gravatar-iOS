@@ -103,12 +103,12 @@ struct ProfileEditContentView: View {
 
             StatefulTextField(
                 isLarge: isLarge,
-                accessibilityLabel: field.localizedTitle,
                 fieldIdentifier: field.rawValue,
                 value: value,
-                isDisabled: { viewModel.isSaving },
+                accessibilityLabel: field.localizedTitle,
                 hasUnsavedChanges: { viewModel.hasDifference(in: field) }
             )
+            .disabled(viewModel.isSaving)
 
             if let footerText {
                 Text(footerText)

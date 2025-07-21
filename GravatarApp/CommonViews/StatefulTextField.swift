@@ -14,53 +14,68 @@ struct StatefulTextField: View {
     /// Whether to use a multiline/singleline text input
     let isLarge: Bool
     /// The accessibilityLabel
-    let accessibilityLabel: String
+    let accessibilityLabel: String?
     /// Used to identify the focused field on the parent
     let fieldIdentifier: String
+    /// Placeholder text
+    let placeholder: String?
     /// Value of the text input
     @Binding var value: String
-    /// If the text input should be disabled
-    let isDisabled: () -> Bool
     /// If the text has unsaved changes
-    let hasUnsavedChanges: () -> Bool
+    let hasUnsavedChanges: (() -> Bool)?
     /// To mock the focused state for unit testing
-    var forceFocusedState: Bool = false
+    let forceFocusedState: Bool
 
     @FocusState private var isFocused: Bool
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
+    @Environment(\.isEnabled) var isEnabled
+
+    init(
+        isLarge: Bool = false,
+        fieldIdentifier: String,
+        placeholder: String? = nil,
+        value: Binding<String>,
+        accessibilityLabel: String? = nil,
+        hasUnsavedChanges: (() -> Bool)? = nil,
+        forceFocusedState: Bool = false
+    ) {
+        self.isLarge = isLarge
+        self.accessibilityLabel = accessibilityLabel
+        self.fieldIdentifier = fieldIdentifier
+        self.placeholder = placeholder
+        self._value = value
+        self.hasUnsavedChanges = hasUnsavedChanges
+        self.forceFocusedState = forceFocusedState
+        self.isFocused = isFocused
+    }
 
     var body: some View {
-        if isLarge {
-            TextEditor(text: $value)
-                .font(Constants.textInputFont)
-                .multilineTextAlignment(.leading)
-                .padding(.horizontal, .DS.Padding.single)
-                .frame(height: dynamicTypeSize >= .accessibility1 ? 150 : 120)
-                .disabled(isDisabled())
-                .accessibilityLabel(accessibilityLabel)
-                .padding(.vertical, 0)
-                .background(backgroundColor)
-                .scrollContentBackground(.hidden)
-                .cornerRadius(Constants.textInputCornerRadius)
-                .focused($isFocused)
-                .focusedBorder(isFocused: shouldShowFocusedStyle)
-                .focusedValue(\.focusedField, isFocused ? fieldIdentifier : nil)
-        } else {
-            TextField(
-                "",
-                text: $value
-            )
-            .font(Constants.textInputFont)
-            .padding(.DS.Padding.split)
-            .disabled(isDisabled())
-            .accessibilityLabel(accessibilityLabel)
-            .background(backgroundColor)
-            .cornerRadius(Constants.textInputCornerRadius)
-            .focused($isFocused)
-            .focusedBorder(isFocused: shouldShowFocusedStyle)
-            .focusedValue(\.focusedField, isFocused ? fieldIdentifier : nil)
+        Group {
+            if isLarge {
+                TextEditor(text: $value)
+                    .multilineTextAlignment(.leading)
+                    .padding(.horizontal, .DS.Padding.single)
+                    .frame(height: dynamicTypeSize >= .accessibility1 ? 150 : 120)
+                    .padding(.vertical, 0)
+                    .scrollContentBackground(.hidden)
+            } else {
+                TextField(
+                    placeholder ?? "",
+                    text: $value
+                )
+                .padding(.DS.Padding.split)
+            }
         }
+        .font(Constants.textInputFont)
+        .disabled(!isEnabled)
+        .accessibilityLabel(accessibilityLabel ?? placeholder ?? "")
+        .background(backgroundColor)
+        .cornerRadius(Constants.textInputCornerRadius)
+        .focused($isFocused)
+        .focusedBorder(isFocused: shouldShowFocusedStyle)
+        .focusedValue(\.focusedField, isFocused ? fieldIdentifier : nil)
+        .opacity(isEnabled ? 1 : 0.3)
     }
 
     private var shouldShowFocusedStyle: Bool {
@@ -68,7 +83,7 @@ struct StatefulTextField: View {
     }
 
     private var backgroundColor: Color {
-        if hasUnsavedChanges() {
+        if hasUnsavedChanges?() ?? false {
             Color(uiColor: Constants.focusedTextBorderColor).opacity(0.1)
         } else if shouldShowFocusedStyle {
             .clear
@@ -102,12 +117,39 @@ extension FocusedValues {
 }
 
 #Preview {
-    StatefulTextField(
-        isLarge: false,
-        accessibilityLabel: "Accessibility Label",
-        fieldIdentifier: "name",
-        value: .constant("value"),
-        isDisabled: { false },
-        hasUnsavedChanges: { false }
-    )
+    VStack {
+        StatefulTextField(
+            isLarge: false,
+            fieldIdentifier: "name",
+            value: .constant("value"),
+            accessibilityLabel: "Accessibility Label",
+            hasUnsavedChanges: { false }
+        )
+
+        StatefulTextField(
+            isLarge: false,
+            fieldIdentifier: "name",
+            value: .constant("value"),
+            accessibilityLabel: "Accessibility Label",
+            hasUnsavedChanges: { false }
+        )
+        .disabled(true)
+
+        StatefulTextField(
+            isLarge: false,
+            fieldIdentifier: "name",
+            placeholder: "This is a placeholder",
+            value: .constant(""),
+            accessibilityLabel: "Accessibility Label",
+            hasUnsavedChanges: { false }
+        )
+
+        StatefulTextField(
+            isLarge: true,
+            fieldIdentifier: "name",
+            value: .constant("value"),
+            accessibilityLabel: "Accessibility Label",
+            hasUnsavedChanges: { false }
+        )
+    }.padding()
 }

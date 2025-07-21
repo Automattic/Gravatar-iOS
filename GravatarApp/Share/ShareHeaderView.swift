@@ -49,7 +49,7 @@ struct ShareHeaderView: View {
             forceRefresh: $forceRefresh
         ) {
             HStack(alignment: .top, spacing: horizontalSectionSpacing) {
-                VStack(alignment: .leading, spacing: .Global.contentSectionSpacing) {
+                VStack(alignment: .leading, spacing: .Global.verticalSectionSpacing) {
                     qrCode
                     Text(Localized.qrExplanation)
                 }
