@@ -1,7 +1,7 @@
 import Gravatar
 import SwiftUI
 
-struct ShareHeaderView: View {
+struct ShareHeaderView<QRImage: View>: View {
     let profile: Profile
     let topPadding: CGFloat
     let imageURL: URL?
@@ -10,9 +10,8 @@ struct ShareHeaderView: View {
 
     @Environment(\.openURL) var openURL
 
-    @State private var qrImage: UIImage?
+    private var qrImage: () -> QRImage
 
-    private let qrGenerator: QRGenerator
     private let horizontalSectionSpacing: CGFloat = 22
 
     @State private var buttonsSectionWidth: CGFloat = 0
@@ -31,6 +30,7 @@ struct ShareHeaderView: View {
 
     init(
         profile: Profile,
+        qrImage: @escaping () -> QRImage,
         topPadding: CGFloat,
         imageURL: URL?,
         forceRefresh: Binding<Bool>,
@@ -39,7 +39,7 @@ struct ShareHeaderView: View {
         self.topPadding = topPadding
         self.imageURL = imageURL
         self._forceRefresh = forceRefresh
-        self.qrGenerator = QRGenerator(profile: profile)
+        self.qrImage = qrImage
     }
 
     var body: some View {
@@ -64,8 +64,7 @@ struct ShareHeaderView: View {
 
     @ViewBuilder
     var qrCode: some View {
-        Image(uiImage: qrGenerator.contactQRCode)
-            .resizable()
+        qrImage()
             .frame(
                 width: qrWidth,
                 height: qrWidth
@@ -110,6 +109,7 @@ private enum Localized {
         ScrollView {
             ShareHeaderView(
                 profile: .testProfile,
+                qrImage: { Image(systemName: "qrcode.viewfinder") },
                 topPadding:
                 geo.safeAreaInsets.top == 0 ?
                     16 : geo.safeAreaInsets.top,

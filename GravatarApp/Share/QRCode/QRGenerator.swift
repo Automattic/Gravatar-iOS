@@ -1,33 +1,44 @@
 import CoreImage.CIFilterBuiltins
 import Gravatar
-import UIKit
+import SwiftUI
 
-class QRGenerator: @unchecked Sendable {
-    private let profile: Profile
-
-    private let context = CIContext()
-    private let filter = CIFilter.qrCodeGenerator()
-
-    init(profile: Profile) {
-        self.profile = profile
+@Observable
+final class QRGenerator {
+    @MainActor
+    func generateQRCode(from string: String) async -> Image {
+        let uiImage = await QRCodeRenderer.generate(from: string)
+        return Image(uiImage: uiImage).resizable()
     }
 
-    var contactQRCode: UIImage {
-        generateQRCode(from: "contact:\(profile.displayName)")
+    static var fallbakImage: some View {
+        Image(systemName: "qrcode")
+            .resizable()
+            .foregroundStyle(.black)
+            .padding()
+            .background(Color.white)
     }
+}
 
-    private func generateQRCode(from string: String) -> UIImage {
-        filter.message = Data(string.utf8)
+private enum QRCodeRenderer {
+    static func generate(from string: String) async -> UIImage {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                let context = CIContext()
+                let filter = CIFilter.qrCodeGenerator()
+                filter.message = Data(string.utf8)
 
-        if let outputImage = filter.outputImage {
-            let bigImage = outputImage.transformed(by: CGAffineTransform(scaleX: 20, y: 20))
-            if let cgImage = context.createCGImage(bigImage, from: bigImage.extent) {
-                let qrImage = UIImage(cgImage: cgImage)
+                if let outputImage = filter.outputImage {
+                    let scaled = outputImage.transformed(by: .init(scaleX: 20, y: 20))
+                    if let cgImage = context.createCGImage(scaled, from: scaled.extent) {
+                        let image = UIImage(cgImage: cgImage)
+                        continuation.resume(returning: image)
+                        return
+                    }
+                }
 
-                return qrImage
+                let fallback = UIImage(systemName: "xmark.circle") ?? UIImage()
+                continuation.resume(returning: fallback)
             }
         }
-
-        return UIImage(systemName: "xmark.circle") ?? UIImage()
     }
 }

@@ -14,7 +14,14 @@ struct ShareField: View {
                 Text(title)
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                Text(value)
+                if value.isEmpty {
+                    Text("- \(Localized.noData) -")
+                        .font(.subheadline)
+                        .italic()
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text(value)
+                }
             }
             .opacity(isEnabled ? 1 : 0.5)
         }
@@ -25,4 +32,13 @@ struct ShareField: View {
 #Preview {
     ShareField(title: "Public email", value: "some@email.com", selected: .constant(false))
         .padding()
+    ShareField(title: "Public email", value: "", selected: .constant(false))
+        .padding()
+}
+
+private enum Localized {
+    static let noData = NSLocalizedString(
+        "Share.Field.noData",
+        value: "No data",
+        comment: "Message shown when there is no data to show in a share field")
 }
