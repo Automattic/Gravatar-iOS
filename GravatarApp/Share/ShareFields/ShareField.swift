@@ -40,5 +40,6 @@ private enum Localized {
     static let noData = NSLocalizedString(
         "Share.Field.noData",
         value: "No data",
-        comment: "Message shown when there is no data to show in a share field")
+        comment: "Message shown when there is no data to show in a share field"
+    )
 }
