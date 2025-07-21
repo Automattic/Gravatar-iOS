@@ -13,6 +13,7 @@ struct ShareHeaderViewTests {
         let view = ScrollView {
             ShareHeaderView(
                 profile: .testProfile,
+                qrImage: { Image(systemName: "qrcode").resizable().foregroundStyle(.black).padding().background(Color.white) },
                 topPadding: 16,
                 imageURL: imageURL,
                 forceRefresh: .constant(false)
