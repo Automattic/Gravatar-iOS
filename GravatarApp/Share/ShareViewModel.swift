@@ -1,9 +1,14 @@
+import Combine
+import Gravatar
 import SwiftUI
 
+@MainActor
 class ShareViewModel: ObservableObject {
     @Published var contactPreviewURL: URL?
+    @Published var profile: Profile
 
-    let userSession: UserSession
+    private let userSession: UserSession
+    private var cancellables = Set<AnyCancellable>()
 
     @AppStorage("storedUserEmail")
     var storedUserEmail: String = ""
@@ -15,6 +20,13 @@ class ShareViewModel: ObservableObject {
 
     init(userSession: UserSession) {
         self.userSession = userSession
+        self.profile = userSession.profile
+        userSession.$profile
+            .receive(on: RunLoop.main)
+            .sink { [weak self] newProfile in
+                self?.profile = newProfile
+            }
+            .store(in: &cancellables)
     }
 
     func previewVCard() {

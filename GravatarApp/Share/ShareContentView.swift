@@ -24,7 +24,7 @@ struct ShareContentView: View {
             )
             .padding(.vertical)
 
-            gravatarFieldsSection(profile: viewModel.userSession.profile)
+            gravatarFieldsSection(profile: viewModel.profile)
 
             Divider()
                 .padding(.bottom)
@@ -62,11 +62,11 @@ struct ShareContentView: View {
             value: profile.fullName ?? "",
             selected: viewModel.share.$name
         )
-        .disabled(viewModel.userSession.profile.fullName == nil)
+        .disabled(viewModel.profile.fullName == nil)
         Divider()
         ShareField(
             title: ProfileField.location.localizedTitle,
-            value: viewModel.userSession.profile.location,
+            value: viewModel.profile.location,
             selected: viewModel.share.$location
         )
         .disabled(profile.location.isEmpty)
