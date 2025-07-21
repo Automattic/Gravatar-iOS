@@ -9,7 +9,7 @@ struct ShareView: View {
 
     var headerAvatarURL: URL? {
         AvatarURL(
-            with: .hashID(viewModel.userSession.profile.hash),
+            with: .hashID(viewModel.profile.hash),
             options: .init(preferredSize: .pixels(256))
         )?.url
     }
@@ -18,7 +18,7 @@ struct ShareView: View {
         GeometryReader { geometry in
             ScrollView {
                 ShareHeaderView(
-                    profile: viewModel.userSession.profile,
+                    profile: viewModel.profile,
                     topPadding: geometry.safeAreaInsets.top,
                     imageURL: headerAvatarURL,
                     forceRefresh: $forceRefresh
