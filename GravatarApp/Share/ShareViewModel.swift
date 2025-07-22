@@ -6,9 +6,11 @@ import SwiftUI
 class ShareViewModel: ObservableObject {
     @Published var contactPreviewURL: URL?
     @Published var profile: Profile
+    @Published var qrCodeImage: Image?
 
     private let userSession: UserSession
     private var cancellables = Set<AnyCancellable>()
+    let qrGenerator: QRGenerator
 
     @AppStorage("storedUserEmail")
     var storedUserEmail: String = ""
@@ -16,43 +18,62 @@ class ShareViewModel: ObservableObject {
     @AppStorage("storedPhoneNumber")
     var storedPhoneNumber: String = ""
 
-    @Published var share: ShareFieldsModel = .init()
+    @Published var share: ShareFieldsSelectionStore = .init()
 
     init(userSession: UserSession) {
         self.userSession = userSession
         self.profile = userSession.profile
+        self.qrGenerator = QRGenerator()
+
+        setupObservers()
+
+        Task { @MainActor in
+            await generateVCardQR()
+        }
+    }
+
+    func setupObservers() {
         userSession.$profile
             .receive(on: RunLoop.main)
             .sink { [weak self] newProfile in
                 self?.profile = newProfile
             }
             .store(in: &cancellables)
+
+        $share.sink { [weak self] _ in
+            Task {
+                await self?.generateVCardQR()
+            }
+        }.store(in: &cancellables)
+    }
+
+    func generateVCardQR() async {
+        let vcardString = vcardModel.generateVCard()
+        let qrImage = await qrGenerator.generateQRCode(from: vcardString)
+        withAnimation {
+            qrCodeImage = qrImage
+        }
     }
 
     func previewVCard() {
-        let data = vcardExample.data(using: .utf8)!
+        let data = vcardModel.generateVCard().data(using: .utf8)!
         let tempDirectory = FileManager.default.temporaryDirectory
         let url = tempDirectory.appendingPathComponent("contact.vcf")
         try! data.write(to: url)
         contactPreviewURL = url
     }
-}
 
-private let vcardExample: String =
-    """
-    BEGIN:VCARD
-    VERSION:4.0
-    N:Gump;Forrest;;Mr.;
-    FN:Sheri Nom
-    ORG:Sheri Nom Co.
-    TITLE:Ultimate Warrior
-    PHOTO;MEDIATYPE#image/gif:http://www.sherinnom.com/dir_photos/my_photo.gif
-    TEL;TYPE#work,voice;VALUE#uri:tel:+1-111-555-1212
-    TEL;TYPE#home,voice;VALUE#uri:tel:+1-404-555-1212
-    ADR;TYPE#WORK;PREF#1;LABEL#"Normality\nBaytown, LA 50514\nUnited States of America":;;100 Waters Edge;Baytown;LA;50514;United States of America
-    ADR;TYPE#HOME;LABEL#"42 Plantation St.\nBaytown, LA 30314\nUnited States of America":;;42 Plantation St.;Baytown;LA;30314;United States of America
-    EMAIL:sherinnom@example.com
-    REV:20080424T195243Z
-    x-qq:21588891
-    END:VCARD
-    """
+    var vcardModel: VCardModel {
+        VCardModel(
+            firstName: share.name ? profile.firstName ?? "" : "",
+            lastName: share.name ? profile.lastName ?? "" : "",
+            fullName: share.name ? profile.fullName ?? "" : "",
+            displayName: profile.displayName,
+            organization: share.company ? profile.company : "",
+            jobTitle: share.jobTitle ? profile.jobTitle : "",
+            phoneNumber: share.phone ? storedPhoneNumber : "",
+            email: share.email ? storedUserEmail : "",
+            profileURL: share.profileURL ? profile.profileUrl : ""
+        )
+    }
+}

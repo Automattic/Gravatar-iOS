@@ -14,11 +14,21 @@ struct ShareView: View {
         )?.url
     }
 
+    @ViewBuilder
+    var qrImage: some View {
+        if let qrCode = viewModel.qrCodeImage {
+            qrCode
+        } else {
+            Image.fallbakQRCodeImage
+        }
+    }
+
     var body: some View {
         GeometryReader { geometry in
             ScrollView {
                 ShareHeaderView(
                     profile: viewModel.profile,
+                    qrImage: { qrImage },
                     topPadding: geometry.safeAreaInsets.top,
                     imageURL: headerAvatarURL,
                     forceRefresh: $forceRefresh

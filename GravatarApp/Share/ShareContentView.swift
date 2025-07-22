@@ -4,6 +4,7 @@ import SwiftUI
 
 struct ShareContentView: View {
     @ObservedObject var viewModel: ShareViewModel
+    @FocusState var focusState: Bool
 
     var body: some View {
         VStack(spacing: .Global.verticalSectionSpacing) {
@@ -33,6 +34,13 @@ struct ShareContentView: View {
         }
         .padding()
         .readableContentWidth()
+        .onChange(of: focusState) { oldValue, newValue in
+            if oldValue && !newValue {
+                Task {
+                    await viewModel.generateVCardQR()
+                }
+            }
+        }
     }
 
     @ViewBuilder
@@ -40,50 +48,75 @@ struct ShareContentView: View {
         ShareTextField(
             text: viewModel.$storedUserEmail,
             placeholder: Localized.emailFieldTitle,
-            selected: viewModel.share.$email
+            selected: $viewModel.share.email
         )
         .textContentType(.emailAddress)
         .keyboardType(.emailAddress)
         .autocorrectionDisabled()
         .autocapitalization(.none)
+        .focused($focusState, equals: true)
 
         ShareTextField(
             text: viewModel.$storedPhoneNumber,
             placeholder: Localized.phoneNumberFieldTitle,
-            selected: viewModel.share.$phone
+            selected: $viewModel.share.phone
         )
         .keyboardType(.phonePad)
+        .focused($focusState, equals: true)
     }
 
     @ViewBuilder
     func gravatarFieldsSection(profile: Profile) -> some View {
+        if let fullName = profile.fullName, !fullName.isEmpty {
+            ShareField(
+                title: Localized.nameFieldTitle,
+                value: profile.fullName ?? "",
+                selected: $viewModel.share.name
+            )
+            .disabled(viewModel.profile.fullName == nil)
+            Divider()
+        }
+        if !profile.location.isEmpty {
+            ShareField(
+                title: ProfileField.location.localizedTitle,
+                value: viewModel.profile.location,
+                selected: $viewModel.share.location
+            )
+            .disabled(profile.location.isEmpty)
+            Divider()
+        }
+        if !profile.jobTitle.isEmpty {
+            ShareField(
+                title: ProfileField.jobTitle.localizedTitle,
+                value: profile.jobTitle,
+                selected: $viewModel.share.jobTitle
+            )
+            .disabled(profile.jobTitle.isEmpty)
+            Divider()
+        }
+        if !profile.company.isEmpty {
+            ShareField(
+                title: ProfileField.company.localizedTitle,
+                value: profile.company,
+                selected: $viewModel.share.company
+            )
+            .disabled(profile.jobTitle.isEmpty)
+            Divider()
+        }
+        if !profile.description.isEmpty {
+            ShareField(
+                title: ProfileField.aboutMe.localizedTitle,
+                value: profile.description,
+                selected: $viewModel.share.description
+            )
+            .disabled(profile.description.isEmpty)
+            Divider()
+        }
         ShareField(
-            title: Localized.nameFieldTitle,
-            value: profile.fullName ?? "",
-            selected: viewModel.share.$name
+            title: Localized.profileURLFieldTitle,
+            value: profile.profileUrl,
+            selected: $viewModel.share.profileURL
         )
-        .disabled(viewModel.profile.fullName == nil)
-        Divider()
-        ShareField(
-            title: ProfileField.location.localizedTitle,
-            value: viewModel.profile.location,
-            selected: viewModel.share.$location
-        )
-        .disabled(profile.location.isEmpty)
-        Divider()
-        ShareField(
-            title: ProfileField.jobTitle.localizedTitle,
-            value: profile.jobTitle,
-            selected: viewModel.share.$jobTitle
-        )
-        .disabled(profile.jobTitle.isEmpty)
-        Divider()
-        ShareField(
-            title: ProfileField.aboutMe.localizedTitle,
-            value: profile.description,
-            selected: viewModel.share.$description
-        )
-        .disabled(profile.description.isEmpty)
     }
 
     @ViewBuilder
@@ -144,6 +177,12 @@ private enum Localized {
         "Share.Contact.Name.title",
         value: "Name",
         comment: "Title for the name field to be shared via QR code"
+    )
+
+    static let profileURLFieldTitle: String = NSLocalizedString(
+        "Share.Contact.ProfileURL.title",
+        value: "Profile URL",
+        comment: "Title for the profile url field to be shared via QR code"
     )
 
     static let privateFieldsSectionTitle: String = NSLocalizedString(
