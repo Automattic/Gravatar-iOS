@@ -8,18 +8,10 @@ final class QRGenerator {
         let image = await Self.generate(from: string)
         return image.resizable()
     }
-
-    static var fallbakImage: some View {
-        Image(systemName: "qrcode")
-            .resizable()
-            .foregroundStyle(.black)
-            .padding()
-            .background(Color.white)
-    }
 }
 
-private extension QRGenerator {
-    static func generate(from string: String) async -> Image {
+extension QRGenerator {
+    fileprivate static func generate(from string: String) async -> Image {
         await withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .userInitiated).async {
                 let context = CIContext()

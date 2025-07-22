@@ -19,7 +19,7 @@ struct ShareView: View {
         if let qrCode = viewModel.qrCodeImage {
             qrCode
         } else {
-            QRGenerator.fallbakImage
+            Image.fallbakQRCodeImage
         }
     }
 
