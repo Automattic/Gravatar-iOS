@@ -12,9 +12,6 @@ class ShareViewModel: ObservableObject {
 
     private let userSession: UserSession
     private var cancellables = Set<AnyCancellable>()
-    //   private var avatarData: Data?
-    //   private var avatarDownloadTask: Task<Data?, Never>?
-    private let notificationCenter: NotificationCenter
     private let urlSession: any URLSessionProtocol
     private let networkMonitor: NetworkMonitor
 
@@ -28,14 +25,12 @@ class ShareViewModel: ObservableObject {
 
     init(
         userSession: UserSession,
-        notificationCenter: NotificationCenter = .default,
         urlSession: URLSessionProtocol? = nil,
         networkMonitor: NetworkMonitor = SystemNetworkMonitor.shared
     ) {
         self.userSession = userSession
         self.profile = userSession.profile
         self.qrGenerator = QRGenerator()
-        self.notificationCenter = notificationCenter
         self.urlSession = urlSession ?? GravatarURLSession.shared
         self.networkMonitor = networkMonitor
 
