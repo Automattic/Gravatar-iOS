@@ -12,10 +12,11 @@ class ShareViewModel: ObservableObject {
 
     private let userSession: UserSession
     private var cancellables = Set<AnyCancellable>()
-    private var avatarData: Data?
-    private var avatarDownloadTask: Task<Data?, Never>?
+    //   private var avatarData: Data?
+    //   private var avatarDownloadTask: Task<Data?, Never>?
     private let notificationCenter: NotificationCenter
     private let urlSession: any URLSessionProtocol
+    private let networkMonitor: NetworkMonitor
 
     let qrGenerator: QRGenerator
 
@@ -28,13 +29,15 @@ class ShareViewModel: ObservableObject {
     init(
         userSession: UserSession,
         notificationCenter: NotificationCenter = .default,
-        urlSession: URLSessionProtocol? = nil
+        urlSession: URLSessionProtocol? = nil,
+        networkMonitor: NetworkMonitor = SystemNetworkMonitor.shared
     ) {
         self.userSession = userSession
         self.profile = userSession.profile
         self.qrGenerator = QRGenerator()
         self.notificationCenter = notificationCenter
         self.urlSession = urlSession ?? GravatarURLSession.shared
+        self.networkMonitor = networkMonitor
 
         setupObservers()
 
@@ -43,12 +46,6 @@ class ShareViewModel: ObservableObject {
             // Pre-fetch the user avatar for fast response on share/preview actions.
             refreshUserAvatar()
         }
-
-        notificationCenter.publisher(for: .avatarChanged).receive(on: RunLoop.main)
-            .sink { [weak self] _ in
-                self?.refreshUserAvatar()
-            }
-            .store(in: &cancellables)
     }
 
     func setupObservers() {
@@ -62,6 +59,12 @@ class ShareViewModel: ObservableObject {
         $share.sink { [weak self] _ in
             Task {
                 await self?.generateVCardQR()
+            }
+        }.store(in: &cancellables)
+
+        networkMonitor.hasNetworkConnection.dropFirst().sink { [weak self] newValue in
+            if newValue {
+                self?.refreshUserAvatar()
             }
         }.store(in: &cancellables)
     }
@@ -97,22 +100,12 @@ class ShareViewModel: ObservableObject {
     }
 
     private func getVCardWithAvatarData() async -> String {
-        let data = await getAvatarData()
+        let data = await fetchAvatarData()
         let vCardModel = vcardModel(with: data)
         return vcardGenerator.generate(with: vCardModel)
     }
 
-    private func getAvatarData() async -> Data? {
-        if let avatarData {
-            return avatarData
-        }
-        if let avatarDownloadTask {
-            return await avatarDownloadTask.value
-        }
-        return await fetchAvatarData()
-    }
-
-    private func fetchAvatarData(retryCount: Int = 0) async -> Data? {
+    private func fetchAvatarData() async -> Data? {
         let service = AvatarService(urlSession: urlSession)
         do {
             let result = try await service.fetch(
@@ -121,26 +114,13 @@ class ShareViewModel: ObservableObject {
             )
             return result.image.jpegData(compressionQuality: 0.7)
         } catch {
-            if retryCount <= 20 {
-                try? await Task.sleep(for: .seconds(min(retryCount, 4)))
-                return await fetchAvatarData(retryCount: retryCount + 1)
-            }
             return nil
         }
     }
 
-    func loadUserAvatarIfNeeded() {
-        guard avatarData == nil else {
-            return
-        }
-        refreshUserAvatar()
-    }
-
     func refreshUserAvatar() {
-        avatarData = nil
-        avatarDownloadTask = Task {
-            let data = await fetchAvatarData()
-            return data
+        Task {
+            await fetchAvatarData()
         }
     }
 

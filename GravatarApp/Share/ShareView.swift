@@ -5,7 +5,7 @@ import SwiftUI
 struct ShareView: View {
     @ObservedObject var viewModel: ShareViewModel
 
-    @State var forceRefresh: Bool = false
+    @Binding var forceRefreshAvatar: Bool
 
     var headerAvatarURL: URL? {
         AvatarURL(
@@ -31,7 +31,7 @@ struct ShareView: View {
                     qrImage: { qrImage },
                     topPadding: geometry.safeAreaInsets.top,
                     imageURL: headerAvatarURL,
-                    forceRefresh: $forceRefresh,
+                    forceRefresh: $forceRefreshAvatar,
                     onShareButtonPressed: onShareButtonPressed
                 )
 
@@ -45,8 +45,10 @@ struct ShareView: View {
             ShareSheet(items: [url])
                 .presentationDetents([.medium, .large])
         }
-        .onAppear {
-            viewModel.loadUserAvatarIfNeeded()
+        .onChange(of: forceRefreshAvatar) { _, newValue in
+            if newValue {
+                viewModel.refreshUserAvatar()
+            }
         }
     }
 
@@ -70,7 +72,8 @@ extension URL: @retroactive Identifiable {
             profile: .testProfile,
             accessToken: "",
             context: .testContext
-        ))
+        )),
+        forceRefreshAvatar: .constant(false)
     )
 }
 #endif
