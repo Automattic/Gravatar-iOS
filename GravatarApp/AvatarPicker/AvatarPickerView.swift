@@ -64,6 +64,7 @@ struct AvatarPickerView: View {
                 MainMenuOptions(profile: avatarPickerModel.userSession.profile)
             } onRefresh: {
                 await avatarPickerModel.refresh()
+                avatarPickerModel.forceRefreshAvatar = true
             }
         }
         .avatarDeletionDialog(avatar: $avatarToDelete, deleteAction: { avatar in

@@ -36,6 +36,7 @@ struct ProfileEditorView: View {
             MainMenuOptions(profile: viewModel.userSession.profile)
         } onRefresh: {
             await viewModel.fetchProfile()
+            forceRefresh = true
         }
         .safeAreaInset(edge: .bottom, alignment: .center, spacing: nil) {
             Group {

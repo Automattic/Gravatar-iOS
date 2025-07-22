@@ -116,7 +116,6 @@ class AvatarPickerViewModel: ObservableObject {
 
         avatarSelectionTask = Task {
             let result = await postAvatarSelection(with: id, identifier: .hashID(userSession.profile.hash))
-            NotificationCenter.default.post(name: .avatarChanged, object: nil)
             return result
         }
 
