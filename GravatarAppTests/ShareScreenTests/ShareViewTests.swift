@@ -41,4 +41,18 @@ struct ShareViewTests {
             ]
         )
     }
+
+    @Test("Snapshot of share view when the profile is empty")
+    func shareViewEmpty() async throws {
+        let view = ShareView(viewModel: .init(userSession: .init(profile: .clean, accessToken: "", context: .testContext)))
+            .fullScreenFrame()
+
+        assertSnapshots(
+            of: view,
+            as: [
+                .testStrategy(userInterfaceStyle: .light, layout: .sizeThatFits),
+                .testStrategy(userInterfaceStyle: .dark, layout: .sizeThatFits),
+            ]
+        )
+    }
 }

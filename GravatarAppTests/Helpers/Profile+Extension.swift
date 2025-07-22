@@ -7,6 +7,10 @@ extension Profile {
         return profile
     }()
 
+    static var clean: Profile {
+        with(displayName: "cleanprofile", location: "", description: "", jobTitle: "", company: "")
+    }
+
     static func with(
         displayName: String = "John Appleseed",
         location: String = "Atlanta GA",
