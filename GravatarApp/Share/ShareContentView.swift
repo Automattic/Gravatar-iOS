@@ -67,41 +67,51 @@ struct ShareContentView: View {
 
     @ViewBuilder
     func gravatarFieldsSection(profile: Profile) -> some View {
-        ShareField(
-            title: Localized.nameFieldTitle,
-            value: profile.fullName ?? "",
-            selected: $viewModel.share.name
-        )
-        .disabled(viewModel.profile.fullName == nil)
-        Divider()
-        ShareField(
-            title: ProfileField.location.localizedTitle,
-            value: viewModel.profile.location,
-            selected: $viewModel.share.location
-        )
-        .disabled(profile.location.isEmpty)
-        Divider()
-        ShareField(
-            title: ProfileField.jobTitle.localizedTitle,
-            value: profile.jobTitle,
-            selected: $viewModel.share.jobTitle
-        )
-        .disabled(profile.jobTitle.isEmpty)
-        Divider()
-        ShareField(
-            title: ProfileField.company.localizedTitle,
-            value: profile.company,
-            selected: $viewModel.share.company
-        )
-        .disabled(profile.jobTitle.isEmpty)
-        Divider()
-        ShareField(
-            title: ProfileField.aboutMe.localizedTitle,
-            value: profile.description,
-            selected: $viewModel.share.description
-        )
-        .disabled(profile.description.isEmpty)
-        Divider()
+        if let fullName = profile.fullName, !fullName.isEmpty {
+            ShareField(
+                title: Localized.nameFieldTitle,
+                value: profile.fullName ?? "",
+                selected: $viewModel.share.name
+            )
+            .disabled(viewModel.profile.fullName == nil)
+            Divider()
+        }
+        if !profile.location.isEmpty {
+            ShareField(
+                title: ProfileField.location.localizedTitle,
+                value: viewModel.profile.location,
+                selected: $viewModel.share.location
+            )
+            .disabled(profile.location.isEmpty)
+            Divider()
+        }
+        if !profile.jobTitle.isEmpty {
+            ShareField(
+                title: ProfileField.jobTitle.localizedTitle,
+                value: profile.jobTitle,
+                selected: $viewModel.share.jobTitle
+            )
+            .disabled(profile.jobTitle.isEmpty)
+            Divider()
+        }
+        if !profile.company.isEmpty {
+            ShareField(
+                title: ProfileField.company.localizedTitle,
+                value: profile.company,
+                selected: $viewModel.share.company
+            )
+            .disabled(profile.jobTitle.isEmpty)
+            Divider()
+        }
+        if !profile.description.isEmpty {
+            ShareField(
+                title: ProfileField.aboutMe.localizedTitle,
+                value: profile.description,
+                selected: $viewModel.share.description
+            )
+            .disabled(profile.description.isEmpty)
+            Divider()
+        }
         ShareField(
             title: Localized.profileURLFieldTitle,
             value: profile.profileUrl,
