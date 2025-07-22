@@ -16,6 +16,7 @@ struct ShareHeaderView<QRImage: View>: View {
 
     @State private var buttonsSectionWidth: CGFloat = 0
     @State private var windowWidth: CGFloat = 0
+    @State private var presentFullScreen: Bool = false
 
     var qrWidth: CGFloat {
         let padding = CGFloat.Global.contentHorizontalPadding
@@ -51,7 +52,7 @@ struct ShareHeaderView<QRImage: View>: View {
             HStack(alignment: .top, spacing: horizontalSectionSpacing) {
                 VStack(alignment: .leading, spacing: .Global.verticalSectionSpacing) {
                     qrCode
-                    Text(Localized.qrExplanation)
+                    Text(ShareLocalized.qrExplanation)
                 }
                 VStack(spacing: 8) {
                     buttonsSection
@@ -60,6 +61,16 @@ struct ShareHeaderView<QRImage: View>: View {
             .padding(.horizontal, .Global.contentHorizontalPadding)
         }
         .contentWidthtReader($windowWidth)
+        .sheet(isPresented: $presentFullScreen) {
+            ShareQRFullScreenView(
+                presentFullScreen: $presentFullScreen,
+                topPadding: topPadding,
+                imageURL: imageURL,
+                forceRefresh: $forceRefresh,
+                windowWidth: windowWidth,
+                qrImage: qrImage
+            )
+        }
     }
 
     @ViewBuilder
@@ -88,13 +99,15 @@ struct ShareHeaderView<QRImage: View>: View {
         CircularButton {} image: {
             Image(.downloadIcon)
         }
-        CircularButton {} image: {
+        CircularButton {
+            presentFullScreen = true
+        } image: {
             Image(.enlargeIcon)
         }
     }
 }
 
-private enum Localized {
+enum ShareLocalized {
     static let qrExplanation = NSLocalizedString(
         "Share.Header.explanation",
         value: "Let others scan this QR code to share your contact information.",
@@ -109,7 +122,7 @@ private enum Localized {
         ScrollView {
             ShareHeaderView(
                 profile: .testProfile,
-                qrImage: { Image(systemName: "qrcode.viewfinder") },
+                qrImage: { QRGenerator.fallbakImage },
                 topPadding:
                 geo.safeAreaInsets.top == 0 ?
                     16 : geo.safeAreaInsets.top,
