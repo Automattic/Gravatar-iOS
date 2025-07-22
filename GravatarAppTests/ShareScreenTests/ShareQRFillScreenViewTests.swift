@@ -17,7 +17,7 @@ struct ShareQRFillScreenViewTests {
                 imageURL: imageURL,
                 forceRefresh: .constant(false),
                 windowWidth: geometry.size.width,
-                qrImage: { QRGenerator.fallbakImage }
+                qrImage: { Image.fallbakQRCodeImage }
             )
         }
         .background(Color.secondary)
