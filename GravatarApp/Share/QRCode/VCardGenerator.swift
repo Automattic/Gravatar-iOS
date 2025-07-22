@@ -13,7 +13,6 @@ struct VCardModel {
     let profileURL: String
     let description: String
     let avatarData: Data?
-}
 
     func generateVCard() -> String {
         vCard(self)

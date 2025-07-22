@@ -70,7 +70,7 @@ class ShareViewModel: ObservableObject {
     }
 
     func generateVCardQR() async {
-        let vcardString = vcardModel.generateVCard()
+        let vcardString = vcardModel().generateVCard()
         let qrImage = await qrGenerator.generateQRCode(from: vcardString)
         withAnimation {
             qrCodeImage = qrImage
@@ -102,7 +102,7 @@ class ShareViewModel: ObservableObject {
     private func getVCardWithAvatarData() async -> String {
         let data = await fetchAvatarData()
         let vCardModel = vcardModel(with: data)
-        return vcardGenerator.generate(with: vCardModel)
+        return vCardModel.generateVCard()
     }
 
     private func fetchAvatarData() async -> Data? {
