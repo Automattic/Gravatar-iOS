@@ -31,7 +31,8 @@ struct ShareView: View {
                     qrImage: { qrImage },
                     topPadding: geometry.safeAreaInsets.top,
                     imageURL: headerAvatarURL,
-                    forceRefresh: $forceRefresh
+                    forceRefresh: $forceRefresh,
+                    onShareButtonPressed: onShareButtonPressed
                 )
 
                 ShareContentView(viewModel: viewModel)
@@ -40,6 +41,25 @@ struct ShareView: View {
             .scrollDismissesKeyboard(.interactively)
         }
         .quickLookPreview($viewModel.contactPreviewURL)
+        .sheet(item: $viewModel.shareVCardURL) { url in
+            ShareSheet(items: [url])
+                .presentationDetents([.medium, .large])
+        }
+        .onAppear {
+            viewModel.loadUserAvatarIfNeeded()
+        }
+    }
+
+    func onShareButtonPressed() {
+        Task {
+            await viewModel.shareVCard()
+        }
+    }
+}
+
+extension URL: @retroactive Identifiable {
+    public var id: String {
+        self.absoluteString
     }
 }
 
