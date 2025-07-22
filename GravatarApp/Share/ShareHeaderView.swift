@@ -152,7 +152,7 @@ extension View {
         ScrollView {
             ShareHeaderView(
                 profile: .testProfile,
-                qrImage: { QRGenerator.fallbakImage },
+                qrImage: { Image.fallbakQRCodeImage },
                 topPadding:
                 geo.safeAreaInsets.top == 0 ?
                     16 : geo.safeAreaInsets.top,

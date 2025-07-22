@@ -95,7 +95,7 @@ extension View {
             forceRefresh: .constant(false),
             windowWidth: geometry.size.width,
             qrImage: {
-                QRGenerator.fallbakImage
+                Image.fallbakQRCodeImage
             }
         )
     }
