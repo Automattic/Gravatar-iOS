@@ -10,6 +10,8 @@ struct ShareHeaderView<QRImage: View>: View {
 
     @Environment(\.openURL) var openURL
 
+    let onShareButtonPressed: (() -> Void)?
+
     private var qrImage: () -> QRImage
 
     private let horizontalSectionSpacing: CGFloat = 22
@@ -35,12 +37,14 @@ struct ShareHeaderView<QRImage: View>: View {
         topPadding: CGFloat,
         imageURL: URL?,
         forceRefresh: Binding<Bool>,
+        onShareButtonPressed: (() -> Void)? = nil
     ) {
         self.profile = profile
         self.topPadding = topPadding
         self.imageURL = imageURL
         self._forceRefresh = forceRefresh
         self.qrImage = qrImage
+        self.onShareButtonPressed = onShareButtonPressed
     }
 
     var body: some View {
@@ -93,7 +97,9 @@ struct ShareHeaderView<QRImage: View>: View {
         // skip forced dark mode coming from parent view (Bouncy)
         .environment(\.colorScheme, UITraitCollection.current.userInterfaceStyle == .dark ? .dark : .light)
 
-        CircularButton {} image: {
+        CircularButton {
+            onShareButtonPressed?()
+        } image: {
             Image(.shareIcon)
         }
         CircularButton {} image: {

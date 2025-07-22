@@ -11,6 +11,8 @@ struct VCardModel {
     let phoneNumber: String
     let email: String
     let profileURL: String
+    let description: String
+    let avatarData: Data?
 }
 
 struct VCardGenerator {
@@ -24,7 +26,7 @@ struct VCardGenerator {
 private func vCard(_ model: VCardModel) -> String {
     """
     BEGIN:VCARD
-    VERSION:4.0
+    VERSION:3.0
     PRODID:Gravatar iOS
     N:\(model.lastName);\(model.firstName);
     FN:\(model.displayName)
@@ -34,6 +36,8 @@ private func vCard(_ model: VCardModel) -> String {
     TEL:\(model.phoneNumber)
     EMAIL:\(model.email)
     URL:\(model.profileURL)
+    NOTE:\(model.description)
+    PHOTO;ENCODING=b;TYPE=JPEG:\(model.avatarData?.base64EncodedString() ?? "")
     END:VCARD
     """
 }
