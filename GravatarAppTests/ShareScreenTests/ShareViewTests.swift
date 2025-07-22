@@ -30,7 +30,7 @@ struct ShareViewTests {
 
     @Test
     func shareView() async throws {
-        let view = ShareView(viewModel: .init(userSession: .init(profile: .full, accessToken: "", context: .testContext)))
+        let view = ShareView(viewModel: .init(userSession: .init(profile: .full, accessToken: "", context: .testContext)), forceRefreshAvatar: .constant(false))
             .fullScreenFrame()
 
         assertSnapshots(
