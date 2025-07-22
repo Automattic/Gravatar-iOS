@@ -11,13 +11,9 @@ struct VCardModel {
     let phoneNumber: String
     let email: String
     let profileURL: String
-}
 
-struct VCardGenerator {
-    let profile: Profile
-
-    func generate(with model: VCardModel) -> String {
-        vCard(model)
+    func generateVCard() -> String {
+        vCard(self)
     }
 }
 

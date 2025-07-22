@@ -2,12 +2,11 @@ import CoreImage.CIFilterBuiltins
 import Gravatar
 import SwiftUI
 
-@Observable
 final class QRGenerator {
     @MainActor
     func generateQRCode(from string: String) async -> Image {
-        let uiImage = await QRCodeRenderer.generate(from: string)
-        return Image(uiImage: uiImage).resizable()
+        let image = await Self.generate(from: string)
+        return image.resizable()
     }
 
     static var fallbakImage: some View {
@@ -19,8 +18,8 @@ final class QRGenerator {
     }
 }
 
-private enum QRCodeRenderer {
-    static func generate(from string: String) async -> UIImage {
+private extension QRGenerator {
+    static func generate(from string: String) async -> Image {
         await withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .userInitiated).async {
                 let context = CIContext()
@@ -30,13 +29,14 @@ private enum QRCodeRenderer {
                 if let outputImage = filter.outputImage {
                     let scaled = outputImage.transformed(by: .init(scaleX: 20, y: 20))
                     if let cgImage = context.createCGImage(scaled, from: scaled.extent) {
-                        let image = UIImage(cgImage: cgImage)
+                        let uiImage = UIImage(cgImage: cgImage)
+                        let image = Image(uiImage: uiImage)
                         continuation.resume(returning: image)
                         return
                     }
                 }
 
-                let fallback = UIImage(systemName: "xmark.circle") ?? UIImage()
+                let fallback = Image(systemName: "qrcode")
                 continuation.resume(returning: fallback)
             }
         }

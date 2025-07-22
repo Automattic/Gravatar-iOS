@@ -11,7 +11,6 @@ class ShareViewModel: ObservableObject {
     private let userSession: UserSession
     private var cancellables = Set<AnyCancellable>()
     let qrGenerator: QRGenerator
-    var vcardGenerator: VCardGenerator
 
     @AppStorage("storedUserEmail")
     var storedUserEmail: String = ""
@@ -25,7 +24,6 @@ class ShareViewModel: ObservableObject {
         self.userSession = userSession
         self.profile = userSession.profile
         self.qrGenerator = QRGenerator()
-        self.vcardGenerator = VCardGenerator(profile: userSession.profile)
 
         setupObservers()
 
@@ -39,7 +37,6 @@ class ShareViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] newProfile in
                 self?.profile = newProfile
-                self?.vcardGenerator = VCardGenerator(profile: newProfile)
             }
             .store(in: &cancellables)
 
@@ -51,7 +48,7 @@ class ShareViewModel: ObservableObject {
     }
 
     func generateVCardQR() async {
-        let vcardString = vcardGenerator.generate(with: vcardModel)
+        let vcardString = vcardModel.generateVCard()
         let qrImage = await qrGenerator.generateQRCode(from: vcardString)
         withAnimation {
             qrCodeImage = qrImage
@@ -59,7 +56,7 @@ class ShareViewModel: ObservableObject {
     }
 
     func previewVCard() {
-        let data = vcardGenerator.generate(with: vcardModel).data(using: .utf8)!
+        let data = vcardModel.generateVCard().data(using: .utf8)!
         let tempDirectory = FileManager.default.temporaryDirectory
         let url = tempDirectory.appendingPathComponent("contact.vcf")
         try! data.write(to: url)
