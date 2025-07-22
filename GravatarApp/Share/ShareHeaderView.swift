@@ -61,16 +61,14 @@ struct ShareHeaderView<QRImage: View>: View {
             .padding(.horizontal, .Global.contentHorizontalPadding)
         }
         .contentWidthtReader($windowWidth)
-        .sheet(isPresented: $presentFullScreen) {
-            ShareQRFullScreenView(
-                presentFullScreen: $presentFullScreen,
-                topPadding: topPadding,
-                imageURL: imageURL,
-                forceRefresh: $forceRefresh,
-                windowWidth: windowWidth,
-                qrImage: qrImage
-            )
-        }
+        .presentQRCodeFullScreen(
+            presentFullScreen: $presentFullScreen,
+            topPadding: topPadding,
+            imageURL: imageURL,
+            forceRefresh: $forceRefresh,
+            windowWidth: windowWidth,
+            qrImage: qrImage
+        )
     }
 
     @ViewBuilder
@@ -113,6 +111,38 @@ enum ShareLocalized {
         value: "Let others scan this QR code to share your contact information.",
         comment: "Message explaining what is the QR code for."
     )
+}
+
+extension View {
+    @ViewBuilder
+    fileprivate func presentQRCodeFullScreen(
+        presentFullScreen: Binding<Bool>,
+        topPadding: CGFloat = 0,
+        imageURL: URL?,
+        forceRefresh: Binding<Bool>,
+        windowWidth: CGFloat,
+        qrImage: @escaping () -> some View
+    ) -> some View {
+        let content = {
+            ShareQRFullScreenView(
+                presentFullScreen: presentFullScreen,
+                topPadding: topPadding,
+                imageURL: imageURL,
+                forceRefresh: forceRefresh,
+                windowWidth: windowWidth,
+                qrImage: qrImage
+            )
+        }
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            self.fullScreenCover(isPresented: presentFullScreen) {
+                content()
+            }
+        } else {
+            self.sheet(isPresented: presentFullScreen) {
+                content()
+            }
+        }
+    }
 }
 
 #if DEBUG
