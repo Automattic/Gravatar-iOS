@@ -47,12 +47,19 @@ private func vCard(_ model: VCardModel) -> String {
     TEL:\(model.phoneNumber)
     EMAIL:\(model.email)
     URL:\(model.profileURL)
-    ADR;CHARSET=UTF-8;TYPE=HOME:;;;\(model.location);;;
+    \(locationFields(model.location))
     \(urlFields(with: model.accounts))
     NOTE:\(model.description)
     PHOTO;ENCODING=b;TYPE=JPEG:\(model.avatarData?.base64EncodedString() ?? "")
     END:VCARD
     """
+}
+
+private func locationFields(_ location: String) -> String {
+    guard !location.isEmpty else {
+        return ""
+    }
+    return "ADR;CHARSET=UTF-8;TYPE=HOME:;;;\(location);;;"
 }
 
 private func urlFields(with accounts: [VCardModel.URL]) -> String {
