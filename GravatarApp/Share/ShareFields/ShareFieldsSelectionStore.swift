@@ -4,73 +4,75 @@ import SwiftUI
 class ShareFieldsSelectionStore: ObservableObject {
     private let userDefaults: UserDefaults
 
-    @AppStorage("shareEmail")
-    private var emailStore: Bool = true
-    @Published var email: Bool = true {
-        didSet { emailStore = email }
+    enum Key {
+        static let shareEmail = "shareEmail"
+        static let sharePhone = "sharePhone"
+        static let shareName = "shareName"
+        static let shareLocation = "shareLocation"
+        static let shareJobTitle = "shareJobTitle"
+        static let shareCompany = "shareCompany"
+        static let shareDescription = "shareDescription"
+        static let shareProfileURL = "shareProfileURL"
     }
 
-    @AppStorage("sharePhone")
-    private var phoneStore: Bool = true
-    @Published var phone: Bool = true {
-        didSet { phoneStore = phone }
+    @Published var email: Bool {
+        didSet { userDefaults.set(email, forKey: Key.shareEmail) }
     }
 
-    @AppStorage("shareName")
-    private var nameStore: Bool = true
-    @Published var name: Bool = true {
-        didSet { nameStore = name }
+    @Published var phone: Bool {
+        didSet { userDefaults.set(phone, forKey: Key.sharePhone) }
     }
 
-    @AppStorage("shareLocation")
-    private var locationStore: Bool = true
-    @Published var location: Bool = true {
-        didSet { locationStore = location }
+    @Published var name: Bool {
+        didSet { userDefaults.set(name, forKey: Key.shareName) }
     }
 
-    @AppStorage("shareJobTitle")
-    private var jobTitleStore: Bool = true
-    @Published var jobTitle: Bool = true {
-        didSet { jobTitleStore = jobTitle }
+    @Published var location: Bool {
+        didSet { userDefaults.set(location, forKey: Key.shareLocation) }
     }
 
-    @AppStorage("shareCompany")
-    private var companyStore: Bool = true
-    @Published var company: Bool = true {
-        didSet { companyStore = company }
+    @Published var jobTitle: Bool {
+        didSet { userDefaults.set(jobTitle, forKey: Key.shareJobTitle) }
     }
 
-    @AppStorage("shareDescription")
-    private var descriptionStore: Bool = true
-    @Published var description: Bool = true {
-        didSet { descriptionStore = description }
+    @Published var company: Bool {
+        didSet { userDefaults.set(company, forKey: Key.shareCompany) }
     }
 
-    @AppStorage("shareProfileURL")
-    private var profileURLStore: Bool = true
-    @Published var profileURL: Bool = true {
-        didSet { profileURLStore = profileURL }
+    @Published var description: Bool {
+        didSet { userDefaults.set(description, forKey: Key.shareDescription) }
     }
 
-    func account(_ verifiedAcctoun: VerifiedAccount) -> Bool {
-        UserDefaults.standard.bool(forKey: verifiedAcctoun.url)
+    @Published var profileURL: Bool {
+        didSet { userDefaults.set(profileURL, forKey: Key.shareProfileURL) }
     }
 
-    func set(_ verifiedAcctoun: VerifiedAccount, to value: Bool) {
-        UserDefaults.standard.set(value, forKey: verifiedAcctoun.url)
+    func account(_ verifiedAccount: VerifiedAccount) -> Bool {
+        userDefaults.bool(forKey: verifiedAccount.url, default: true)
+    }
+
+    func set(_ verifiedAccount: VerifiedAccount, to value: Bool) {
+        userDefaults.set(value, forKey: verifiedAccount.url)
         objectWillChange.send()
     }
 
     init(userDefaults: UserDefaults = .standard) {
         self.userDefaults = userDefaults
 
-        email = emailStore
-        phone = phoneStore
-        location = locationStore
-        name = nameStore
-        jobTitle = jobTitleStore
-        company = companyStore
-        description = descriptionStore
-        profileURL = profileURLStore
+        email = userDefaults.bool(forKey: Key.shareEmail, default: true)
+        phone = userDefaults.bool(forKey: Key.sharePhone, default: true)
+        name = userDefaults.bool(forKey: Key.shareName, default: true)
+        location = userDefaults.bool(forKey: Key.shareLocation, default: true)
+        jobTitle = userDefaults.bool(forKey: Key.shareJobTitle, default: true)
+        company = userDefaults.bool(forKey: Key.shareCompany, default: true)
+        description = userDefaults.bool(forKey: Key.shareDescription, default: true)
+        profileURL = userDefaults.bool(forKey: Key.shareProfileURL, default: true)
+    }
+}
+
+extension UserDefaults {
+    /// Return the `defaultValue` if the value doesn't exist in the UserDefaults.
+    func bool(forKey key: String, default defaultValue: Bool) -> Bool {
+        object(forKey: key) as? Bool ?? defaultValue
     }
 }
