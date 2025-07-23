@@ -51,7 +51,7 @@ class ShareViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
-        $share.sink { [weak self] _ in
+        share.objectWillChange.sink { [weak self] _ in
             Task {
                 await self?.generateVCardQR()
             }
@@ -127,11 +127,13 @@ class ShareViewModel: ObservableObject {
             displayName: profile.displayName,
             organization: share.company ? profile.company : "",
             jobTitle: share.jobTitle ? profile.jobTitle : "",
+            location: share.location ? profile.location : "",
             phoneNumber: share.phone ? storedPhoneNumber : "",
             email: share.email ? storedUserEmail : "",
             profileURL: share.profileURL ? profile.profileUrl : "",
             description: share.description ? profile.description : "",
-            avatarData: avatarData
+            avatarData: avatarData,
+            accounts: profile.verifiedAccounts.filter { share.account($0) }.map()
         )
     }
 }

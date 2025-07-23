@@ -13,7 +13,7 @@
             "service_type": "wordpress",
             "service_label": "WordPress",
             "service_icon": "https://gravatar.com/icons/wordpress.svg",
-            "url": "http://notreal.wordpress.com",
+            "url": "https://notreal.wordpress.com",
             "is_hidden": false
         }
     ],

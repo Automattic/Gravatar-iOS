@@ -1,6 +1,9 @@
+import Gravatar
 import SwiftUI
 
 class ShareFieldsSelectionStore: ObservableObject {
+    private let userDefaults: UserDefaults
+
     @AppStorage("shareEmail")
     private var emailStore: Bool = true
     @Published var email: Bool = true {
@@ -49,7 +52,18 @@ class ShareFieldsSelectionStore: ObservableObject {
         didSet { profileURLStore = profileURL }
     }
 
-    init() {
+    func account(_ verifiedAcctoun: VerifiedAccount) -> Bool {
+        UserDefaults.standard.bool(forKey: verifiedAcctoun.url)
+    }
+
+    func set(_ verifiedAcctoun: VerifiedAccount, to value: Bool) {
+        UserDefaults.standard.set(value, forKey: verifiedAcctoun.url)
+        objectWillChange.send()
+    }
+
+    init(userDefaults: UserDefaults = .standard) {
+        self.userDefaults = userDefaults
+
         email = emailStore
         phone = phoneStore
         location = locationStore
