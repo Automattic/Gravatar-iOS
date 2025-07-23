@@ -22,6 +22,8 @@ class AvatarPickerViewModel: ObservableObject {
     }
 
     private var networkMonitor: any NetworkMonitor
+    private let notificationCenter: NotificationCenter
+
     let userSession: UserSession
 
     @Published var selectedAvatarURL: URL?
@@ -44,7 +46,8 @@ class AvatarPickerViewModel: ObservableObject {
         imageDownloader: ImageDownloader? = nil,
         networkMonitor: any NetworkMonitor = SystemNetworkMonitor.shared,
         urlSession: URLSessionProtocol = GravatarURLSession.shared,
-        toastManager: ToastManager = ToastManager()
+        toastManager: ToastManager = ToastManager(),
+        notificationCenter: NotificationCenter = .default
     ) {
         self.userSession = userSession
         self.profileService = profileService ?? Gravatar.ProfileService(urlSession: urlSession)
@@ -53,6 +56,7 @@ class AvatarPickerViewModel: ObservableObject {
         self.networkMonitor = networkMonitor
         self.profileHash = userSession.profile.hash
         self.toastManager = toastManager
+        self.notificationCenter = notificationCenter
 
         setupCombine()
     }
@@ -111,7 +115,8 @@ class AvatarPickerViewModel: ObservableObject {
         avatarSelectionTask?.cancel()
 
         avatarSelectionTask = Task {
-            await postAvatarSelection(with: id, identifier: .hashID(userSession.profile.hash))
+            let result = await postAvatarSelection(with: id, identifier: .hashID(userSession.profile.hash))
+            return result
         }
 
         return await avatarSelectionTask?.value
