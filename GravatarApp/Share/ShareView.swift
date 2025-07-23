@@ -8,10 +8,7 @@ struct ShareView: View {
     @Binding var forceRefreshAvatar: Bool
 
     var headerAvatarURL: URL? {
-        AvatarURL(
-            with: .hashID(viewModel.profile.hash),
-            options: .init(preferredSize: .pixels(256))
-        )?.url
+        AvatarURL.preferredURL(for: viewModel.profile.hash)
     }
 
     @ViewBuilder

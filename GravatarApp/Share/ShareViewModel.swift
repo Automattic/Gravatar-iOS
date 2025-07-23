@@ -105,7 +105,7 @@ class ShareViewModel: ObservableObject {
         do {
             let result = try await service.fetch(
                 with: .hashID(profile.hash),
-                options: .init(preferredSize: .pixels(256))
+                options: .init(preferredSize: .preferredSize)
             )
             return result.image.jpegData(compressionQuality: 0.7)
         } catch {
