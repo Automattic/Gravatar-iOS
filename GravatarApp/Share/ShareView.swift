@@ -6,9 +6,20 @@ struct ShareView: View {
     @ObservedObject var viewModel: ShareViewModel
 
     @Binding var forceRefreshAvatar: Bool
+    @State var scrollOffset: CGFloat = 0
+    @State var windowWidth: CGFloat = 0
+    @State var safeAreaInsets: EdgeInsets = .init()
 
     var headerAvatarURL: URL? {
         AvatarURL.preferredURL(for: viewModel.profile.hash)
+    }
+
+    var topPadding: CGFloat {
+        safeAreaInsets.top > 0 ? topPaddingCompensation : .Global.verticalSectionSpacing
+    }
+
+    private var topPaddingCompensation: CGFloat {
+        safeAreaInsets.top > 0 && safeAreaInsets.top <= 20 ? 4 : 0
     }
 
     @ViewBuilder
@@ -23,19 +34,29 @@ struct ShareView: View {
     var body: some View {
         GeometryReader { geometry in
             ScrollView {
+                OffsetReaderView(scrollOffset: $scrollOffset)
                 ShareHeaderView(
                     profile: viewModel.profile,
                     qrImage: { qrImage },
-                    topPadding: geometry.safeAreaInsets.top,
+                    topPadding: topPadding,
                     imageURL: headerAvatarURL,
                     forceRefresh: $forceRefreshAvatar,
+                    windowWidth: $windowWidth,
                     onShareButtonPressed: onShareButtonPressed
                 )
-
                 ShareContentView(viewModel: viewModel)
             }
-            .ignoresSafeArea(.container, edges: [.top, .horizontal])
+            .ignoresSafeArea(.container, edges: [.horizontal])
             .scrollDismissesKeyboard(.interactively)
+            .onChange(of: geometry.safeAreaInsets) { _, newValue in
+                safeAreaInsets = newValue
+            }
+            .onChange(of: geometry.size) { _, value in
+                windowWidth = value.width
+            }
+            .onAppear {
+                windowWidth = geometry.size.width
+            }
         }
         .quickLookPreview($viewModel.contactPreviewURL)
         .sheet(item: $viewModel.shareVCardURL) { url in
@@ -47,6 +68,18 @@ struct ShareView: View {
                 viewModel.refreshUserAvatar()
             }
         }
+        .overlay(content: {
+            VStack {
+                Rectangle().fill(Color.clear)
+                    .background(.ultraThinMaterial)
+                    .frame(height: safeAreaInsets.top)
+                    .ignoresSafeArea()
+                    .opacity(scrollOffset < -.DS.Padding.single ? 1 : 0)
+                    .animation(.snappy(duration: 0.3), value: scrollOffset)
+                    .environment(\.colorScheme, .dark)
+                Spacer()
+            }
+        })
     }
 
     func onShareButtonPressed() {

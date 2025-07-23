@@ -5,12 +5,14 @@ import SwiftUI
 struct ShareContentView: View {
     @ObservedObject var viewModel: ShareViewModel
     @FocusState var focusState: Bool
+    @EnvironmentObject var modalManager: ModalPresentationManager
 
     var body: some View {
         VStack(spacing: .Global.verticalSectionSpacing) {
             sectionTitle(
                 text: Localized.privateFieldsSectionTitle,
-                image: .lock
+                image: .lock,
+                showExclamationButton: true
             )
 
             privateSection
@@ -144,11 +146,30 @@ struct ShareContentView: View {
         .buttonStyle(.actionButton())
     }
 
-    func sectionTitle(text: String, image: ImageResource, imageColor: Color? = nil) -> some View {
+    func sectionTitle(
+        text: String,
+        image: ImageResource,
+        imageColor: Color? = nil,
+        showExclamationButton: Bool = false
+    ) -> some View {
         HStack {
-            Text(text)
+            Button {
+                modalManager.present {
+                    PrivateInformationAlertView(onDismiss: {
+                        modalManager.dismiss()
+                    })
+                }
+            } label: {
+                HStack(spacing: 4) {
+                    if showExclamationButton {
+                        Image(systemName: "exclamationmark.circle")
+                    }
+                    Text(text)
+                }
                 .font(.footnote)
-                .foregroundStyle(.secondary)
+            }
+            .foregroundStyle(.secondary)
+            .disabled(!showExclamationButton)
             Spacer()
             Image(image)
                 .padding(.trailing, 12)
@@ -173,6 +194,7 @@ struct ShareContentView: View {
                 context: .testContext
             ))
         )
+        .environmentObject(ModalPresentationManager())
     }
 }
 #endif
