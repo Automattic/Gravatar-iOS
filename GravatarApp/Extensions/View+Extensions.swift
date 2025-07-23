@@ -2,38 +2,18 @@ import SwiftUI
 
 extension View {
     func contentHeightReader(_ height: Binding<CGFloat>) -> some View {
-        self.background(
-            GeometryReader { geo in
-                Color.clear.onChange(of: geo.size) { _, value in
-                    height.wrappedValue = value.height
-                }.onAppear {
-                    height.wrappedValue = geo.size.height
-                }
-            }
-        )
+        self.onGeometryChange(for: CGSize.self) { geometry in
+            geometry.size
+        } action: { newValue in
+            height.wrappedValue = newValue.height
+        }
     }
 
     func contentWidthtReader(_ width: Binding<CGFloat>) -> some View {
-        self.background(
-            GeometryReader { geo in
-                Color.clear.onChange(of: geo.size) { _, value in
-                    width.wrappedValue = value.width
-                }.onAppear {
-                    width.wrappedValue = geo.size.width
-                }
-            }
-        )
-    }
-
-    func scrollOffsetReader(_ offset: Binding<CGFloat>) -> some View {
-        if #available(iOS 18.0, *) {
-            return self.onScrollGeometryChange(for: CGFloat.self, of: { geometry in
-                geometry.contentOffset.y + geometry.contentInsets.top
-            }, action: { _, newValue in
-                offset.wrappedValue = newValue
-            })
-        } else {
-            return self
+        self.onGeometryChange(for: CGSize.self) { geometry in
+            geometry.size
+        } action: { newValue in
+            width.wrappedValue = newValue.height
         }
     }
 
