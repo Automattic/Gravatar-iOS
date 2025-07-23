@@ -7,6 +7,7 @@ struct ShareView: View {
 
     @Binding var forceRefreshAvatar: Bool
     @State var scrollOffset: CGFloat = 0
+    @State var windowWidth: CGFloat = 0
     @State var safeAreaInsets: EdgeInsets = .init()
 
     var headerAvatarURL: URL? {
@@ -40,15 +41,21 @@ struct ShareView: View {
                     topPadding: topPadding,
                     imageURL: headerAvatarURL,
                     forceRefresh: $forceRefreshAvatar,
+                    windowWidth: $windowWidth,
                     onShareButtonPressed: onShareButtonPressed
                 )
-//                Text("topPadding: \(safeAreaInsets.top)")
                 ShareContentView(viewModel: viewModel)
             }
             .ignoresSafeArea(.container, edges: [.horizontal])
             .scrollDismissesKeyboard(.interactively)
             .onChange(of: geometry.safeAreaInsets) { _, newValue in
                 safeAreaInsets = newValue
+            }
+            .onChange(of: geometry.size) { _, value in
+                windowWidth = value.width
+            }
+            .onAppear {
+                windowWidth = geometry.size.width
             }
         }
         .quickLookPreview($viewModel.contactPreviewURL)
