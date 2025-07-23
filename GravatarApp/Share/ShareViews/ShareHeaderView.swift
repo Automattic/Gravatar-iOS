@@ -166,7 +166,7 @@ extension View {
                     16 : geo.safeAreaInsets.top,
                 imageURL: imageURL,
                 forceRefresh: .constant(false),
-                windowWidth: .constant(320)
+                windowWidth: .constant(geo.size.width)
             )
         }.ignoresSafeArea()
     }
