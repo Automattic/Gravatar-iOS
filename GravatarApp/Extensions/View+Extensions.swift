@@ -10,11 +10,15 @@ extension View {
     }
 
     func contentWidthtReader(_ width: Binding<CGFloat>) -> some View {
-        self.onGeometryChange(for: CGSize.self) { geometry in
-            geometry.size
-        } action: { newValue in
-            width.wrappedValue = newValue.height
-        }
+        self.background(
+            GeometryReader { geo in
+                Color.clear.onChange(of: geo.size) { _, value in
+                    width.wrappedValue = value.width
+                }.onAppear {
+                    width.wrappedValue = geo.size.width
+                }
+            }
+        )
     }
 
     func borders(colorScheme: ColorScheme) -> some View {
