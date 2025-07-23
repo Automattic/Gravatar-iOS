@@ -20,6 +20,7 @@ extension CGFloat {
         public static let contentHorizontalPadding: CGFloat = .DS.Padding.double
         public static let contentBottomPadding: CGFloat = .DS.Padding.double
         public static let verticalSectionSpacing: CGFloat = .DS.Padding.double
+        public static let verticalElementsSpacing: CGFloat = .DS.Padding.single
     }
 }
 
