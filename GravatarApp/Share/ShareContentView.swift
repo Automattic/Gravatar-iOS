@@ -116,9 +116,22 @@ struct ShareContentView: View {
         }
         ShareField(
             title: Localized.profileURLFieldTitle,
-            value: profile.profileUrl,
+            value: cleanURL(profile.profileUrl),
             selected: $viewModel.share.profileURL
         )
+
+        ForEach(profile.verifiedAccounts, id: \.self) { account in
+            Divider()
+            ShareField(
+                title: Localized.accountNameFieldTitle(for: account.serviceLabel),
+                value: cleanURL(account.url),
+                selected: Binding(get: {
+                    viewModel.share.account(account)
+                }, set: { newValue in
+                    viewModel.share.set(account, to: newValue)
+                })
+            )
+        }
     }
 
     @ViewBuilder
@@ -165,6 +178,10 @@ struct ShareContentView: View {
                 }
         }
     }
+
+    private func cleanURL(_ url: String) -> String {
+        url.replacingOccurrences(of: "https://", with: "")
+    }
 }
 
 #if DEBUG
@@ -206,6 +223,14 @@ private enum Localized {
         value: "Profile URL",
         comment: "Title for the profile url field to be shared via QR code"
     )
+
+    static func accountNameFieldTitle(for serviceLabel: String) -> String {
+        String(format: NSLocalizedString(
+            "Share.Contact.Account.title",
+            value: "%@ account",
+            comment: "Title for the account url field. %@ is the service label. e.g. 'WordPress account'."
+        ), serviceLabel)
+    }
 
     static let privateFieldsSectionTitle: String = NSLocalizedString(
         "Share.Contact.PrivateSection.title",

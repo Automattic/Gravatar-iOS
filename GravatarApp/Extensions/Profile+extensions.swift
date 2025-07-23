@@ -16,7 +16,15 @@ extension Profile {
             "description": "Some long description which will hopefully generate multiline labels all around the app.",
             "job_title": "Software Engineer",
             "company": "Automattic",
-            "verified_accounts": [],
+            "verified_accounts": [
+                [
+                    "service_type": "wp",
+                    "service_label": "WordPress",
+                    "service_icon": "",
+                    "url": "https://wordpress.com/mysite",
+                    "is_hidden": false,
+                ],
+            ],
             "pronunciation": "",
             "pronouns": "",
         ]

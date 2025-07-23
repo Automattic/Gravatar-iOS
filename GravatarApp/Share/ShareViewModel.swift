@@ -8,7 +8,7 @@ class ShareViewModel: ObservableObject {
     @Published var profile: Profile
     @Published var qrCodeImage: Image?
     @Published var shareVCardURL: URL?
-    @Published var share: ShareFieldsSelectionStore = .init()
+    @Published var share: ShareFieldsSelectionStore
 
     private let userSession: UserSession
     private var cancellables = Set<AnyCancellable>()
@@ -26,13 +26,15 @@ class ShareViewModel: ObservableObject {
     init(
         userSession: UserSession,
         urlSession: URLSessionProtocol? = nil,
-        networkMonitor: NetworkMonitor = SystemNetworkMonitor.shared
+        networkMonitor: NetworkMonitor = SystemNetworkMonitor.shared,
+        userDefaults: UserDefaults = .standard
     ) {
         self.userSession = userSession
         self.profile = userSession.profile
         self.qrGenerator = QRGenerator()
         self.urlSession = urlSession ?? GravatarURLSession.shared
         self.networkMonitor = networkMonitor
+        self.share = .init(userDefaults: userDefaults)
 
         setupObservers()
 
@@ -51,7 +53,7 @@ class ShareViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
-        $share.sink { [weak self] _ in
+        share.objectWillChange.sink { [weak self] _ in
             Task {
                 await self?.generateVCardQR()
             }
@@ -127,11 +129,13 @@ class ShareViewModel: ObservableObject {
             displayName: profile.displayName,
             organization: share.company ? profile.company : "",
             jobTitle: share.jobTitle ? profile.jobTitle : "",
+            location: share.location ? profile.location : "",
             phoneNumber: share.phone ? storedPhoneNumber : "",
             email: share.email ? storedUserEmail : "",
             profileURL: share.profileURL ? profile.profileUrl : "",
             description: share.description ? profile.description : "",
-            avatarData: avatarData
+            avatarData: avatarData,
+            accounts: profile.verifiedAccounts.filter { share.account($0) }.map()
         )
     }
 }
