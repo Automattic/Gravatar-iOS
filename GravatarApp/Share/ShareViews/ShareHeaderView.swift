@@ -75,9 +75,6 @@ struct ShareHeaderView<QRImage: View>: View {
             windowWidth: windowWidth,
             qrImage: qrImage
         )
-        .onChange(of: windowWidth) { _, newValue in
-            print("windowWidth: \(newValue)")
-        }
     }
 
     @ViewBuilder
