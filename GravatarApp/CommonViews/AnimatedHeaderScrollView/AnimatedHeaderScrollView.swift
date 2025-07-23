@@ -29,14 +29,19 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
         isRefreshing ? nominal : (canRefreshAgain && scrollOffset > 0 ? scrollOffset / progressRatio : 0)
     }
 
+    private let refreshControlPadding: CGFloat = 44
+
     private var scrollableHeaderTopPadding: CGFloat {
-        (safeAreaInset.top == 0 ? defaultTopPadding : safeAreaInset.top) + (isRefreshing ? 44 : 0) + topPaddingCompensation
+        (safeAreaInset.top == 0 ? defaultTopPadding : safeAreaInset.top) + (isRefreshing ? refreshControlPadding : 0) + topPaddingCompensation
     }
 
     private var topPaddingCompensation: CGFloat {
         safeAreaInset.top > 0 && safeAreaInset.top <= 20 ? 4 : 0
     }
 
+    // 8 is the height of `OffsetReaderView` at the top of the scroll view.
+    // Geometry reader uses a bit of vertical space to do its magic.
+    // We can get rid of this once we stop support of iOS 17.
     private let offsetReaderHeight: CGFloat = 8
 
     private var stickySafeAreaInsets: EdgeInsets {
@@ -128,9 +133,6 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
         let start = -(scrollableHeaderHeight - stickyHeaderHeight)
 
         if animationBehavior == .automatic {
-            // 8 is a magic number found on testing. Not sure where is this being missed from.
-            // My guess is the `OffsetReaderView` at the top of the scroll view.
-            // Geometry reader uses a bit of vertical space to do its magic
             return scrollOffset >= (start - offsetReaderHeight) ? 0 : 1
         }
 
