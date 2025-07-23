@@ -58,7 +58,7 @@ struct ShareHeaderView<QRImage: View>: View {
                     qrCode
                     Text(ShareLocalized.qrExplanation)
                 }
-                .padding(.top, .DS.Padding.single)
+                .padding(.top, .DS.Padding.half)
                 VStack(spacing: 8) {
                     buttonsSection
                 }.contentWidthtReader($buttonsSectionWidth)

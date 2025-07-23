@@ -33,7 +33,7 @@ struct BouncyImageBackgroundHeaderView<Content>: View where Content: View {
             .offset(y: isBouncing ? -offset : 0)
             .overlay {
                 VStack {
-                    Spacer()
+                    Spacer(minLength: 0)
                     content()
                         .padding(.bottom)
                         .contentHeightReader($contentHeight)

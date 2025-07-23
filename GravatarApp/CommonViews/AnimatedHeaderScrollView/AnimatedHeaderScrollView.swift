@@ -30,7 +30,22 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
     }
 
     private var scrollableHeaderTopPadding: CGFloat {
-        (safeAreaInset.top == 0 ? defaultTopPadding : safeAreaInset.top) + (isRefreshing ? 44 : 0)
+        (safeAreaInset.top == 0 ? defaultTopPadding : safeAreaInset.top) + (isRefreshing ? 44 : 0) + topPaddingCompensation
+    }
+
+    private var topPaddingCompensation: CGFloat {
+        safeAreaInset.top > 0 && safeAreaInset.top <= 20 ? 4 : 0
+    }
+
+    private let offsetReaderHeight: CGFloat = 8
+
+    private var stickySafeAreaInsets: EdgeInsets {
+        .init(
+            top: safeAreaInset.top == 0 ? defaultTopPadding : safeAreaInset.top + offsetReaderHeight + topPaddingCompensation,
+            leading: safeAreaInset.leading,
+            bottom: safeAreaInset.bottom,
+            trailing: safeAreaInset.bottom
+        )
     }
 
     var body: some View {
@@ -59,7 +74,7 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
             }
             .scrollDismissesKeyboard(.immediately)
 
-            stickyHeader(stickyHeaderOpacity, safeAreaInset)
+            stickyHeader(stickyHeaderOpacity, stickySafeAreaInsets)
                 .contentHeightReader($stickyHeaderHeight)
                 .ignoresSafeArea(.container)
                 .if(animationBehavior == .automatic) { view in
@@ -74,7 +89,7 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
                     EllipsisButton(action: {})
                 }
             }
-            .padding(.top, safeAreaInset.top == 0 ? defaultTopPadding : 0)
+            .padding(.top, safeAreaInset.top == 0 ? defaultTopPadding : offsetReaderHeight + topPaddingCompensation)
             .padding(.trailing, safeAreaInset.trailing == 0 ? 16 : 0)
         }
         .background(GeometryReader { geo in
@@ -116,7 +131,7 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
             // 8 is a magic number found on testing. Not sure where is this being missed from.
             // My guess is the `OffsetReaderView` at the top of the scroll view.
             // Geometry reader uses a bit of vertical space to do its magic
-            return scrollOffset >= (start - 8) ? 0 : 1
+            return scrollOffset >= (start - offsetReaderHeight) ? 0 : 1
         }
 
         let end = start - animationLength

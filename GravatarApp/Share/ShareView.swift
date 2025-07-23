@@ -14,7 +14,11 @@ struct ShareView: View {
     }
 
     var topPadding: CGFloat {
-        safeAreaInsets.top > 0 ? safeAreaInsets.top : .Global.verticalSectionSpacing
+        safeAreaInsets.top > 0 ? topPaddingCompensation : .Global.verticalSectionSpacing
+    }
+
+    private var topPaddingCompensation: CGFloat {
+        safeAreaInsets.top > 0 && safeAreaInsets.top <= 20 ? 4 : 0
     }
 
     @ViewBuilder
@@ -29,6 +33,7 @@ struct ShareView: View {
     var body: some View {
         GeometryReader { geometry in
             ScrollView {
+                OffsetReaderView(scrollOffset: $scrollOffset)
                 ShareHeaderView(
                     profile: viewModel.profile,
                     qrImage: { qrImage },
@@ -37,11 +42,11 @@ struct ShareView: View {
                     forceRefresh: $forceRefreshAvatar,
                     onShareButtonPressed: onShareButtonPressed
                 )
+//                Text("topPadding: \(safeAreaInsets.top)")
                 ShareContentView(viewModel: viewModel)
             }
-            .ignoresSafeArea(.container, edges: [.top, .horizontal])
+            .ignoresSafeArea(.container, edges: [.horizontal])
             .scrollDismissesKeyboard(.interactively)
-            .scrollOffsetReader($scrollOffset)
             .onChange(of: geometry.safeAreaInsets) { _, newValue in
                 safeAreaInsets = newValue
             }
@@ -62,7 +67,7 @@ struct ShareView: View {
                     .background(.ultraThinMaterial)
                     .frame(height: safeAreaInsets.top)
                     .ignoresSafeArea()
-                    .opacity(scrollOffset > .DS.Padding.single ? 1 : 0)
+                    .opacity(scrollOffset < -.DS.Padding.single ? 1 : 0)
                     .animation(.snappy(duration: 0.3), value: scrollOffset)
                     .environment(\.colorScheme, .dark)
                 Spacer()
