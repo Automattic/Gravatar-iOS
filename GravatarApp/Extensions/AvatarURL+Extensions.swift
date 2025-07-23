@@ -1,5 +1,5 @@
-import Gravatar
 import Foundation
+import Gravatar
 
 extension ImageSize {
     static var preferredSize: ImageSize {
