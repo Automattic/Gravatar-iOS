@@ -56,7 +56,7 @@ class ShareFieldsSelectionStore: ObservableObject {
         objectWillChange.send()
     }
 
-    init(userDefaults: UserDefaults = .standard) {
+    init(userDefaults: UserDefaults) {
         self.userDefaults = userDefaults
 
         email = userDefaults.bool(forKey: Key.shareEmail, default: true)
@@ -67,12 +67,5 @@ class ShareFieldsSelectionStore: ObservableObject {
         company = userDefaults.bool(forKey: Key.shareCompany, default: true)
         description = userDefaults.bool(forKey: Key.shareDescription, default: true)
         profileURL = userDefaults.bool(forKey: Key.shareProfileURL, default: true)
-    }
-}
-
-extension UserDefaults {
-    /// Return the `defaultValue` if the value doesn't exist in the UserDefaults.
-    func bool(forKey key: String, default defaultValue: Bool) -> Bool {
-        object(forKey: key) as? Bool ?? defaultValue
     }
 }
