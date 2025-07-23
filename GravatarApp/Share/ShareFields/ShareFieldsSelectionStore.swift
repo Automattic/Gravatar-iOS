@@ -4,7 +4,7 @@ import SwiftUI
 class ShareFieldsSelectionStore: ObservableObject {
     private let userDefaults: UserDefaults
 
-    enum Key {
+    private enum Key {
         static let shareEmail = "shareEmail"
         static let sharePhone = "sharePhone"
         static let shareName = "shareName"
