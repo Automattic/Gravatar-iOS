@@ -6,9 +6,15 @@ struct ShareView: View {
     @ObservedObject var viewModel: ShareViewModel
 
     @Binding var forceRefreshAvatar: Bool
+    @State var scrollOffset: CGFloat = 0
+    @State var safeAreaInsets: EdgeInsets = .init()
 
     var headerAvatarURL: URL? {
         AvatarURL.preferredURL(for: viewModel.profile.hash)
+    }
+
+    var topPadding: CGFloat {
+        safeAreaInsets.top > 0 ? safeAreaInsets.top : .Global.verticalSectionSpacing
     }
 
     @ViewBuilder
@@ -26,16 +32,19 @@ struct ShareView: View {
                 ShareHeaderView(
                     profile: viewModel.profile,
                     qrImage: { qrImage },
-                    topPadding: geometry.safeAreaInsets.top,
+                    topPadding: topPadding,
                     imageURL: headerAvatarURL,
                     forceRefresh: $forceRefreshAvatar,
                     onShareButtonPressed: onShareButtonPressed
                 )
-
                 ShareContentView(viewModel: viewModel)
             }
             .ignoresSafeArea(.container, edges: [.top, .horizontal])
             .scrollDismissesKeyboard(.interactively)
+            .scrollOffsetReader($scrollOffset)
+            .onChange(of: geometry.safeAreaInsets) { _, newValue in
+                safeAreaInsets = newValue
+            }
         }
         .quickLookPreview($viewModel.contactPreviewURL)
         .sheet(item: $viewModel.shareVCardURL) { url in
@@ -47,6 +56,18 @@ struct ShareView: View {
                 viewModel.refreshUserAvatar()
             }
         }
+        .overlay(content: {
+            VStack {
+                Rectangle().fill(Color.clear)
+                    .background(.ultraThinMaterial)
+                    .frame(height: safeAreaInsets.top)
+                    .ignoresSafeArea()
+                    .opacity(scrollOffset > .DS.Padding.single ? 1 : 0)
+                    .animation(.snappy(duration: 0.3), value: scrollOffset)
+                    .environment(\.colorScheme, .dark)
+                Spacer()
+            }
+        })
     }
 
     func onShareButtonPressed() {
