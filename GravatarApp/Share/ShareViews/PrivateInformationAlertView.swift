@@ -20,10 +20,6 @@ struct PrivateInformationAlertView: View {
                     Text(Localized.dismissButton).frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.actionButton())
-                Button {} label: {
-                    Text(Localized.moreInfoButton).frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.actionButton(style: .secondary))
             }
         }
         .padding()
@@ -35,11 +31,6 @@ private enum Localized {
         "Share.PrivateInfoAlert.DismissButton.title",
         value: "Got it",
         comment: "Button title to dismiss the private information alert"
-    )
-    static let moreInfoButton = NSLocalizedString(
-        "Share.PrivateInfoAlert.MoreInfoButton.title",
-        value: "Learn more",
-        comment: "Title of the button to show extra explanation about sharing private information"
     )
     static let title = NSLocalizedString(
         "Share.PrivateInfoAlert.title",
