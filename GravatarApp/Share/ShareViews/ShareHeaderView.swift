@@ -17,7 +17,7 @@ struct ShareHeaderView<QRImage: View>: View {
     private let horizontalSectionSpacing: CGFloat = 22
 
     @State private var buttonsSectionWidth: CGFloat = 0
-    @State private var windowWidth: CGFloat = 0
+    @Binding private var windowWidth: CGFloat
     @State private var presentFullScreen: Bool = false
 
     var qrWidth: CGFloat {
@@ -37,12 +37,14 @@ struct ShareHeaderView<QRImage: View>: View {
         topPadding: CGFloat,
         imageURL: URL?,
         forceRefresh: Binding<Bool>,
+        windowWidth: Binding<CGFloat>,
         onShareButtonPressed: (() -> Void)? = nil
     ) {
         self.profile = profile
         self.topPadding = topPadding
         self.imageURL = imageURL
         self._forceRefresh = forceRefresh
+        self._windowWidth = windowWidth
         self.qrImage = qrImage
         self.onShareButtonPressed = onShareButtonPressed
     }
@@ -58,13 +60,13 @@ struct ShareHeaderView<QRImage: View>: View {
                     qrCode
                     Text(ShareLocalized.qrExplanation)
                 }
+                .padding(.top, .DS.Padding.half)
                 VStack(spacing: 8) {
                     buttonsSection
                 }.contentWidthtReader($buttonsSectionWidth)
             }
             .padding(.horizontal, .Global.contentHorizontalPadding)
         }
-        .contentWidthtReader($windowWidth)
         .presentQRCodeFullScreen(
             presentFullScreen: $presentFullScreen,
             topPadding: topPadding,
@@ -163,7 +165,8 @@ extension View {
                 geo.safeAreaInsets.top == 0 ?
                     16 : geo.safeAreaInsets.top,
                 imageURL: imageURL,
-                forceRefresh: .constant(false)
+                forceRefresh: .constant(false),
+                windowWidth: .constant(geo.size.width)
             )
         }.ignoresSafeArea()
     }
