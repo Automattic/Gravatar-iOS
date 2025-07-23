@@ -7,10 +7,7 @@ struct ProfileEditorView: View {
     @ObservedObject var viewModel: EditProfileViewModel
 
     var headerAvatarURL: URL? {
-        AvatarURL(
-            with: .hashID(viewModel.userSession.profile.hash),
-            options: .init(preferredSize: .pixels(256))
-        )?.url
+        AvatarURL.preferredURL(for: viewModel.userSession.profile.hash)
     }
 
     var body: some View {
@@ -36,6 +33,7 @@ struct ProfileEditorView: View {
             MainMenuOptions(profile: viewModel.userSession.profile)
         } onRefresh: {
             await viewModel.fetchProfile()
+            forceRefresh = true
         }
         .safeAreaInset(edge: .bottom, alignment: .center, spacing: nil) {
             Group {

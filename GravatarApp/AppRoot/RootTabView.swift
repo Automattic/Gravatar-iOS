@@ -38,7 +38,7 @@ struct RootTabView: View {
 
                 // MARK: - Third tab
 
-                ShareTab(viewModel: shareViewModel)
+                ShareTab(viewModel: shareViewModel, avatarForceRefresh: $avatarPickerViewModel.forceRefreshAvatar)
             }
             // Needed to be added inside the TabView for the toast to follow the bottom safe area guide.
             .addToastContainer(manager: toastManager)
@@ -83,11 +83,15 @@ struct ProfileTab: View {
 
 struct ShareTab: View {
     @ObservedObject var viewModel: ShareViewModel
+    @Binding var avatarForceRefresh: Bool
 
     var body: some View {
         NavigationStack {
             BackgroundColorView(color: .secondarySystemBackground) {
-                ShareView(viewModel: viewModel)
+                ShareView(
+                    viewModel: viewModel,
+                    forceRefreshAvatar: $avatarForceRefresh
+                )
             }
         }
         .background(Color(uiColor: .secondarySystemBackground))

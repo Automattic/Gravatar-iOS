@@ -5,13 +5,10 @@ import SwiftUI
 struct ShareView: View {
     @ObservedObject var viewModel: ShareViewModel
 
-    @State var forceRefresh: Bool = false
+    @Binding var forceRefreshAvatar: Bool
 
     var headerAvatarURL: URL? {
-        AvatarURL(
-            with: .hashID(viewModel.profile.hash),
-            options: .init(preferredSize: .pixels(256))
-        )?.url
+        AvatarURL.preferredURL(for: viewModel.profile.hash)
     }
 
     @ViewBuilder
@@ -31,7 +28,8 @@ struct ShareView: View {
                     qrImage: { qrImage },
                     topPadding: geometry.safeAreaInsets.top,
                     imageURL: headerAvatarURL,
-                    forceRefresh: $forceRefresh
+                    forceRefresh: $forceRefreshAvatar,
+                    onShareButtonPressed: onShareButtonPressed
                 )
 
                 ShareContentView(viewModel: viewModel)
@@ -40,6 +38,27 @@ struct ShareView: View {
             .scrollDismissesKeyboard(.interactively)
         }
         .quickLookPreview($viewModel.contactPreviewURL)
+        .sheet(item: $viewModel.shareVCardURL) { url in
+            ShareSheet(items: [url])
+                .presentationDetents([.medium, .large])
+        }
+        .onChange(of: forceRefreshAvatar) { _, newValue in
+            if newValue {
+                viewModel.refreshUserAvatar()
+            }
+        }
+    }
+
+    func onShareButtonPressed() {
+        Task {
+            await viewModel.shareVCard()
+        }
+    }
+}
+
+extension URL: @retroactive Identifiable {
+    public var id: String {
+        self.absoluteString
     }
 }
 
@@ -50,7 +69,8 @@ struct ShareView: View {
             profile: .testProfile,
             accessToken: "",
             context: .testContext
-        ))
+        )),
+        forceRefreshAvatar: .constant(false)
     )
 }
 #endif
