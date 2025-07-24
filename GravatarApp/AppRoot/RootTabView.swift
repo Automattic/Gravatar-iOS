@@ -63,7 +63,7 @@ struct GravatarTab: View {
             AvatarPickerView(avatarPickerModel: avatarPickerViewModel, onLogout: onLogout)
         }
         .tabItem {
-            Label("Gravatar", image: "gravatar-logo")
+            Label("Gravatar", image: .gravatarLogo)
         }
     }
 }
