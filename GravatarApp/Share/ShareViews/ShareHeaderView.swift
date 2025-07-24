@@ -76,6 +76,7 @@ struct ShareHeaderView<QRImage: View>: View {
                             view.frame(width: qrWidth)
                         }
                 }
+                .padding(.top, .DS.Padding.half)
                 if shouldUseCenteredLayout {
                     // Needed to center the QR Image
                     Spacer(minLength: 0)
