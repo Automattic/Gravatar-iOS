@@ -7,6 +7,7 @@ enum ImagePickerSource: CaseIterable, Identifiable {
         case system(String)
         case custom(ImageResource)
     }
+
     case photoLibrary
     case camera
     case playground
