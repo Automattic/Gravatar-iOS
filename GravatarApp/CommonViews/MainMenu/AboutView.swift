@@ -4,24 +4,30 @@ struct AboutView: View {
     @EnvironmentObject var modalManager: ModalPresentationManager
 
     var body: some View {
-        VStack(alignment: .leading) {
-            title(Localized.aboutTitle)
-            Text("v\(getAppVersion())")
-                .foregroundStyle(Color.primary.opacity(0.6))
-            title(Localized.getHelpTitle)
-            link("support.gravatar.com", url: "https://support.gravatar.com")
-            link("support@gravatar.com", url: "mailto:support@gravatar.com")
-            title(Localized.legalTitle)
-
-            // TODO: Use real links. Maybe open in-app webview.
-            link(Localized.termsOfServiceText, url: "https://gravatar.com")
-            link("Privacy Policy", url: "https://gravatar.com")
+        VStack(alignment: .leading, spacing: .Global.verticalSectionSpacing) {
+            VStack(alignment: .leading) {
+                title(Localized.aboutTitle)
+                Text("v\(getAppVersion())")
+                    .foregroundStyle(Color.primary.opacity(0.6))
+            }
+            VStack(alignment: .leading) {
+                title(Localized.getHelpTitle)
+                link("support.gravatar.com", url: "https://support.gravatar.com")
+                link("support@gravatar.com", url: "mailto:support@gravatar.com")
+            }
+            VStack(alignment: .leading) {
+                title(Localized.legalTitle)
+                link(Localized.termsOfServiceText, url: "https://automattic.com/tos/")
+                link(Localized.privacyPolicyText, url: "https://automattic.com/privacy/")
+            }
 
             Button {
                 modalManager.dismiss()
-            } label: { Text("Done").frame(maxWidth: .infinity) }
-                .buttonStyle(.actionButton(style: .secondary))
-                .padding(.top, 16)
+            } label: {
+                Text(Localized.closeButtonTitle)
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.actionButton())
         }
         .padding()
     }
@@ -30,7 +36,7 @@ struct AboutView: View {
         Text(text)
             .font(.title3)
             .fontWeight(.semibold)
-            .padding(.top, 16)
+            .padding(.bottom, .DS.Padding.half)
     }
 
     private func link(_ text: String, url: String) -> some View {
@@ -76,9 +82,17 @@ private enum Localized {
         value: "Privacy Policy",
         comment: "Link text for the 'Privacy Policy' in the 'About Gravatar' view"
     )
+
+    static let closeButtonTitle = NSLocalizedString(
+        "AboutModal.CloseButton.title",
+        value: "Done",
+        comment: "Text for the 'Done' button in the 'About Gravatar' view"
+    )
 }
 
 #Preview {
-    AboutView()
-        .environmentObject(ModalPresentationManager())
+    ModalView {
+        AboutView()
+            .environmentObject(ModalPresentationManager())
+    }
 }
