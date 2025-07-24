@@ -63,7 +63,7 @@ struct GravatarTab: View {
             AvatarPickerView(avatarPickerModel: avatarPickerViewModel, onLogout: onLogout)
         }
         .tabItem {
-            Label("Gravatar", image: "gravatar-logo")
+            Label("Gravatar", image: .gravatarTab)
         }
     }
 }
@@ -76,7 +76,7 @@ struct ProfileTab: View {
             ProfileEditorView(viewModel: editProfileViewModel)
         }
         .tabItem {
-            Label("Profile", systemImage: "brain.filled.head.profile")
+            Label("Profile", image: .profileTab)
         }
     }
 }
@@ -96,7 +96,7 @@ struct ShareTab: View {
         }
         .background(Color(uiColor: .secondarySystemBackground))
         .tabItem {
-            Label("Share", systemImage: "qrcode")
+            Label("Share", image: .shareTab)
         }
     }
 }
