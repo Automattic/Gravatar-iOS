@@ -27,8 +27,13 @@ struct ShareHeaderView<QRImage: View>: View {
         // We also set a maximum size to not have huge QR codes on iPad.
         return min(
             windowWidth - buttonsSectionWidth - padding * 2 - horizontalSectionSpacing,
-            350
+            332 // maximum calculated size possible (on iPhone Pro Max)
         )
+    }
+
+    var shouldUseCenteredLayout: Bool {
+        // Bigger iphone width is 430 points
+        windowWidth >= 440
     }
 
     init(
@@ -56,16 +61,33 @@ struct ShareHeaderView<QRImage: View>: View {
             forceRefresh: $forceRefresh
         ) {
             HStack(alignment: .top, spacing: horizontalSectionSpacing) {
-                VStack(alignment: .leading, spacing: .Global.verticalSectionSpacing) {
+                if shouldUseCenteredLayout {
+                    // Needed to center the QR Image
+                    Spacer().frame(maxWidth: buttonsSectionWidth)
+                    Spacer(minLength: 0)
+                }
+                VStack(
+                    alignment: .leading,
+                    spacing: .Global.verticalSectionSpacing
+                ) {
                     qrCode
                     Text(ShareLocalized.qrExplanation)
+                        .if(shouldUseCenteredLayout) { view in
+                            view.frame(width: qrWidth)
+                        }
                 }
                 .padding(.top, .DS.Padding.half)
-                VStack(spacing: 8) {
+                if shouldUseCenteredLayout {
+                    // Needed to center the QR Image
+                    Spacer(minLength: 0)
+                }
+                VStack(spacing: .Global.verticalElementsSpacing) {
                     buttonsSection
-                }.contentWidthtReader($buttonsSectionWidth)
+                }
+                .contentWidthtReader($buttonsSectionWidth)
             }
             .padding(.horizontal, .Global.contentHorizontalPadding)
+            .readableContentWidth()
         }
         .presentQRCodeFullScreen(
             presentFullScreen: $presentFullScreen,
