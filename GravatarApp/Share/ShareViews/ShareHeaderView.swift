@@ -63,7 +63,7 @@ struct ShareHeaderView<QRImage: View>: View {
                 .padding(.top, .DS.Padding.half)
                 VStack(spacing: 8) {
                     buttonsSection
-                }.contentWidthtReader($buttonsSectionWidth)
+                }.contentWidthReader($buttonsSectionWidth)
             }
             .padding(.horizontal, .Global.contentHorizontalPadding)
         }
