@@ -12,7 +12,7 @@ struct ImagePickerSectionView: View {
             HStack {
                 ForEach(ImagePickerSource.allCases, id: \.id) { source in
                     ImagePicker(sourceType: source) {
-                        uploadAvatarButton(title: source.localizedTitle, systemImage: source.iconName)
+                        uploadAvatarButton(title: source.localizedTitle, icon: source.icon)
                     } onImageSelected: { image in
                         onImageSelected(image)
                     }
@@ -21,13 +21,20 @@ struct ImagePickerSectionView: View {
         }
     }
 
-    func uploadAvatarButton(title: String, systemImage: String) -> some View {
+    func uploadAvatarButton(title: String, icon: ImagePickerSource.Icon) -> some View {
         Label {
             Text(title)
                 .font(.subheadline)
         } icon: {
-            Image(systemName: systemImage)
-                .font(.title)
+            Group {
+                switch icon {
+                case .system(let systemImage):
+                    Image(systemName: systemImage)
+                case .custom(let resource):
+                    Image(resource)
+                }
+            }
+            .font(.title)
         }
         .labelStyle(.vertical)
         .foregroundStyle(Color.DS.bluishColor)
