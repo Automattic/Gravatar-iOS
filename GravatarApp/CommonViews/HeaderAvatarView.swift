@@ -29,7 +29,6 @@ struct HeaderAvatarView: View {
             placeholderView: {
                 placeholderColor
             },
-            cache: ImageCache(),
             oneTimeForceRefresh: $forceRefresh,
             loadingView: {
                 showLoading ?

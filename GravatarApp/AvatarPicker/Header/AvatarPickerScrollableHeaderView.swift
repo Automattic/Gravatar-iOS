@@ -21,15 +21,25 @@ struct AvatarPickerScrollableHeaderView: View {
     }
 
     func bigAvatar() -> some View {
-        HeaderAvatarView(imageURL: imageURL, showLoading: true, forceRefresh: $forceRefresh, placeholderColor: .DS.avatarPlaceholderColor, animation: .smooth)
+        avatar
             .frame(width: 105, height: 105)
             .avatarSytle(Circle())
     }
 
     func smallAvatar() -> some View {
-        HeaderAvatarView(imageURL: imageURL, showLoading: true, forceRefresh: $forceRefresh, placeholderColor: .DS.avatarPlaceholderColor, animation: .smooth)
+        avatar
             .frame(width: 49, height: 49)
             .avatarSytle(RoundedRectangle(cornerRadius: 7))
+    }
+
+    var avatar: some View {
+        HeaderAvatarView(
+            imageURL: imageURL,
+            showLoading: true,
+            forceRefresh: $forceRefresh,
+            placeholderColor: .DS.avatarPlaceholderColor,
+            animation: .smooth
+        )
     }
 }
 

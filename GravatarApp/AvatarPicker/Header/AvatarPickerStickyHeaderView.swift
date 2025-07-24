@@ -21,25 +21,24 @@ struct AvatarPickerStickyHeaderView: View {
     }
 
     func bigAvatar() -> some View {
-        HeaderAvatarView(
-            imageURL: imageURL,
-            showLoading: false,
-            forceRefresh: $forceRefresh,
-            placeholderColor: .DS.avatarPlaceholderColor
-        )
-        .frame(width: 44, height: 44)
-        .avatarSytle(Circle())
+        avatar
+            .frame(width: 44, height: 44)
+            .avatarSytle(Circle())
     }
 
     func smallAvatar() -> some View {
+        avatar
+            .frame(width: 33, height: 33)
+            .avatarSytle(RoundedRectangle(cornerRadius: 7))
+    }
+
+    var avatar: some View {
         HeaderAvatarView(
             imageURL: imageURL,
             showLoading: false,
             forceRefresh: $forceRefresh,
             placeholderColor: .DS.avatarPlaceholderColor
         )
-        .frame(width: 33, height: 33)
-        .avatarSytle(RoundedRectangle(cornerRadius: 7))
     }
 }
 
