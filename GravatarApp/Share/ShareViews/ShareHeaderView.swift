@@ -59,6 +59,7 @@ struct ShareHeaderView<QRImage: View>: View {
                 VStack(alignment: .leading, spacing: .Global.verticalSectionSpacing) {
                     qrCode
                     Text(ShareLocalized.qrExplanation)
+                        .foregroundStyle(Color.white)
                 }
                 .padding(.top, .DS.Padding.half)
                 VStack(spacing: 8) {

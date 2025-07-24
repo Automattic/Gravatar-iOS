@@ -18,20 +18,19 @@ struct ProfileEditorScrollableHeaderView: View {
             VStack(spacing: 16) {
                 avatar()
 
-                profileInfo()
-
-                profileURLButton()
+                Group {
+                    profileInfo()
+                    profileURLButton()
+                }
+                .environment(\.colorScheme, .dark)
             }
         }
     }
 
     func avatar() -> some View {
-        HeaderAvatarView(imageURL: imageURL, showLoading: true, forceRefresh: $forceRefresh) {
-            EmptyView()
-        }
-        .frame(width: 105, height: 105)
-        .shape(Circle(), borderColor: .black.opacity(0.2), borderWidth: 2)
-        .shadow(radius: 2, x: 0, y: 3)
+        HeaderAvatarView(imageURL: imageURL, showLoading: true, forceRefresh: $forceRefresh, placeholderColor: .DS.avatarPlaceholderColor)
+            .frame(width: 105, height: 105)
+            .avatarSytle(Circle())
     }
 
     func profileInfo() -> some View {

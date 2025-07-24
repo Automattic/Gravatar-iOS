@@ -59,4 +59,12 @@ extension View {
             ToastContainerView(toastManager: manager)
         }
     }
+
+    func avatarSytle(_ shape: some Shape) -> some View {
+        self.clipShape(shape)
+            .shadow(radius: 2, x: 0, y: 3)
+            .overlay {
+                shape.stroke(.black.opacity(0.2), lineWidth: 2)
+            }
+    }
 }
