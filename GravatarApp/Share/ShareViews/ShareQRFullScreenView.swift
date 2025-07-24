@@ -22,10 +22,14 @@ struct ShareQRFullScreenView<QRImage: View>: View {
 
     var body: some View {
         VStack(alignment: .leading) {
+            Spacer()
             closeButton
             Spacer()
             centralContent
             Spacer()
+            // Balance space to keep the qr code at the center
+            Image(systemName: "xmark")
+                .opacity(0)
             Spacer()
         }
         .background {
