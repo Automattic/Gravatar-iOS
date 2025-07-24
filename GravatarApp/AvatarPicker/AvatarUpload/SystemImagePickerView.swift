@@ -3,6 +3,11 @@ import PhotosUI
 import SwiftUI
 
 enum ImagePickerSource: CaseIterable, Identifiable {
+    enum Icon {
+        case system(String)
+        case custom(ImageResource)
+    }
+
     case photoLibrary
     case camera
     case playground
@@ -107,14 +112,14 @@ struct ImagePicker<Label>: View where Label: View {
 }
 
 extension ImagePickerSource {
-    var iconName: String {
+    var icon: Icon {
         switch self {
         case .camera:
-            "camera.fill"
+            .system("camera.fill")
         case .photoLibrary:
-            "photo.on.rectangle.angled.fill"
+            .custom(.photosIcon)
         case .playground:
-            "apple.image.playground.fill"
+            .system("apple.image.playground.fill")
         }
     }
 
