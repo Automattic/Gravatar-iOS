@@ -48,7 +48,7 @@ struct ShareContentView: View {
     @ViewBuilder
     var privateSection: some View {
         ShareTextField(
-            text: viewModel.$storedUserEmail,
+            text: $viewModel.storedUserEmail,
             placeholder: Localized.emailFieldTitle,
             selected: $viewModel.share.email
         )
@@ -59,7 +59,7 @@ struct ShareContentView: View {
         .focused($focusState, equals: true)
 
         ShareTextField(
-            text: viewModel.$storedPhoneNumber,
+            text: $viewModel.storedPhoneNumber,
             placeholder: Localized.phoneNumberFieldTitle,
             selected: $viewModel.share.phone
         )

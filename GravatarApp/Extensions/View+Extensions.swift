@@ -9,7 +9,7 @@ extension View {
         }
     }
 
-    func contentWidthtReader(_ width: Binding<CGFloat>) -> some View {
+    func contentWidthReader(_ width: Binding<CGFloat>) -> some View {
         self.background(
             GeometryReader { geo in
                 Color.clear.onChange(of: geo.size) { _, value in

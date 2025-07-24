@@ -95,7 +95,9 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
                 }
             }
             .padding(.top, safeAreaInset.top == 0 ? defaultTopPadding : offsetReaderHeight + topPaddingCompensation)
-            .padding(.trailing, safeAreaInset.trailing == 0 ? 16 : 0)
+            // `safeAreaInset.trailing` can be set to -0 on iOS 18.2
+            .padding(.trailing, safeAreaInset.trailing <= 0 ? 16 : 0)
+            .readableContentWidth()
         }
         .background(GeometryReader { geo in
             Color.clear

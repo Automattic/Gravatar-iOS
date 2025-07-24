@@ -4,6 +4,11 @@ import SwiftUI
 
 @MainActor
 class ShareViewModel: ObservableObject {
+    private enum StorageKeys {
+        static let email = "storedUserEmail"
+        static let phone = "storedPhoneNumber"
+    }
+
     @Published var contactPreviewURL: URL?
     @Published var profile: Profile
     @Published var qrCodeImage: Image?
@@ -14,14 +19,17 @@ class ShareViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private let urlSession: any URLSessionProtocol
     private let networkMonitor: NetworkMonitor
+    private let userDefaults: UserDefaults
 
     let qrGenerator: QRGenerator
 
-    @AppStorage("storedUserEmail")
-    var storedUserEmail: String = ""
+    @Published var storedUserEmail: String {
+        didSet { userDefaults.set(storedUserEmail, forKey: StorageKeys.email) }
+    }
 
-    @AppStorage("storedPhoneNumber")
-    var storedPhoneNumber: String = ""
+    @Published var storedPhoneNumber: String {
+        didSet { userDefaults.set(storedPhoneNumber, forKey: StorageKeys.phone) }
+    }
 
     init(
         userSession: UserSession,
@@ -35,6 +43,10 @@ class ShareViewModel: ObservableObject {
         self.urlSession = urlSession ?? GravatarURLSession.shared
         self.networkMonitor = networkMonitor
         self.share = .init(userDefaults: userDefaults)
+        self.userDefaults = userDefaults
+
+        storedUserEmail = userDefaults.string(forKey: StorageKeys.email) ?? ""
+        storedPhoneNumber = userDefaults.string(forKey: StorageKeys.phone) ?? ""
 
         setupObservers()
 

@@ -57,6 +57,7 @@ struct WelcomeView: View {
             }
             .padding(.bottom, .Global.contentBottomPadding)
             .padding(.horizontal, .Global.contentHorizontalPadding)
+            .readableContentWidth()
         }
     }
 
