@@ -76,7 +76,7 @@ struct ProfileTab: View {
             ProfileEditorView(viewModel: editProfileViewModel)
         }
         .tabItem {
-            Label("Profile", image: .profileTab)
+            Label(Localized.profileTabTitle, image: .profileTab)
         }
     }
 }
@@ -96,7 +96,7 @@ struct ShareTab: View {
         }
         .background(Color(uiColor: .secondarySystemBackground))
         .tabItem {
-            Label("Share", image: .shareTab)
+            Label(Localized.shareTabTitle, image: .shareTab)
         }
     }
 }
@@ -112,6 +112,20 @@ struct BackgroundColorView<Content>: View where Content: View {
             content()
         }
     }
+}
+
+private enum Localized {
+    static let profileTabTitle = NSLocalizedString(
+        "Tabs.Profile.title",
+        value: "Profile",
+        comment: "Title for the profile tab"
+    )
+
+    static let shareTabTitle = NSLocalizedString(
+        "Tabs.Share.title",
+        value: "Share",
+        comment: "Title for the share tab"
+    )
 }
 
 #if DEBUG // Needed when we use `Profile.testProfile on Previews`
