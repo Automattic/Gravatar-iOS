@@ -28,9 +28,14 @@ struct ProfileEditorScrollableHeaderView: View {
     }
 
     func avatar() -> some View {
-        HeaderAvatarView(imageURL: imageURL, showLoading: true, forceRefresh: $forceRefresh, placeholderColor: .DS.avatarPlaceholderColor)
-            .frame(width: 105, height: 105)
-            .avatarSytle(Circle())
+        HeaderAvatarView(
+            imageURL: imageURL,
+            showLoading: true,
+            forceRefresh: $forceRefresh,
+            placeholderColor: .DS.avatarPlaceholderColor
+        )
+        .frame(width: 105, height: 105)
+        .avatarSytle(Circle())
     }
 
     func profileInfo() -> some View {
