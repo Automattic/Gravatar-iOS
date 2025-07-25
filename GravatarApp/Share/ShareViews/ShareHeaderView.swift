@@ -72,6 +72,7 @@ struct ShareHeaderView<QRImage: View>: View {
                 ) {
                     qrCode
                     Text(ShareLocalized.qrExplanation)
+                        .foregroundStyle(Color.white)
                         .if(shouldUseCenteredLayout) { view in
                             view.frame(width: qrWidth)
                         }

@@ -28,12 +28,14 @@ struct ProfileEditorStickyHeaderView: View {
     }
 
     func avatar() -> some View {
-        HeaderAvatarView(imageURL: imageURL, showLoading: true, forceRefresh: $forceRefresh) {
-            EmptyView()
-        }
+        HeaderAvatarView(
+            imageURL: imageURL,
+            showLoading: true,
+            forceRefresh: $forceRefresh,
+            placeholderColor: .DS.avatarPlaceholderColor
+        )
         .frame(width: 44, height: 44)
-        .shape(Circle(), borderColor: .black.opacity(0.2), borderWidth: 2)
-        .shadow(radius: 2, x: 0, y: 3)
+        .avatarSytle(Circle())
     }
 
     func profileInfo() -> some View {
@@ -43,6 +45,7 @@ struct ProfileEditorStickyHeaderView: View {
                 Text(profession).font(.subheadline).foregroundStyle(.secondary)
             }
         }
+        .environment(\.colorScheme, .dark)
     }
 }
 
