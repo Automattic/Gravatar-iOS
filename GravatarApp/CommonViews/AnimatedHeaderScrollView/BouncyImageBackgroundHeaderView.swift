@@ -14,16 +14,28 @@ struct BouncyImageBackgroundHeaderView<Content>: View where Content: View {
         contentHeight + topPadding
     }
 
+    // We use label colors, but we need to reverse them to use them as background.
+    private let backgroundColor = Color(uiColor: .init(
+        light: .secondaryLabel.resolvedColor(with: .init(userInterfaceStyle: .dark)),
+        dark: .secondaryLabel.resolvedColor(with: .init(userInterfaceStyle: .light))
+    ))
+
     var body: some View {
         GeometryReader { geo in
             let offset = geo.frame(in: .global).minY
             let isBouncing = (offset > 0)
 
-            HeaderAvatarView(imageURL: imageURL, showLoading: false, forceRefresh: $forceRefresh) {
-                EmptyView()
-            }
+            HeaderAvatarView(
+                imageURL: imageURL,
+                showLoading: false,
+                forceRefresh: $forceRefresh,
+                placeholderColor: backgroundColor
+            )
             .scaledToFill()
-            .frame(width: geo.size.width, height: isBouncing ? viewHeight + offset : viewHeight)
+            .frame(
+                width: geo.size.width,
+                height: isBouncing ? viewHeight + offset : viewHeight
+            )
             .clipped()
             .blur(radius: 40, opaque: true)
             .overlay(content: {
@@ -42,12 +54,11 @@ struct BouncyImageBackgroundHeaderView<Content>: View where Content: View {
                 .offset(y: isBouncing ? -offset : 0)
             }
         }
-        .environment(\.colorScheme, .dark)
         .frame(height: viewHeight)
     }
 }
 
-#Preview {
+#Preview("Text content") {
     let imageURL = URL(string: "https://1.gravatar.com/avatar/1?size=256")
     GeometryReader { geo in
         ScrollView {
@@ -60,6 +71,30 @@ struct BouncyImageBackgroundHeaderView<Content>: View where Content: View {
                     Text("Hello world")
                     Text("Drag me down!")
                 }
+                .foregroundStyle(Color.white)
+            }
+        }.ignoresSafeArea()
+    }
+}
+
+#Preview("Circular content") {
+    let imageURL = URL(string: "https://1.gravatar.com/avatar/3?size=256")
+    GeometryReader { geo in
+        ScrollView {
+            BouncyImageBackgroundHeaderView(
+                topPadding: geo.safeAreaInsets.top,
+                imageURL: imageURL,
+                forceRefresh: .constant(false)
+            ) {
+                HeaderAvatarView(
+                    imageURL: imageURL,
+                    showLoading: true,
+                    forceRefresh: .constant(false),
+                    placeholderColor: .DS.avatarPlaceholderColor,
+                    animation: .smooth
+                )
+                .frame(width: 105, height: 105)
+                .avatarSytle(Circle())
             }
         }.ignoresSafeArea()
     }

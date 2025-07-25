@@ -36,8 +36,7 @@ struct ShareQRFullScreenView<QRImage: View>: View {
             HeaderAvatarView(
                 imageURL: imageURL,
                 showLoading: false,
-                forceRefresh: $forceRefresh,
-                placeholderView: { EmptyView() }
+                forceRefresh: $forceRefresh
             )
             .frame(maxHeight: .infinity)
             .darkBlurImageStyle(width: windowWidth)

@@ -37,6 +37,10 @@ extension Color {
             dark: UIColor(red: 0.34, green: 0.52, blue: 0.93, alpha: 1.00)
         ))
         static let oppositeBackgroundColor: Color = .init(uiColor: UIColor(light: .black, dark: .DS.almostWhite))
+        static let avatarPlaceholderColor = Color(uiColor: .init(
+            light: .rgba(178, 178, 186),
+            dark: .rgba(68, 68, 78)
+        ))
     }
 }
 
