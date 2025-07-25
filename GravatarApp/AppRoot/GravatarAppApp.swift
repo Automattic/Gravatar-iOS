@@ -1,3 +1,4 @@
+import Analytics
 import OAuth
 import SwiftData
 import SwiftUI
@@ -9,6 +10,7 @@ struct GravatarAppApp: App {
     @StateObject private var welcomeViewModel: WelcomeViewModel
 
     init() {
+        Analytics.setPushEventsToRemote(false)
         do {
             let context = try ModelContext(ModelContainer(for: ProfileStore.self))
             self.modelContext = context

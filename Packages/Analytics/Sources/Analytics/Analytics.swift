@@ -5,6 +5,7 @@ import OSLog
 
 public actor Analytics {
     public static let shared = Analytics()
+    private static var pushEventsToRemote: Bool = true
 
     private let tracker: Tracker
     private let logger = Logger(subsystem: "com.gravatar", category: "gravatar.analytics")
@@ -28,10 +29,13 @@ public actor Analytics {
     func track(_ event: AnalyticsEvent) {
         let properties = event.jsonProperties ?? [:]
 
-        tracker.track(event.name, withCustomProperties: properties)
+        if Self.pushEventsToRemote {
+            tracker.track(event.name, withCustomProperties: properties)
+        }
 
         #if DEBUG
-        logger.debug("🔹 Tracking: \(event.name); properties: \(properties)")
+        let trackingText = !Self.pushEventsToRemote ? " (Locally)" : ""
+        logger.debug("🔹 Tracking\(trackingText): \(event.name); properties: \(properties)")
         #endif
     }
 
@@ -40,6 +44,10 @@ public actor Analytics {
         tracker.setUserName(userName, userUUIDStorage: userUUIDStorage)
 
         updateUserProperties()
+    }
+
+    public static func setPushEventsToRemote(_ pushEventsToRemote: Bool) {
+        Self.pushEventsToRemote = pushEventsToRemote
     }
 
     private var defaultProperties: [String: AnyHashable] {
