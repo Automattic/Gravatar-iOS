@@ -6,7 +6,7 @@ enum AvatarAction: Identifiable {
     case share
     case delete
     case playground
-    case altText
+    // case altText
 
     var id: String {
         switch self {
@@ -14,7 +14,7 @@ enum AvatarAction: Identifiable {
         case .share: "share"
         case .delete: "delete"
         case .playground: "playground"
-        case .altText: "altText"
+            // case .altText: "altText"
         }
     }
 
@@ -28,8 +28,9 @@ enum AvatarAction: Identifiable {
             Image(systemName: "square.and.arrow.up")
         case .playground:
             Image(systemName: "apple.image.playground")
-        case .altText:
-            Image(systemName: "text.below.photo")
+            /* case .altText:
+                 Image(systemName: "text.below.photo")
+             */
         }
     }
 
@@ -59,12 +60,13 @@ enum AvatarAction: Identifiable {
                 value: "Playground",
                 comment: "An option to show the image playground"
             )
-        case .altText:
-            NSLocalizedString(
-                "AvatarPicker.AvatarAction.altText",
-                value: "Alt Text",
-                comment: "An option in the avatar menu that edits the avatar's Alt Text."
-            )
+            /* case .altText:
+                NSLocalizedString(
+                    "AvatarPicker.AvatarAction.altText",
+                    value: "Alt Text",
+                    comment: "An option in the avatar menu that edits the avatar's Alt Text."
+                )
+             */
         }
     }
 
@@ -72,7 +74,7 @@ enum AvatarAction: Identifiable {
         switch self {
         case .delete:
             .destructive
-        case .share, .playground, .altText, .select:
+        case .share, .playground, /* .altText, */ .select:
             nil
         }
     }

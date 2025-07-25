@@ -18,13 +18,13 @@ struct AvatarActionsMenu<Label>: View where Label: View {
                 button(for: .share)
                 // TODO: We might use this soon, so keeping it commented for now
                 /**
-                 if #available(iOS 18.2, *) {
-                     if EnvironmentValues().supportsImagePlayground {
-                         button(for: .playground)
-                     }
-                 }
-                  */
-                button(for: .altText)
+                  if #available(iOS 18.2, *) {
+                      if EnvironmentValues().supportsImagePlayground {
+                          button(for: .playground)
+                      }
+                  }
+                  button(for: .altText)
+                 */
             }
             Section {
                 button(for: .delete)
