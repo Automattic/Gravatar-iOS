@@ -45,8 +45,10 @@ struct ShareQRFullScreenView<QRImage: View>: View {
         .onAppear {
             incrementBrightness()
         }
-        .onDisappear {
-            UIScreen.main.brightness = originalScreenBrightness
+        .onChange(of: presentFullScreen) { _, newValue in
+            if !newValue {
+                UIScreen.main.brightness = originalScreenBrightness
+            }
         }
         .ignoresSafeArea()
         .frame(maxHeight: .infinity)
