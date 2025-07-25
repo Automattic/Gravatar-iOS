@@ -125,9 +125,11 @@ struct ShareHeaderView<QRImage: View>: View {
         } image: {
             Image(.shareIcon)
         }
-        CircularButton {} image: {
+        /*
+         CircularButton {} image: {
             Image(.downloadIcon)
-        }
+         }
+         */
         CircularButton {
             presentFullScreen = true
         } image: {
