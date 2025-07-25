@@ -2,6 +2,7 @@ import SwiftUI
 
 struct AboutView: View {
     @EnvironmentObject var modalManager: ModalPresentationManager
+    @State private var inAppURL: URL?
 
     var body: some View {
         VStack(alignment: .leading, spacing: .Global.verticalSectionSpacing) {
@@ -17,8 +18,8 @@ struct AboutView: View {
             }
             VStack(alignment: .leading) {
                 title(Localized.legalTitle)
-                link(Localized.termsOfServiceText, url: "https://automattic.com/tos/")
-                link(Localized.privacyPolicyText, url: "https://automattic.com/privacy/")
+                inAppSafariLink(Localized.termsOfServiceText, url: "https://automattic.com/tos/")
+                inAppSafariLink(Localized.privacyPolicyText, url: "https://automattic.com/privacy/")
             }
 
             Button {
@@ -30,6 +31,7 @@ struct AboutView: View {
             .buttonStyle(.actionButton())
         }
         .padding()
+        .presentSafariView(url: $inAppURL)
     }
 
     private func title(_ text: String) -> some View {
@@ -42,6 +44,15 @@ struct AboutView: View {
     private func link(_ text: String, url: String) -> some View {
         Link(text, destination: URL(string: url)!)
             .foregroundStyle(Color.primary.opacity(0.6))
+    }
+
+    private func inAppSafariLink(_ text: String, url: String) -> some View {
+        Button {
+            inAppURL = URL(string: url)
+        } label: {
+            Text(text)
+                .foregroundStyle(Color.primary.opacity(0.6))
+        }
     }
 
     func getAppVersion() -> String {
