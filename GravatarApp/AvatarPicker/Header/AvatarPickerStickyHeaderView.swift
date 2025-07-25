@@ -15,7 +15,8 @@ struct AvatarPickerStickyHeaderView: View {
 
                 Spacer()
             }
-            .padding(.horizontal, safeAreaInsets.leading + 16)
+            .padding(.horizontal, safeAreaInsets.leading + .Global.contentHorizontalPadding)
+            .readableContentWidth()
         }
         .opacity(opacity)
     }

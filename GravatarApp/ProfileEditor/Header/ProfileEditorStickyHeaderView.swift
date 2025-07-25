@@ -22,7 +22,9 @@ struct ProfileEditorStickyHeaderView: View {
 
                 Spacer()
             }
-            .padding(.horizontal, safeAreaInsets.leading + 16)
+            .padding(.horizontal, safeAreaInsets.leading + .Global.contentHorizontalPadding)
+            .readableContentWidth()
+
         }
         .opacity(opacity)
     }
@@ -45,6 +47,8 @@ struct ProfileEditorStickyHeaderView: View {
                 Text(profession).font(.subheadline).foregroundStyle(.secondary)
             }
         }
+        .lineLimit(1)
+        .padding(.trailing, 44) // Avoid main menu button.
         .environment(\.colorScheme, .dark)
     }
 }
