@@ -41,7 +41,7 @@ struct RootTabView: View {
 
                 // MARK: - Second tab
 
-                ProfileTab(editProfileViewModel: editProfileViewModel)
+                ProfileTab(editProfileViewModel: editProfileViewModel, avatarForceRefresh: $avatarPickerViewModel.forceRefreshAvatar)
 
                 // MARK: - Third tab
 
@@ -78,10 +78,11 @@ struct GravatarTab: View {
 
 struct ProfileTab: View {
     @ObservedObject var editProfileViewModel: EditProfileViewModel
+    @Binding var avatarForceRefresh: Bool
 
     var body: some View {
         BackgroundColorView(color: .secondarySystemBackground) {
-            ProfileEditorView(viewModel: editProfileViewModel)
+            ProfileEditorView(viewModel: editProfileViewModel, forceRefreshAvatar: $avatarForceRefresh)
         }
         .tabItem {
             Label(Localized.profileTabTitle, image: .profileTab)

@@ -2,9 +2,8 @@ import GravatarUI
 import SwiftUI
 
 struct ProfileEditorView: View {
-    @State private var forceRefresh: Bool = false
-
     @ObservedObject var viewModel: EditProfileViewModel
+    @Binding var forceRefreshAvatar: Bool
 
     var headerAvatarURL: URL? {
         AvatarURL.preferredURL(for: viewModel.userSession.profile.hash)
@@ -16,7 +15,7 @@ struct ProfileEditorView: View {
                 profile: viewModel.userSession.profile,
                 topPadding: topPadding,
                 imageURL: headerAvatarURL,
-                forceRefresh: $forceRefresh
+                forceRefresh: $forceRefreshAvatar
             )
         } stickyHeader: { opacity, safeArea in
             ProfileEditorStickyHeaderView(
@@ -24,7 +23,7 @@ struct ProfileEditorView: View {
                 opacity: opacity,
                 safeAreaInsets: safeArea,
                 imageURL: headerAvatarURL,
-                forceRefresh: $forceRefresh
+                forceRefresh: $forceRefreshAvatar
             )
         } content: {
             ProfileEditContentView(viewModel: viewModel)
@@ -33,7 +32,7 @@ struct ProfileEditorView: View {
             MainMenuOptions(profile: viewModel.userSession.profile)
         } onRefresh: {
             await viewModel.fetchProfile()
-            forceRefresh = true
+            forceRefreshAvatar = true
         }
         .safeAreaInset(edge: .bottom, alignment: .center, spacing: nil) {
             Group {
@@ -58,7 +57,7 @@ struct ProfileEditorView: View {
     ProfileEditorView(
         viewModel: .init(
             userSession: UserSession(profile: .testProfile, accessToken: "", context: .testContext)
-        )
+        ), forceRefreshAvatar: .constant(false)
     )
 }
 
@@ -67,7 +66,7 @@ struct ProfileEditorView: View {
         ProfileEditorView(
             viewModel: .init(
                 userSession: UserSession(profile: .testProfile, accessToken: "", context: .testContext)
-            )
+            ), forceRefreshAvatar: .constant(false)
         )
         .tabItem {
             Label("Profile", systemImage: "brain.filled.head.profile")
