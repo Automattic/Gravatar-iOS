@@ -24,7 +24,6 @@ struct ProfileEditorStickyHeaderView: View {
             }
             .padding(.horizontal, safeAreaInsets.leading + .Global.contentHorizontalPadding)
             .readableContentWidth()
-
         }
         .opacity(opacity)
     }

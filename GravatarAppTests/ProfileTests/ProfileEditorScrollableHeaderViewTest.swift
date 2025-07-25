@@ -1,7 +1,7 @@
-import SwiftUI
 import Gravatar
 @testable import GravatarApp
 import SnapshotTesting
+import SwiftUI
 import Testing
 
 @Suite(.snapshots(record: .failed, diffTool: .ksdiff))

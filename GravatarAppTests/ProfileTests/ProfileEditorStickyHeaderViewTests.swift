@@ -1,7 +1,7 @@
-import SwiftUI
 import Gravatar
 @testable import GravatarApp
 import SnapshotTesting
+import SwiftUI
 import Testing
 
 @Suite(.snapshots(record: .failed, diffTool: .ksdiff))
@@ -51,9 +51,8 @@ struct ProfileEditorStickyHeaderViewTests {
             Text("Content")
         } buttonMenuItems: {
             EmptyView()
-        } onRefresh: {
-        }
-        .frame(width: ViewImageConfig.iPhone13Pro.size?.width ?? 0, height: 200)
+        } onRefresh: {}
+            .frame(width: ViewImageConfig.iPhone13Pro.size?.width ?? 0, height: 200)
 
         assertSnapshots(
             of: view,
