@@ -1,7 +1,7 @@
+import Analytics
 import OAuth
 import SwiftData
 import SwiftUI
-import Analytics
 
 @main
 struct GravatarAppApp: App {
