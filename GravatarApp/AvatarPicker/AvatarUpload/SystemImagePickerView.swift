@@ -115,11 +115,11 @@ extension ImagePickerSource {
     var icon: Icon {
         switch self {
         case .camera:
-            .system("camera.fill")
+            .custom(.cameraIcon)
         case .photoLibrary:
             .custom(.photosIcon)
         case .playground:
-            .system("apple.image.playground.fill")
+            .system("apple.image.playground")
         }
     }
 
