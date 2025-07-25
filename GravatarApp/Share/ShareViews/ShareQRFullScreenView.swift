@@ -43,14 +43,26 @@ struct ShareQRFullScreenView<QRImage: View>: View {
         }
         .environment(\.colorScheme, .dark)
         .onAppear {
-            originalScreenBrightness = UIScreen.main.brightness
-            UIScreen.main.brightness = 1
+            incrementBrightness()
         }
         .onDisappear {
             UIScreen.main.brightness = originalScreenBrightness
         }
         .ignoresSafeArea()
         .frame(maxHeight: .infinity)
+    }
+
+    func incrementBrightness() {
+        originalScreenBrightness = UIScreen.main.brightness
+        let increaseAmmount: CGFloat = {
+            guard originalScreenBrightness < 0.5 else {
+                return 0.2
+            }
+            // This returns 0.4 for 0.1 brightness, and 0.2 for 0.5 brightness.
+            // Then we continue increasing 0.2 afterwards.
+            return (0.9 - originalScreenBrightness) / 2
+        }()
+        UIScreen.main.brightness = min(originalScreenBrightness + increaseAmmount, 1)
     }
 
     var centralContent: some View {
