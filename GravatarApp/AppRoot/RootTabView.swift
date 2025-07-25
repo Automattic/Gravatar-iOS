@@ -2,7 +2,7 @@ import Gravatar
 import SwiftData
 import SwiftUI
 
-enum RootTabItem: Int {
+fileprivate enum RootTabItem: Int {
     case gravatar = 0
     case profile
     case share
