@@ -33,15 +33,20 @@ struct ImagePickerSectionView: View {
                 switch icon {
                 case .system(let systemImage):
                     Image(systemName: systemImage)
+                        .font(.system(size: 28))
                 case .custom(let resource):
                     Image(resource)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .padding(1)
                 }
             }
-            .font(.title)
+            .frame(height: 32)
         }
         .labelStyle(.vertical)
         .foregroundStyle(Color.DS.bluishColor)
-        .padding(.vertical, 16)
+        .padding(.top, .Global.verticalSectionSpacing)
+        .padding(.bottom, .DS.Padding.split)
         .frame(maxWidth: .infinity)
         .background(Color.DS.bluishColor.opacity(0.15))
         .cornerRadius(12)
@@ -63,7 +68,7 @@ private enum Localized {
 
 struct VerticalLabelStyle: LabelStyle {
     func makeBody(configuration: LabelStyle.Configuration) -> some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 4) {
             configuration.icon
             configuration.title
         }
