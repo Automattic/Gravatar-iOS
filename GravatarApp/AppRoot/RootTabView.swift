@@ -2,12 +2,19 @@ import Gravatar
 import SwiftData
 import SwiftUI
 
+private enum RootTabItem: Int {
+    case gravatar = 0
+    case profile
+    case share
+}
+
 struct RootTabView: View {
     @StateObject private var avatarPickerViewModel: AvatarPickerViewModel
     @StateObject private var editProfileViewModel: EditProfileViewModel
     @StateObject private var shareViewModel: ShareViewModel
     @StateObject private var toastManager: ToastManager
     @StateObject private var modalManager = ModalPresentationManager()
+    @AppStorage("selectedRootTabIndex") private var selectedTab: RootTabItem = .gravatar
 
     let session: UserSession
 
@@ -26,7 +33,7 @@ struct RootTabView: View {
     }
 
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             Group {
                 // MARK: - First tab
 
@@ -34,7 +41,7 @@ struct RootTabView: View {
 
                 // MARK: - Second tab
 
-                ProfileTab(editProfileViewModel: editProfileViewModel)
+                ProfileTab(editProfileViewModel: editProfileViewModel, avatarForceRefresh: $avatarPickerViewModel.forceRefreshAvatar)
 
                 // MARK: - Third tab
 
@@ -65,19 +72,22 @@ struct GravatarTab: View {
         .tabItem {
             Label("Gravatar", image: .gravatarTab)
         }
+        .tag(RootTabItem.gravatar)
     }
 }
 
 struct ProfileTab: View {
     @ObservedObject var editProfileViewModel: EditProfileViewModel
+    @Binding var avatarForceRefresh: Bool
 
     var body: some View {
         BackgroundColorView(color: .secondarySystemBackground) {
-            ProfileEditorView(viewModel: editProfileViewModel)
+            ProfileEditorView(viewModel: editProfileViewModel, forceRefreshAvatar: $avatarForceRefresh)
         }
         .tabItem {
             Label(Localized.profileTabTitle, image: .profileTab)
         }
+        .tag(RootTabItem.profile)
     }
 }
 
@@ -98,6 +108,7 @@ struct ShareTab: View {
         .tabItem {
             Label(Localized.shareTabTitle, image: .shareTab)
         }
+        .tag(RootTabItem.share)
     }
 }
 
