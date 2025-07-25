@@ -22,8 +22,11 @@ struct ProfileEditorScrollableHeaderView: View {
                     profileInfo()
                     profileURLButton()
                 }
+                .readableContentWidth()
+                .multilineTextAlignment(.center)
                 .environment(\.colorScheme, .dark)
             }
+            .padding(.horizontal, .Global.contentHorizontalPadding)
         }
     }
 
