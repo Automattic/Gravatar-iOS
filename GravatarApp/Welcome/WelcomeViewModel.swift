@@ -72,7 +72,7 @@ class WelcomeViewModel: ObservableObject {
         }
     }
 
-    func softLoginConfiguration(profile: Profile, accessToken: String) {
+    private func softLoginConfiguration(profile: Profile, accessToken: String) {
         userSession = .init(profile: profile, accessToken: accessToken, context: context)
         Task {
             await analytics.setUserName(profile.userLogin)
@@ -94,12 +94,6 @@ class WelcomeViewModel: ObservableObject {
         Task {
             await fetchProfile(with: accessToken)
         }
-    }
-
-    var hasUser: Bool {
-        guard let currentUser = userDefaults.string(forKey: .Gravatar.currentUserKey)
-        else { return false }
-        return oauthManager.sessionToken(with: currentUser) != nil
     }
 
     func logout() async {

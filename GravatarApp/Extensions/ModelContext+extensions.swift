@@ -13,8 +13,12 @@ extension ModelContext {
 extension ModelContext {
     @MainActor
     static var testContext: ModelContext {
+        .testContainer.mainContext
+    }
+
+    @MainActor
+    static var testContainer: ModelContainer {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
-        let container = try! ModelContainer(for: ProfileStore.self, configurations: config)
-        return container.mainContext
+        return try! ModelContainer(for: ProfileStore.self, configurations: config)
     }
 }
