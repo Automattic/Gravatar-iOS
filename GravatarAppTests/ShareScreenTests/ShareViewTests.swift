@@ -7,7 +7,7 @@ import Testing
 @MainActor
 struct ShareViewTests {
     init() async throws {
-        UserDefaults.testUserDefaults.removePersistentDomain(forName: UserDefaults.testSuiteName)
+        UserDefaults.deleteTestData()
     }
 
     @Test

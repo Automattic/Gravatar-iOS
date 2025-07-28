@@ -1,6 +1,6 @@
 import Foundation
 
-protocol AuthenticationSession: Sendable {
+public protocol AuthenticationSession: Sendable {
     func authenticate(using url: URL, callbackURLComponents: URLComponents) async throws -> URL
     func cancel() async
 }

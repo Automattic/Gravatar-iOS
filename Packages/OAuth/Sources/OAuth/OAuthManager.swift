@@ -8,14 +8,14 @@ public struct OAuthManager: Sendable {
 
     private let callbackParser: CallbackParser
 
-    init(
-        authenticationSession: AuthenticationSession = WebAuthenticationSession(),
-        storage: SecureStorage = Keychain(),
-        callbackParser: CallbackParser = CodeCallbackParser()
+    public init(
+        authenticationSession: AuthenticationSession? = nil,
+        storage: SecureStorage? = nil,
+        callbackParser: CallbackParser? = nil
     ) {
-        self.authenticationSession = authenticationSession
-        self.storage = storage
-        self.callbackParser = callbackParser
+        self.authenticationSession = authenticationSession ?? WebAuthenticationSession()
+        self.storage = storage ?? Keychain()
+        self.callbackParser = callbackParser ?? CodeCallbackParser()
     }
 
     // MARK: Keychain helpers

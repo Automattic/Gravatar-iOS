@@ -1,6 +1,6 @@
 import Foundation
 
-protocol SecureStorage: Sendable {
+public protocol SecureStorage: Sendable {
     func setSecret(_ secret: SecureToken, for key: String) throws
     func deleteSecret(with key: String) throws
     func secret(with key: String) throws -> SecureToken?
