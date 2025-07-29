@@ -39,8 +39,8 @@ private func vCard(_ model: VCardModel) -> String {
     BEGIN:VCARD
     VERSION:3.0
     PRODID:Gravatar iOS
-    N:\(model.lastName);\(model.firstName);
-    FN:\(model.displayName)
+    N:\(model.lastName);\(model.fullName.isEmpty ? model.displayName : model.firstName);
+    FN:
     NICKNAME:\(model.displayName)
     ORG:\(model.organization)
     TITLE:\(model.jobTitle)
