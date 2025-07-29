@@ -2,10 +2,24 @@ import SwiftUI
 
 extension View {
     func contentHeightReader(_ height: Binding<CGFloat>) -> some View {
-        self.onGeometryChange(for: CGSize.self) { geometry in
-            geometry.size
-        } action: { newValue in
-            height.wrappedValue = newValue.height
+        Group {
+            if #available(iOS 18.0, *) {
+                self.onGeometryChange(for: CGSize.self) { geometry in
+                    geometry.size
+                } action: { newValue in
+                    height.wrappedValue = newValue.height
+                }
+            } else {
+                self.background(
+                    GeometryReader { geo in
+                        Color.clear.onChange(of: geo.size) { _, value in
+                            height.wrappedValue = value.height
+                        }.onAppear {
+                            height.wrappedValue = geo.size.height
+                        }
+                    }
+                )
+            }
         }
     }
 
