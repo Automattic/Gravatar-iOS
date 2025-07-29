@@ -136,6 +136,31 @@ platform :ios do
   lane :configure_code_signing_enterprise do |readonly: true|
     configure_code_signing(app_identifier: app_bundle_identifier_enterprise!, type: 'enterprise', team_id: enterprise_team_id!, readonly: readonly)
   end
+
+  # Generates the `.strings` files for the base language based on the app's source code.
+  #
+  lane :generate_strings do |skip_commit: false|
+    gravatar_app_path = File.join(PROJECT_ROOT_FOLDER, 'GravatarApp')
+    en_lproj_path = File.join(gravatar_app_path, 'Resources', 'en.lproj')
+
+    # Use release-toolkit which uses `genstrings` to generate strings
+    ios_generate_strings_file_from_code(
+      paths: [gravatar_app_path],
+      output_dir: en_lproj_path,
+      output_encoding: 'UTF-8',
+      routines: ['NSLocalizedString'],
+      quiet: false
+    )
+
+    next if skip_commit
+
+    git_add(path: en_lproj_path)
+    git_commit(
+      path: en_lproj_path,
+      message: 'Update strings in base locale',
+      allow_nothing_to_commit: true
+    )
+  end
 end
 
 def configure_code_signing(app_identifier:, type:, team_id:, readonly:)
