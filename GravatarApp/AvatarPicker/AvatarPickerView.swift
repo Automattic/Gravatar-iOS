@@ -70,6 +70,8 @@ struct AvatarPickerView: View {
             }
         })
         .avatarShareSheet(item: $shareSheetItem)
+        .sensoryFeedback(.error, trigger: avatarPickerModel.imageUploadErrorID)
+        .sensoryFeedback(.success, trigger: avatarPickerModel.imageUploadSuccessID)
     }
 
     func gridView() -> some View {

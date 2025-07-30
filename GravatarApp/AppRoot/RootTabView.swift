@@ -58,6 +58,12 @@ struct RootTabView: View {
             }
         }
         .modalPresentation(manager: modalManager)
+        .sensoryFeedback(.error, trigger: toastManager.toasts) { _, toasts in
+            toasts.first { $0.type == .error } != nil
+        }
+        .sensoryFeedback(.success, trigger: toastManager.toasts) { _, toasts in
+            toasts.first { $0.type == .info } != nil
+        }
     }
 }
 
