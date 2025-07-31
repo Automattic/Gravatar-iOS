@@ -18,8 +18,8 @@ steps:
     priority: 1
     plugins: [$CI_TOOLKIT]
     artifact_paths:
-      - artifacts/*.ipa
-      - artifacts/*.zip
+      - .build/artifacts/*.ipa
+      - .build/artifacts/*.zip
     notify:
       - slack: "#build-and-ship"
 
