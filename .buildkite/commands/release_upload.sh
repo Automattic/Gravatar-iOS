@@ -21,5 +21,5 @@ echo "--- :closed_lock_with_key: Installing Secrets"
 bundle exec fastlane run configure_apply
 
 echo "--- :testflight: Uploading to TestFlight"
-bundle exec fastlane upload_app_store_connect_build_to_testflight
+bundle exec fastlane upload_to_app_store_connect
 
