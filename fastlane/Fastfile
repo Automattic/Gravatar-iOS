@@ -92,7 +92,6 @@ platform :ios do
       scheme: SCHEME,
       include_symbols: true,
       clean: true,
-      output_directory: ARTIFACTS_FOLDER,
       export_team_id: asc_team_id!,
       export_options: { **COMMON_EXPORT_OPTIONS, method: 'app-store' },
       archive_path: APP_STORE_CONNECT_XCARCHIVE_PATH,
