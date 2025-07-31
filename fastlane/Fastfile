@@ -24,8 +24,8 @@ CODE_SIGNING_ENV_VARS = %w[
 ########################################################################
 PROJECT_ROOT_FOLDER = File.dirname(File.expand_path(__dir__))
 
-PROJECT_XCCONFIG_PATH = File.join(PROJECT_ROOT_FOLDER, 'Config', 'Project.xcconfig')
-PROJECT_XCCONFIG = Xcodeproj::Config.new(PROJECT_XCCONFIG_PATH)
+VERSION_FILE_PATH = File.join(PROJECT_ROOT_FOLDER, 'Config', 'Version.xcconfig')
+PROJECT_XCCONFIG = Xcodeproj::Config.new(File.join(PROJECT_ROOT_FOLDER, 'Config', 'Project.xcconfig'))
 APP_STORE_XCCONFIG = Xcodeproj::Config.new(File.join(PROJECT_ROOT_FOLDER, 'Config', 'GravatarApp.common.xcconfig'))
 ENTERPRISE_XCCONFIG_PATH = File.join(PROJECT_ROOT_FOLDER, 'Config', 'GravatarApp.enterprise.xcconfig')
 ENTERPRISE_XCCONFIG = Xcodeproj::Config.new(ENTERPRISE_XCCONFIG_PATH)
@@ -51,7 +51,7 @@ GITHUB_REPO = 'Automattic/Gravatar-iOS'
 VERSION_CALCULATOR = Fastlane::Wpmreleasetoolkit::Versioning::SemanticVersionCalculator.new
 VERSION_FORMATTER = Fastlane::Wpmreleasetoolkit::Versioning::FourPartVersionFormatter.new
 BUILD_CODE_FORMATTER = Fastlane::Wpmreleasetoolkit::Versioning::FourPartBuildCodeFormatter.new
-PUBLIC_VERSION_FILE = Fastlane::Wpmreleasetoolkit::Versioning::IOSVersionFile.new(xcconfig_path: PROJECT_XCCONFIG_PATH)
+PUBLIC_VERSION_FILE = Fastlane::Wpmreleasetoolkit::Versioning::IOSVersionFile.new(xcconfig_path: VERSION_FILE_PATH)
 
 # Required for app_store_connect_api_key to generate the key information to pass down the call chain.
 ASC_API_KEY_ENV_VARS = %w[
@@ -382,7 +382,7 @@ end
 def commit_version_update(message:)
   Fastlane::Helper::GitHelper.commit(
     message: message,
-    files: PROJECT_XCCONFIG_PATH
+    files: VERSION_FILE_PATH
   )
 end
 
