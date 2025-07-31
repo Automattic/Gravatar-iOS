@@ -192,8 +192,8 @@ platform :ios do
   #
   lane :new_beta_release do |skip_confirm: false|
     require_env_vars!('BUILDKITE_TOKEN')
-    # TODO - UNCOMMENT ensure_git_status_clean
-    # TODO - UNCOMMENT ensure_git_branch(branch: '^release/')
+    ensure_git_status_clean
+    ensure_git_branch(branch: '^release/')
 
     message = <<~MESSAGE
       Initiating a new beta release.
@@ -212,7 +212,7 @@ platform :ios do
     bump_build_code
     UI.success "Done! New Build Code: #{build_code_current}"
 
-    #push_to_git_remote(tags: false)
+    push_to_git_remote(tags: false)
 
     trigger_beta_build(branch_to_build: release_branch_name)
   end
@@ -366,7 +366,7 @@ def bump_build_code
     version_short: release_version_current,
     version_long: build_code_next
   )
-  # TODO - UNCOMMENT commit_version_update(message: '[skip ci] Bump build code')
+  commit_version_update(message: '[skip ci] Bump build code')
 end
 
 # Updates the version name in PUBLIC_VERSION_FILE to the next release version and commits the change
