@@ -272,42 +272,42 @@ def configure_code_signing(app_identifier:, type:, team_id:, readonly:)
   )
 end
 
-  #####################################################################################
-  # Helper Functions
-  #####################################################################################
+#####################################################################################
+# Helper Functions
+#####################################################################################
 
-  # Name of the `release/` branch for the current version
-  #
-  def release_branch_name
-    "release/#{release_version_current}"
-  end
+# Name of the `release/` branch for the current version
+#
+def release_branch_name
+  "release/#{release_version_current}"
+end
 
-  # Kicks off a Buildkite build using the `release-builds.yml` pipeline
-  #
-  # @param branch [String] The git branch on which to trigger the CI build on
-  # @param beta [Boolean] If true, build a beta; if false, build a final release
-  # @return [String] The URL of the build that has been triggered
-  #
-  def trigger_buildkite_release_build(branch:, beta:)
-    pipeline_args = {
-      pipeline_file: 'release-builds.yml',
-      environment: {
-        RELEASE_VERSION: release_version_current,
-        BETA_RELEASE: beta
-      }
+# Kicks off a Buildkite build using the `release-builds.yml` pipeline
+#
+# @param branch [String] The git branch on which to trigger the CI build on
+# @param beta [Boolean] If true, build a beta; if false, build a final release
+# @return [String] The URL of the build that has been triggered
+#
+def trigger_buildkite_release_build(branch:, beta:)
+  pipeline_args = {
+    pipeline_file: 'release-builds.yml',
+    environment: {
+      RELEASE_VERSION: release_version_current,
+      BETA_RELEASE: beta
     }
-    if is_ci?
-      buildkite_pipeline_upload(**pipeline_args)
-    else
-      require_env_vars!('BUILDKITE_TOKEN')
-      buildkite_trigger_build(
-        buildkite_organization: 'automattic',
-        buildkite_pipeline: 'gravatar-ios',
-        branch: branch,
-        **pipeline_args
-      )
-    end
+  }
+  if is_ci?
+    buildkite_pipeline_upload(**pipeline_args)
+  else
+    require_env_vars!('BUILDKITE_TOKEN')
+    buildkite_trigger_build(
+      buildkite_organization: 'automattic',
+      buildkite_pipeline: 'gravatar-ios',
+      branch: branch,
+      **pipeline_args
+    )
   end
+end
 
 def asc_team_id!
   read_from_xcconfig!(key: 'DEVELOPMENT_TEAM', xcconfig: PROJECT_XCCONFIG)
