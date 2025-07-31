@@ -9,7 +9,7 @@ BETA_RELEASE=${2:-true} # use second call param, default to true for safety
 echo "Running $0 with BETA_RELEASE = $BETA_RELEASE..."
 
 echo "--- :arrow_down: Downloading Artifacts"
-ARTIFACTS_DIR='artifacts' # Defined in Fastlane, see ARTIFACTS_FOLDER
+ARTIFACTS_DIR='.build/artifacts' # Defined in Fastlane, see ARTIFACTS_FOLDER
 STEP=testflight_build
 buildkite-agent artifact download "$ARTIFACTS_DIR/*.ipa" . --step $STEP
 buildkite-agent artifact download "$ARTIFACTS_DIR/*.zip" . --step $STEP
