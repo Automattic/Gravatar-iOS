@@ -4,10 +4,6 @@
 RELEASE_VERSION="${1:?RELEASE_VERSION parameter missing}"
 "$(dirname "${BASH_SOURCE[0]}")/checkout_release_branch.sh" "$RELEASE_VERSION"
 
-BETA_RELEASE=${2:-true} # use second call param, default to true for safety
-
-echo "Running $0 with BETA_RELEASE = $BETA_RELEASE..."
-
 echo "--- :arrow_down: Downloading Artifacts"
 ARTIFACTS_DIR='.build/artifacts' # Defined in Fastlane, see ARTIFACTS_FOLDER
 STEP=testflight_build
