@@ -207,7 +207,7 @@ platform :ios do
     UI.important(message)
     UI.user_error!('Aborted by user request') unless skip_confirm || UI.confirm('Continue?')
 
-    UI.message 'Bumping build code...'
+    UI.message 'Bumping Build Number...'
     bump_build_code
     UI.success "Done! New Build Number: #{build_code_current}"
 
