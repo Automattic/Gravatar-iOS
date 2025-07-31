@@ -4,7 +4,7 @@
 RELEASE_VERSION="${1:?RELEASE_VERSION parameter missing}"
 "$(dirname "${BASH_SOURCE[0]}")/checkout_release_branch.sh" "$RELEASE_VERSION"
 
-"$(dirname "${BASH_SOURCE[0]}")/shared_setup.sh"
+"$(dirname "${BASH_SOURCE[0]}")/setup_shared.sh"
 
 echo "--- :closed_lock_with_key: Installing Secrets"
 bundle exec fastlane run configure_apply
