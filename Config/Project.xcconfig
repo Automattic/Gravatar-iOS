@@ -1,12 +1,6 @@
-DEVELOPMENT_TEAM = PZYM8XX95Q
-
-// At this point in time the Gravatar SDK does not support macOS.
-//
-// See https://github.com/Automattic/Gravatar-SDK-iOS/blob/71350ef7274a989ca2ed89c512f8b9dd99bc8c3d/Package.swift#L12
-SUPPORTED_PLATFORMS = iphoneos iphonesimulator xros xrsimulator
-
 CURRENT_PROJECT_VERSION = $VERSION_LONG
+DEVELOPMENT_TEAM = PZYM8XX95Q
 MARKETING_VERSION = $VERSION_SHORT
-
+SUPPORTED_PLATFORMS = iphoneos iphonesimulator xros xrsimulator
+VERSION_LONG = 1.0.0.1
 VERSION_SHORT = 1.0
-VERSION_LONG = 1.0.0.0
