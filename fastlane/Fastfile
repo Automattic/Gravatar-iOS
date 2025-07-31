@@ -209,7 +209,7 @@ platform :ios do
 
     UI.message 'Bumping build code...'
     bump_build_code
-    UI.success "Done! New Build Code: #{build_code_current}"
+    UI.success "Done! New Build Number: #{build_code_current}"
 
     push_to_git_remote(tags: false)
 
