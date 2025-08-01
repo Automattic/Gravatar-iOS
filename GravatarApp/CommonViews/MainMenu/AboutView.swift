@@ -4,12 +4,20 @@ struct AboutView: View {
     @EnvironmentObject var modalManager: ModalPresentationManager
     @State private var inAppURL: URL?
 
+    @State private var presentAccountDeletionWarning: Bool = false
+
+    private let textColor = Color.primary.opacity(0.6)
+    private let notificationCenter: NotificationCenter
+
+    init(notificationCenter: NotificationCenter = .default) {
+        self.notificationCenter = notificationCenter
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: .Global.verticalSectionSpacing) {
             VStack(alignment: .leading) {
                 title(Localized.aboutTitle)
-                Text("v\(getAppVersion())")
-                    .foregroundStyle(Color.primary.opacity(0.6))
+                label("v\(getAppVersion())")
             }
             VStack(alignment: .leading) {
                 title(Localized.getHelpTitle)
@@ -21,6 +29,11 @@ struct AboutView: View {
                 inAppSafariLink(Localized.termsOfServiceText, url: "https://automattic.com/tos/")
                 inAppSafariLink(Localized.privacyPolicyText, url: "https://automattic.com/privacy/")
             }
+            VStack(alignment: .leading) {
+                title(Localized.deleteAccountTitle)
+                label(Localized.deleteAccountMessage)
+                deleteAccountButton
+            }
 
             Button {
                 modalManager.dismiss()
@@ -29,6 +42,7 @@ struct AboutView: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.actionButton())
+            .padding(.top, .DS.Padding.single)
         }
         .padding()
         .presentSafariView(url: $inAppURL)
@@ -43,7 +57,29 @@ struct AboutView: View {
 
     private func link(_ text: String, url: String) -> some View {
         Link(text, destination: URL(string: url)!)
-            .foregroundStyle(Color.primary.opacity(0.6))
+            .foregroundStyle(textColor)
+    }
+
+    private func label(_ text: String) -> some View {
+        Text(text)
+            .foregroundStyle(textColor)
+    }
+
+    private var deleteAccountButton: some View {
+        Button {
+            presentAccountDeletionWarning = true
+        } label: {
+            Text(Localized.deleteAccountTitle)
+                .foregroundColor(.red)
+                .padding(.top, .DS.Padding.half)
+        }
+        .confirmationDialog(Localized.deleteAccountWarningTitle, isPresented: $presentAccountDeletionWarning, titleVisibility: .visible) {
+            Button(Localized.deleteAccountTitle, role: .destructive) {
+                notificationCenter.post(name: .deleteAccount, object: nil)
+            }
+        } message: {
+            Text(Localized.deleteAccountWarningMessage)
+        }
     }
 
     private func inAppSafariLink(_ text: String, url: String) -> some View {
@@ -51,7 +87,7 @@ struct AboutView: View {
             inAppURL = URL(string: url)
         } label: {
             Text(text)
-                .foregroundStyle(Color.primary.opacity(0.6))
+                .foregroundStyle(textColor)
         }
     }
 
@@ -98,6 +134,30 @@ private enum Localized {
         "AboutModal.CloseButton.title",
         value: "Done",
         comment: "Text for the 'Done' button in the 'About Gravatar' view"
+    )
+
+    static let deleteAccountTitle = NSLocalizedString(
+        "AboutModal.accountDeletion.title",
+        value: "Delete account",
+        comment: "Title for the 'Delete account' section in the 'About Gravatar' view"
+    )
+
+    static let deleteAccountMessage = NSLocalizedString(
+        "AboutModal.accountDeletion.message",
+        value: "No longer using Gravatar? Delete your account here.",
+        comment: "Warning message for the 'Delete account' section in the 'About Gravatar' view"
+    )
+
+    static let deleteAccountWarningTitle = NSLocalizedString(
+        "AboutModal.accountDeletion.warning.message",
+        value: "Deleting your Gravatar account will immediately prevent all access to your profile",
+        comment: "Detailed Title warning for the 'Delete account' action in the 'About Gravatar' view"
+    )
+
+    static let deleteAccountWarningMessage = NSLocalizedString(
+        "AboutModal.accountDeletion.warning.message",
+        value: "Your data will be permanently deleted after 30 days. During this period, you can still restore your profile by logging in at gravatar.com using your browser. After 30 days, it will no longer be recoverable.",
+        comment: "Detailed warning message for the 'Delete account' section in the 'About Gravatar' view"
     )
 }
 

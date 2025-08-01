@@ -12,7 +12,9 @@ struct WelcomeView: View {
 
     var body: some View {
         Group {
-            if let userSession = viewModel.userSession {
+            if viewModel.isDeletingAccount {
+                ProgressView()
+            } else if let userSession = viewModel.userSession {
                 rootView(userSession: userSession)
             } else {
                 loginView
@@ -32,6 +34,19 @@ struct WelcomeView: View {
                 await viewModel.logout()
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .deleteAccount)) { _ in
+            Task { await viewModel.deleteAccount() }
+        }
+        .alert(
+            String.deleteAccountErrorTitle,
+            isPresented: .init(
+                get: { viewModel.accountDeletionError != nil },
+                set: { present in present ? () : (viewModel.accountDeletionError = nil) }
+            ),
+            presenting: viewModel.accountDeletionError,
+            actions: { _ in },
+            message: { error in Text(error) }
+        )
     }
 
     private func rootView(userSession: UserSession) -> some View {
@@ -209,6 +224,12 @@ extension String {
         "Welcome.Error.Profile.Generic.message",
         value: "There was an unknown issue loading your profile.",
         comment: "Generic error message when the profile fetch fails for an unkonwn reason."
+    )
+
+    static let deleteAccountErrorTitle = NSLocalizedString(
+        "Welcome.Error.DeleteAccount.title",
+        value: "Error deleting account.",
+        comment: "Title for the error when account deletion fails"
     )
 }
 

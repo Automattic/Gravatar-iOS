@@ -11,6 +11,8 @@ class WelcomeViewModel: ObservableObject {
 
     @Published var isLoading: Bool = false
     @Published var userSession: UserSession?
+    @Published var isDeletingAccount: Bool = false
+    @Published var accountDeletionError: String?
 
     /// This property will have a value only in the case an OAuth request succeed and the profile request fails.
     /// Used to retry the Profile request.
@@ -105,9 +107,32 @@ class WelcomeViewModel: ObservableObject {
         try? context.delete(model: ProfileStore.self)
         context.saveNow()
         localAccessToken = nil
+        if let bundleIdentifier = Bundle.main.bundleIdentifier {
+            userDefaults.removePersistentDomain(forName: bundleIdentifier)
+        }
 
         withAnimation {
             self.userSession = nil
+        }
+    }
+
+    func deleteAccount() async {
+        guard let userSession else { return }
+        defer {
+            withAnimation {
+                isDeletingAccount = false
+            }
+        }
+        withAnimation {
+            isDeletingAccount = true
+        }
+
+        let service = AccountService(userSession: userSession)
+        do {
+            try await service.deleteAccount()
+            await logout()
+        } catch {
+            accountDeletionError = error.localizedDescription.isEmpty ? Localized.unknownError : error.localizedDescription
         }
     }
 
@@ -134,4 +159,12 @@ class WelcomeViewModel: ObservableObject {
             isLoading = false
         }
     }
+}
+
+private enum Localized {
+    static let unknownError = NSLocalizedString(
+        "Welcome.accountDeletion.unknownError",
+        value: "An unknown error has occoured while deleting your account",
+        comment: "Error message shown when an unknown error occurs while deleting an account"
+    )
 }
