@@ -368,6 +368,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INCLUDED_SOURCE_FILE_NAMES = "";
+				INFOPLIST_KEY_CFBundleDisplayName = Gravatar;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Upload new avatars";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save avatars to your photo library";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -415,6 +416,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INCLUDED_SOURCE_FILE_NAMES = "";
+				INFOPLIST_KEY_CFBundleDisplayName = Gravatar;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Upload new avatars";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save avatars to your photo library";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -552,6 +554,7 @@
 				CODE_SIGN_ENTITLEMENTS = GravatarApp/GravatarApp.entitlements;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Gravatar;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Upload new avatars";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save avatars to your photo library";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
