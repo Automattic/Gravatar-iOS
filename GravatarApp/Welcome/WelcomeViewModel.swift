@@ -164,7 +164,7 @@ class WelcomeViewModel: ObservableObject {
 private enum Localized {
     static let unknownError = NSLocalizedString(
         "Welcome.accountDeletion.unknownError",
-        value: "An unknown error has occoured while deleting your account",
+        value: "An unknown error has occurred while deleting your account",
         comment: "Error message shown when an unknown error occurs while deleting an account"
     )
 }
