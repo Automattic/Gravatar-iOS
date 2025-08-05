@@ -8,19 +8,22 @@ struct HeaderAvatarView: View {
 
     let placeholderColor: Color
     let transaction: Transaction
+    let urlSession: URLSession
 
     init(
         imageURL: URL?,
         showLoading: Bool = false,
         forceRefresh: Binding<Bool>,
         placeholderColor: Color = .secondary,
-        animation: Animation? = nil
+        animation: Animation? = nil,
+        urlSession: URLSession = GravatarURLSession.shared.urlSession
     ) {
         self.imageURL = imageURL
         self.showLoading = showLoading
         self._forceRefresh = forceRefresh
         self.placeholderColor = placeholderColor
         self.transaction = Transaction(animation: animation)
+        self.urlSession = urlSession
     }
 
     var body: some View {
@@ -29,6 +32,7 @@ struct HeaderAvatarView: View {
             placeholderView: {
                 placeholderColor
             },
+            urlSession: urlSession,
             oneTimeForceRefresh: $forceRefresh,
             loadingView: {
                 showLoading ?
