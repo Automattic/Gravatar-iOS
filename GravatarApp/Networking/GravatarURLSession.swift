@@ -4,7 +4,7 @@ import Gravatar
 /// Intercepts the network requests to perform common operations.
 final class GravatarURLSession: URLSessionProtocol, Sendable {
     static let shared = GravatarURLSession()
-    fileprivate let urlSession: URLSession
+    let urlSession: URLSession
 
     private init() {
         self.urlSession = URLSession(

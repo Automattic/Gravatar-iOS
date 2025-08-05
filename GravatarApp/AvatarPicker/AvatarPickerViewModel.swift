@@ -5,6 +5,7 @@ import SwiftUI
 
 @MainActor
 class AvatarPickerViewModel: ObservableObject {
+    private static let selectedAvatarURLKey = "selectedAvatarURLKey"
     private let profileService: Gravatar.ProfileService
     private let avatarService: AvatarService
     private let imageDownloader: ImageDownloader
@@ -25,11 +26,22 @@ class AvatarPickerViewModel: ObservableObject {
     private let notificationCenter: NotificationCenter
 
     let userSession: UserSession
+    private let urlSession: URLSession?
+    private let userDefaults: UserDefaults
 
     var imageUploadErrorID: UUID?
     var imageUploadSuccessID: UUID?
 
     @Published var selectedAvatarURL: URL?
+    private var savedSelectedAvatarURL: URL? {
+        set {
+            userDefaults.set(newValue, forKey: Self.selectedAvatarURLKey)
+        }
+        get {
+            userDefaults.url(forKey: Self.selectedAvatarURLKey)
+        }
+    }
+
     @Published private(set) var backendSelectedAvatarURL: URL?
     @Published private(set) var gridResponseStatus: Result<Void, Error>?
     @Published private(set) var grid: AvatarGridModel = .init(avatars: [])
@@ -50,8 +62,10 @@ class AvatarPickerViewModel: ObservableObject {
         networkMonitor: any NetworkMonitor = SystemNetworkMonitor.shared,
         urlSession: URLSessionProtocol = GravatarURLSession.shared,
         toastManager: ToastManager = ToastManager(),
-        notificationCenter: NotificationCenter = .default
+        notificationCenter: NotificationCenter = .default,
+        userDefaults: UserDefaults = .standard
     ) {
+        self.urlSession = urlSession as? URLSession
         self.userSession = userSession
         self.profileService = profileService ?? Gravatar.ProfileService(urlSession: urlSession)
         self.avatarService = avatarService ?? AvatarService(urlSession: urlSession)
@@ -60,6 +74,7 @@ class AvatarPickerViewModel: ObservableObject {
         self.profileHash = userSession.profile.hash
         self.toastManager = toastManager
         self.notificationCenter = notificationCenter
+        self.userDefaults = userDefaults
 
         setupCombine()
     }
@@ -93,10 +108,14 @@ class AvatarPickerViewModel: ObservableObject {
             .store(in: &cancellables)
 
         $selectedAvatarURL
-            .removeDuplicates()
-            .dropFirst(2) // First value is nil, second value is the first time we load the URL, no need to `forceRefresh` for these cases.
-            .sink { [weak self] _ in
-                self?.forceRefreshAvatar = true
+            .dropFirst(1) // First value is nil, no need to `forceRefresh` in that case.
+            .sink { [weak self] url in
+                guard let self else { return }
+                if self.savedSelectedAvatarURL != url {
+                    resetURLCache()
+                    self.forceRefreshAvatar = true
+                    self.savedSelectedAvatarURL = url
+                }
             }
             .store(in: &cancellables)
 
@@ -151,6 +170,12 @@ class AvatarPickerViewModel: ObservableObject {
         return nil
     }
 
+    private func resetURLCache() {
+        if let urlCache = urlSession?.configuration.urlCache {
+            urlCache.removeAllCachedResponses()
+        }
+    }
+
     func fetchAvatars() async {
         defer {
             withAnimation(.smooth) {
@@ -167,8 +192,8 @@ class AvatarPickerViewModel: ObservableObject {
             withAnimation(.smooth) {
                 grid.setAvatars(images.map(AvatarImageModel.init))
             }
+            selectedAvatarURL = grid.selectedAvatar?.url // always set the selectedAvatarURL even `nil`
             if let selectedAvatar = grid.selectedAvatar {
-                selectedAvatarURL = selectedAvatar.url
                 selectedAvatarResult = .success(selectedAvatar.id)
             }
             gridResponseStatus = .success(())
