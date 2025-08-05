@@ -55,6 +55,7 @@ struct RootTabView: View {
         .onAppear {
             Task {
                 await avatarPickerViewModel.fetchAvatars()
+                avatarPickerViewModel.forceRefreshAvatar = true
             }
         }
         .modalPresentation(manager: modalManager)

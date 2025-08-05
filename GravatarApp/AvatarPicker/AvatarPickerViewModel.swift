@@ -94,7 +94,7 @@ class AvatarPickerViewModel: ObservableObject {
 
         $selectedAvatarURL
             .removeDuplicates()
-            .dropFirst(2) // First value is nil, second value is the first time we load the URL, no need to `forceRefresh` for these cases.
+            .dropFirst(1) // First value is nil, no need to `forceRefresh` in that case.
             .sink { [weak self] _ in
                 self?.forceRefreshAvatar = true
             }
