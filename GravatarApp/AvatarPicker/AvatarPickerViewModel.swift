@@ -65,7 +65,7 @@ class AvatarPickerViewModel: ObservableObject {
         notificationCenter: NotificationCenter = .default,
         userDefaults: UserDefaults = .standard
     ) {
-        self.urlSession = urlSession as? URLSession
+        self.urlSession = (urlSession as? GravatarURLSession)?.urlSession as? URLSession
         self.userSession = userSession
         self.profileService = profileService ?? Gravatar.ProfileService(urlSession: urlSession)
         self.avatarService = avatarService ?? AvatarService(urlSession: urlSession)
