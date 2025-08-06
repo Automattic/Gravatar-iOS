@@ -22,7 +22,7 @@ struct ShareContentView: View {
 
             sectionTitle(
                 text: Localized.gravatarFieldsSectionTitle,
-                image: .gravatarLogo,
+                image: .gravatarTab,
                 imageColor: .DS.bluishColor
             )
             .padding(.vertical)
@@ -153,29 +153,28 @@ struct ShareContentView: View {
         showExclamationButton: Bool = false
     ) -> some View {
         HStack {
-            Button {
-                modalManager.present {
-                    PrivateInformationAlertView(onDismiss: {
-                        modalManager.dismiss()
-                    })
-                }
-            } label: {
-                HStack(spacing: 4) {
-                    if showExclamationButton {
-                        Image(systemName: "exclamationmark.circle")
-                    }
-                    Text(text)
-                }
-                .font(.footnote)
-            }
-            .foregroundStyle(.secondary)
-            .disabled(!showExclamationButton)
-            Spacer()
             Image(image)
-                .padding(.trailing, 12)
                 .if(imageColor) { view, color in
                     view.foregroundStyle(color)
                 }
+            Text(text)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+            Spacer()
+            if showExclamationButton {
+                Button {
+                    modalManager.present {
+                        PrivateInformationAlertView(onDismiss: {
+                            modalManager.dismiss()
+                        })
+                    }
+                } label: {
+                    Image(systemName: "exclamationmark.circle")
+                        .font(.system(size: 16))
+                }
+                .foregroundStyle(.secondary)
+                .padding(.trailing, 16)
+            }
         }
     }
 
