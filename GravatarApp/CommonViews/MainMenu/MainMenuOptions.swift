@@ -52,7 +52,7 @@ private enum Localized {
     )
     static let shareTitle: String = NSLocalizedString(
         "MainMenu.Option.share",
-        value: "Share",
+        value: "Share profile",
         comment: "Title for the button to share the user's profile"
     )
     static let aboutTitle: String = NSLocalizedString(
