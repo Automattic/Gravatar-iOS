@@ -22,7 +22,7 @@ struct ShareContentView: View {
 
             sectionTitle(
                 text: Localized.gravatarFieldsSectionTitle,
-                image: .gravatarLogo,
+                image: .gravatarTab,
                 imageColor: .DS.bluishColor
             )
             .padding(.vertical)
@@ -152,31 +152,33 @@ struct ShareContentView: View {
         imageColor: Color? = nil,
         showExclamationButton: Bool = false
     ) -> some View {
-        HStack {
-            Button {
-                modalManager.present {
-                    PrivateInformationAlertView(onDismiss: {
-                        modalManager.dismiss()
-                    })
-                }
-            } label: {
-                HStack(spacing: 4) {
-                    if showExclamationButton {
-                        Image(systemName: "exclamationmark.circle")
-                    }
-                    Text(text)
-                }
-                .font(.footnote)
+        Button {
+            modalManager.present {
+                PrivateInformationAlertView(onDismiss: {
+                    modalManager.dismiss()
+                })
             }
-            .foregroundStyle(.secondary)
-            .disabled(!showExclamationButton)
-            Spacer()
-            Image(image)
-                .padding(.trailing, 12)
-                .if(imageColor) { view, color in
-                    view.foregroundStyle(color)
+        } label: {
+            HStack {
+                Image(image)
+                    .if(imageColor) { view, color in
+                        view.foregroundStyle(color)
+                    }
+                    .foregroundStyle(Color.primary)
+                Text(text)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                if showExclamationButton {
+                    Image(systemName: "exclamationmark.circle")
+                        .font(.system(size: 16))
+                        .fontWeight(.semibold)
+                        .padding(.trailing, 16)
                 }
+            }
         }
+        .foregroundStyle(.secondary)
+        .disabled(!showExclamationButton)
     }
 
     private func cleanURL(_ url: String) -> String {
