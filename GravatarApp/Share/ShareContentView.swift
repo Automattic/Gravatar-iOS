@@ -170,10 +170,10 @@ struct ShareContentView: View {
                     .foregroundStyle(.secondary)
                 Spacer()
                 if showExclamationButton {
-                        Image(systemName: "exclamationmark.circle")
-                            .font(.system(size: 16))
-                            .fontWeight(.semibold)
-                            .padding(.trailing, 16)
+                    Image(systemName: "exclamationmark.circle")
+                        .font(.system(size: 16))
+                        .fontWeight(.semibold)
+                        .padding(.trailing, 16)
                 }
             }
         }
