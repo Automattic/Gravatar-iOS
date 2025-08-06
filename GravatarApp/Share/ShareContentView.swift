@@ -152,30 +152,33 @@ struct ShareContentView: View {
         imageColor: Color? = nil,
         showExclamationButton: Bool = false
     ) -> some View {
-        HStack {
-            Image(image)
-                .if(imageColor) { view, color in
-                    view.foregroundStyle(color)
-                }
-            Text(text)
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-            Spacer()
-            if showExclamationButton {
-                Button {
-                    modalManager.present {
-                        PrivateInformationAlertView(onDismiss: {
-                            modalManager.dismiss()
-                        })
+        Button {
+            modalManager.present {
+                PrivateInformationAlertView(onDismiss: {
+                    modalManager.dismiss()
+                })
+            }
+        } label: {
+            HStack {
+                Image(image)
+                    .if(imageColor) { view, color in
+                        view.foregroundStyle(color)
                     }
-                } label: {
-                    Image(systemName: "exclamationmark.circle")
-                        .font(.system(size: 16))
+                    .foregroundStyle(Color.black)
+                Text(text)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                if showExclamationButton {
+                        Image(systemName: "exclamationmark.circle")
+                            .font(.system(size: 16))
+                            .fontWeight(.semibold)
+                            .padding(.trailing, 16)
                 }
-                .foregroundStyle(.secondary)
-                .padding(.trailing, 16)
             }
         }
+        .foregroundStyle(.secondary)
+        .disabled(!showExclamationButton)
     }
 
     private func cleanURL(_ url: String) -> String {
