@@ -164,7 +164,7 @@ struct ShareContentView: View {
                     .if(imageColor) { view, color in
                         view.foregroundStyle(color)
                     }
-                    .foregroundStyle(Color.black)
+                    .foregroundStyle(Color.primary)
                 Text(text)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
