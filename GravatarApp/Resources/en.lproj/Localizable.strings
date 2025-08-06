@@ -110,7 +110,7 @@
 "MainMenu.Option.about" = "About this app";
 
 /* Title for the button to share the user's profile */
-"MainMenu.Option.share" = "Share";
+"MainMenu.Option.share" = "Share profile";
 
 /* Title for the button to sign out */
 "MainMenu.Option.signOut" = "Sign out";
