@@ -22,8 +22,18 @@ public enum OAuthError: Error {
         switch self {
         case .oauthResponseError(let error, let code) where code == .canceledLogin:
             // Taping on cancel and the "Using HTTPS callbacks requires Associated Domains" error are both code `canceledLogin`
-            // We need to differenciate them to treate them differently.
+            // We need to differentiate them to treat them differently.
             !error.contains("HTTPS")
+        default: false
+        }
+    }
+
+    public var isAssociatedDomainError: Bool {
+        switch self {
+        case .oauthResponseError(let error, let code) where code == .canceledLogin:
+            // Taping on cancel and the "Using HTTPS callbacks requires Associated Domains" error are both code `canceledLogin`
+            // We need to differentiate them to treat them differently.
+            error.contains("HTTPS")
         default: false
         }
     }

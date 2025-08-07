@@ -175,7 +175,9 @@ class WelcomeViewModel: ObservableObject {
             await fetchProfile(with: token)
         } catch {
             analytics.track(WelcomeScreenEvent.oauthError(error: error.errorDescription))
-            if !(error.isAccessDenied || error.isCancelled) {
+            if error.isAssociatedDomainError {
+                oauthAlertErrorMessage = Localized.secureLoginErrorMessage
+            } else if !(error.isAccessDenied || error.isCancelled) {
                 oauthAlertErrorMessage = error.errorDescription
             }
             withAnimation {
@@ -191,5 +193,11 @@ private enum Localized {
         "Welcome.accountDeletion.unknownError",
         value: "An unknown error has occurred while deleting your account",
         comment: "Error message shown when an unknown error occurs while deleting an account"
+    )
+
+    static let secureLoginErrorMessage = NSLocalizedString(
+        "Welcome.OAuth.secureLoginErrorMessage",
+        value: "Setting up secure login… Please try again in a few seconds.",
+        comment: "Error message shown when associated domain setup hasn't finished yet"
     )
 }
