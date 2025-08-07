@@ -28,12 +28,11 @@
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gravatar-logo" translatesAutoresizingMaskIntoConstraints="NO" id="ipK-mP-any">
-                                <rect key="frame" x="71.666666666666686" y="175.66666666666663" width="250" height="250"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Gravatar-logo" translatesAutoresizingMaskIntoConstraints="NO" id="ipK-mP-any">
+                                <rect key="frame" x="138.66666666666666" y="314" width="116" height="116"/>
                                 <color key="tintColor" name="gravatar-blue"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" priority="750" constant="250" id="D2d-3j-eY3"/>
-                                    <constraint firstAttribute="width" relation="lessThanOrEqual" priority="750" constant="400" id="IJ2-3Y-TJN"/>
+                                    <constraint firstAttribute="width" priority="750" constant="116" id="D2d-3j-eY3"/>
                                     <constraint firstAttribute="width" secondItem="ipK-mP-any" secondAttribute="height" multiplier="1:1" id="VKr-uz-sQE"/>
                                 </constraints>
                             </imageView>
@@ -42,8 +41,7 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="Bcu-3y-fUS" firstAttribute="centerX" secondItem="obG-Y5-kRd" secondAttribute="centerX" id="5cz-MP-9tL"/>
-                            <constraint firstItem="ipK-mP-any" firstAttribute="centerY" secondItem="Bcu-3y-fUS" secondAttribute="centerY" multiplier="2/3" priority="750" id="9p1-sn-zqr"/>
-                            <constraint firstItem="ipK-mP-any" firstAttribute="top" relation="greaterThanOrEqual" secondItem="Bcu-3y-fUS" secondAttribute="top" constant="20" id="Aac-yp-GsR"/>
+                            <constraint firstItem="ipK-mP-any" firstAttribute="centerY" secondItem="Bcu-3y-fUS" secondAttribute="centerY" priority="750" constant="-79" id="9p1-sn-zqr"/>
                             <constraint firstItem="ipK-mP-any" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Bcu-3y-fUS" secondAttribute="leading" constant="30" id="OaY-px-uK0"/>
                             <constraint firstItem="Bcu-3y-fUS" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="ipK-mP-any" secondAttribute="trailing" constant="30" id="Pzc-Uw-3t8"/>
                             <constraint firstItem="Bcu-3y-fUS" firstAttribute="centerX" secondItem="GJd-Yh-RWb" secondAttribute="centerX" id="Q3B-4B-g5h"/>
@@ -61,9 +59,9 @@
         </scene>
     </scenes>
     <resources>
-        <image name="gravatar-logo" width="22" height="22"/>
+        <image name="Gravatar-logo" width="22" height="22"/>
         <namedColor name="gravatar-blue">
-            <color red="0.11" green="0.31" blue="0.77000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.10999999940395355" green="0.31000000238418579" blue="0.76999998092651367" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
