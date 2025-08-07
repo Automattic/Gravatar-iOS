@@ -42,6 +42,29 @@ ASC_API_KEY_ENV_VARS = %w[
   APP_STORE_CONNECT_API_KEY_KEY
 ].freeze
 
+GLOTPRESS_PROJECT_URL = 'https://translate.wordpress.com/projects/gravatar/gravatar-ios'
+LOCALIZATIONS_ROOT = File.join('GravatarApp', 'Resources')
+
+# List of locales used for the app strings (GlotPress code => `*.lproj` folder name`)
+GLOTPRESS_TO_LPROJ_APP_LOCALE_CODES = {
+  'ar' => 'ar',         # Arabic
+  'de' => 'de',         # German
+  'es' => 'es',         # Spanish
+  'fr' => 'fr',         # French
+  'he' => 'he',         # Hebrew
+  'id' => 'id',         # Indonesian
+  'it' => 'it',         # Italian
+  'ja' => 'ja',         # Japanese
+  'ko' => 'ko',         # Korean
+  'nl' => 'nl',         # Dutch
+  'pt-br' => 'pt-BR',   # Portuguese (Brazil)
+  'ru' => 'ru',         # Russian
+  'sv' => 'sv',         # Swedish
+  'tr' => 'tr',         # Turkish
+  'zh-cn' => 'zh-Hans', # Chinese (China)
+  'zh-tw' => 'zh-Hant'  # Chinese (Taiwan)
+}.freeze
+
 require_relative 'lib/env_manager'
 require_relative 'lib/code_signing_helpers'
 
@@ -158,6 +181,37 @@ platform :ios do
     git_commit(
       path: en_lproj_path,
       message: 'Update strings in base locale',
+      allow_nothing_to_commit: true
+    )
+  end
+
+  # Download the latest localizations from GlotPress and update the app accordingly.
+  #
+  # @param skip_commit [Boolean] Whether to skip committing the changes to git (default: false)
+  #
+  lane :download_translations do |skip_commit: false|
+    check_translation_progress(
+      glotpress_url: GLOTPRESS_PROJECT_URL,
+      abort_on_violations: false,
+      skip_confirm: true
+    )
+
+    ios_download_strings_files_from_glotpress(
+      project_url: GLOTPRESS_PROJECT_URL,
+      locales: GLOTPRESS_TO_LPROJ_APP_LOCALE_CODES,
+      download_dir: LOCALIZATIONS_ROOT
+    )
+
+    ios_lint_localizations(
+      input_dir: LOCALIZATIONS_ROOT
+    )
+
+    next if skip_commit
+
+    git_add(path: LOCALIZATIONS_ROOT)
+    git_commit(
+      path: LOCALIZATIONS_ROOT,
+      message: 'Update localizations',
       allow_nothing_to_commit: true
     )
   end
