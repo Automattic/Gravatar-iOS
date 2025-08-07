@@ -67,8 +67,8 @@ class WelcomeViewModel: ObservableObject {
             configureSession(profile: profile, accessToken: token)
             cleanAllErrors()
         } catch {
-            if let error = error as? OAuthError { // Always the case (we need typed throws from the SDK)
-                analytics.track(WelcomeScreenEvent.profileFetchError(error: error.errorDescription))
+            if let error = error as? APIError { // Always the case (we need typed throws from the SDK)
+                analytics.track(WelcomeScreenEvent.profileFetchError(error: error.debugDescription))
             }
             localAccessToken = token
             withAnimation(.smooth(duration: 0.2)) {
