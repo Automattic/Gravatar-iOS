@@ -45,7 +45,7 @@ ASC_API_KEY_ENV_VARS = %w[
 GLOTPRESS_PROJECT_URL = 'https://translate.wordpress.com/projects/gravatar/gravatar-ios'
 LOCALIZATIONS_ROOT = File.join('GravatarApp', 'Resources')
 
-# List of locales used for the app strings (GlotPress code => `*.lproj` folder name`)
+# List of locales used for the app strings (GlotPress code => `*.lproj` folder name)
 GLOTPRESS_TO_LPROJ_APP_LOCALE_CODES = {
   'ar' => 'ar',         # Arabic
   'de' => 'de',         # German
