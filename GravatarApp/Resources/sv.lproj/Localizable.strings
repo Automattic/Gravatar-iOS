@@ -1,0 +1,272 @@
+/* Translation-Revision-Date: 2025-08-06 20:47:55+0000 */
+/* Plural-Forms: nplurals=2; plural=n != 1; */
+/* Generator: GlotPress/2.4.0-alpha */
+/* Language: sv_SE */
+
+/* Text for the 'Done' button in the 'About Gravatar' view */
+"AboutModal.CloseButton.title" = "Klar";
+
+/* Title for the 'Get help' section in the 'About Gravatar' view */
+"AboutModal.getHelpTitle" = "Skaffa hjälp";
+
+/* Title for the 'Legal' section in the 'About Gravatar' view */
+"AboutModal.legalTitle" = "Juridiskt";
+
+/* Link text for the 'Privacy Policy' in the 'About Gravatar' view */
+"AboutModal.privacyPolicyText" = "Integritetspolicy";
+
+/* Link text for the 'Terms of Service' in the 'About Gravatar' view */
+"AboutModal.termsOfServiceText" = "Användarvillkor";
+
+/* Title for the 'About Gravatar' view */
+"AboutModal.title" = "Om Gravatar";
+
+/* Accessibility label spoken outloud by VoiceOver when an avatar is selected. The '%@' is the Alt text of the avatar image. */
+"Avatar.Accessibility.AvatarButton.Label" = "Profilbild. %@";
+
+/* An option in the avatar menu that edits the avatar's Alt Text. */
+"AvatarPicker.AvatarAction.altText" = "Alt-text";
+
+/* An option in the avatar menu that deletes the avatar */
+"AvatarPicker.AvatarAction.delete" = "Ta bort";
+
+/* An option in the avatar menu that selects the avatar */
+"AvatarPicker.AvatarAction.select" = "Välj";
+
+/* An option in the avatar menu that shares the avatar */
+"AvatarPicker.AvatarAction.share" = "Dela …";
+
+/* The title of the retry button shown when avatars cannot be loaded. */
+"AvatarPicker.Avatars.Loading.Error.buttonTitle" = "Försök igen";
+
+/* The description of the error shown when avatars cannot be loaded. */
+"AvatarPicker.Avatars.Loading.Error.description" = "Det var ett problem att ladda in dina profilbilder. Försök igen om några minuter.";
+
+/* The title of the error shown when avatars cannot be loaded. */
+"AvatarPicker.Avatars.Loading.Error.title" = "Kan inte ladda profilbilder";
+
+/* The title button which confirms the avatar deletion. */
+"AvatarPicker.Deletion.Confirmation.ctaButtonTitle" = "Ta bort";
+
+/* Title of the confirmation dialog to delete an avatar */
+"AvatarPicker.Deletion.Confirmation.title" = "Är du säker på att du vill ta bort denna bild?";
+
+/* The title of the dismiss button on a confirmation dialog. */
+"AvatarPicker.Dismiss.title" = "Avfärda";
+
+/* A label displayed above an empty avatars grid. */
+"AvatarPicker.Grid.Empty.label" = "Dina profilbilder kommer visas här.";
+
+/* A warning message that appears above the avatars grid when there's no selected avatar. */
+"AvatarPicker.Grid.NoSelectedAvatar" = "Ingen profilbild vald. Visar standardprofilbilden.";
+
+/* A subtext that appears below the avatars grid title */
+"AvatarPicker.Grid.subtext" = "Tryck för alternativ.";
+
+/* Title of the avatars grid */
+"AvatarPicker.Grid.title" = "Tidigare profilbilder";
+
+/* Error message to show when the upload fails because the image is too big. */
+"AvatarPicker.Upload.Error.ImageTooBig.Error" = "Den angivna bilden överskrider den maximala storleken: 10 MB";
+
+/* The title of the remove button on the upload error dialog. */
+"AvatarPicker.Upload.Error.Remove.title" = "Ta bort";
+
+/* The title of the retry button on the upload error dialog. */
+"AvatarPicker.Upload.Error.Retry.title" = "Försök igen";
+
+/* The title of the upload error dialog. */
+"AvatarPicker.Upload.Error.title" = "Uppladdning har misslyckats";
+
+/* Title for the section with the upload image buttons */
+"AvatarPicker.UploadSection.header" = "Skaffa ett nytt utseende";
+
+/* Subtitle for the section with the upload image buttons */
+"AvatarPicker.UploadSection.subtitle" = "Låt din personlighet glänsa med en ny profilbild.";
+
+/* This confirmation message shows when the user has updated the alt text. */
+"AvatarPickerViewModel.AltText.Success" = "Bildens alt-text ändrades.";
+
+/* This error message shows when the avatars request fails. */
+"AvatarPickerViewModel.AvatarsRequest.Error" = "Kan inte hämta dina profilbilder. Försök igen.";
+
+/* This error message shows when the user attempts to delete an avatar and fails. */
+"AvatarPickerViewModel.Delete.Error" = "Kunde inte ta bort bilden. Försök igen.";
+
+/* This error message shows when the user attempts to share an avatar and fails. */
+"AvatarPickerViewModel.Share.Fail" = "Kunde inte dela din profilbild. Försök igen.";
+
+/* This error message shows when the user attempts to pick a different avatar and fails. */
+"AvatarPickerViewModel.Update.Fail" = "Kan inte ändra din profilbild. Försök igen.";
+
+/* This confirmation message shows when the user picks a different avatar. */
+"AvatarPickerViewModel.Update.Success" = "Profilbild uppdaterad.";
+
+/* A generic error message to show on an error dialog when the upload fails. */
+"AvatarPickerViewModel.Upload.Error.message" = "Hoppsan, det var ett fel vid uppladdning av bilden.";
+
+/* Screen title. Resize and crop an image. */
+"ImageCropper.title" = "Ändra storlek och beskär";
+
+/* Title for the button to show 'about this app' section */
+"MainMenu.Option.about" = "Om denna app";
+
+/* Title for the button to share the user's profile */
+"MainMenu.Option.share" = "Dela profil";
+
+/* Title for the button to sign out */
+"MainMenu.Option.signOut" = "Logga ut";
+
+/* Title for the button to visit the user's profile */
+"MainMenu.Option.visitProfile" = "Besök din profil";
+
+/* Label of a field that contains a short biography or description about the user. */
+"Profile.AboutInfoField.aboutMe" = "Om mig";
+
+/* Description for the 'About me' field in the profile editing screen. */
+"Profile.AboutInfoField.aboutMe.footer" = "Kort beskrivning för din profil.";
+
+/* Label of a field that contains the company or organization the user is affiliated with. */
+"Profile.AboutInfoField.company" = "Företag";
+
+/* Label of a field that contains a user’s email. */
+"Profile.AboutInfoField.contactEmail" = "E-post";
+
+/* Label of a field that contains a user’s phone number. */
+"Profile.AboutInfoField.contactPhone" = "Telefon";
+
+/* Label of a field that contains a user’s display name. */
+"Profile.AboutInfoField.displayName" = "Visningsnamn";
+
+/* Label of a field that contains a user’s first name. */
+"Profile.AboutInfoField.firstName" = "Förnamn";
+
+/* Label of a field that contains the user's current job title or role. */
+"Profile.AboutInfoField.jobTitle" = "Jobbtitel";
+
+/* Label of a field that contains a user’s last name. */
+"Profile.AboutInfoField.lastName" = "Efternamn";
+
+/* Label of a field that contains the user's geographic location. */
+"Profile.AboutInfoField.location" = "Plats";
+
+/* Label of a field that contains the pronouns the user identifies with (e.g., she/her, they/them). */
+"Profile.AboutInfoField.pronouns" = "Pronomen";
+
+/* Label of a field that contains a phonetic pronunciation of the user’s name. */
+"Profile.AboutInfoField.pronunciation" = "Uttal";
+
+/* Description for the 'Pronunciation' field in the profile editing screen. */
+"Profile.AboutInfoField.pronunciation.footer" = "Låt dem veta hur ditt namn låter.";
+
+/* Title of the cancel button in the profile editing screen. */
+"Profile.CancelButton.title" = "Avbryt";
+
+/* Default message shown when there is an error saving the profile. */
+"Profile.Refresh.errorMessage" = "Kan inte uppdatera din profil. Försök igen.";
+
+/* Default message shown when there is an error saving the profile. */
+"Profile.Save.errorMessage" = "Kan inte spara din profil. Försök igen.";
+
+/* Message shown when the profile is saved successfully. */
+"Profile.Save.successMessage" = "Profil sparad.";
+
+/* Title of the save button in the profile editing screen. */
+"Profile.SaveButton.title" = "Spara";
+
+/* Text shown while saving changes in the profile editing screen. */
+"Profile.Saving.text" = "Sparar …";
+
+/* Title of the about section in the profile editing screen. */
+"Profile.Section.About.header" = "Om";
+
+/* Title of the contact info section in the profile editing screen. */
+"Profile.Section.Contact.header" = "Kontakt";
+
+/* Title of the name section in the profile editing screen. */
+"Profile.Section.Name.header" = "Namn";
+
+/* Title of the professional/work info section in the profile editing screen. */
+"Profile.Section.Professional.header" = "Yrke";
+
+/* Title for the account url field. %@ is the service label. e.g. 'WordPress account'. */
+"Share.Contact.Account.title" = "%@-konto";
+
+/* Title for the email field to be shared via QR code */
+"Share.Contact.Email.title" = "E-post";
+
+/* Title for the section with the public Gravatar contact info. */
+"Share.Contact.GravatarFieldsSection.title" = "Dela information från din Gravatar-profil.";
+
+/* Title for the name field to be shared via QR code */
+"Share.Contact.Name.title" = "Namn";
+
+/* Title for the phone number field to be shared via QR code */
+"Share.Contact.PhoneNumber.title" = "Telefonnummer";
+
+/* Title for the preview vCard button. */
+"Share.Contact.Preview.Button.title" = "Förhandsgranska";
+
+/* Title for the preview section. */
+"Share.Contact.Preview.title" = "Se vad andra kommer se när de skannar din QR-kod.";
+
+/* Title for the section with the private contact info. */
+"Share.Contact.PrivateSection.title" = "Dela privat kontaktinformation.";
+
+/* Title for the profile url field to be shared via QR code */
+"Share.Contact.ProfileURL.title" = "Profil-URL";
+
+/* Message shown when there is no data to show in a share field */
+"Share.Field.noData" = "Ingen data";
+
+/* Message explaining what is the QR code for. */
+"Share.Header.explanation" = "Låt andra skanna denna QR-kod för att dela din kontaktinformation.";
+
+/* Button title to dismiss the private information alert */
+"Share.PrivateInfoAlert.DismissButton.title" = "Jag förstår";
+
+/* Message explanation about sharing private information */
+"Share.PrivateInfoAlert.message" = "Din e-post och ditt telefonnummer delas endast med hjälp av QR-koden. Denna information är inte sparad i din Gravatar-profil och är inte offentligt tillgänglig.";
+
+/* Title of the explaining alert about sharing private information */
+"Share.PrivateInfoAlert.title" = "Privat information";
+
+/* An option in a menu that will display the camera for taking a picture */
+"SystemImagePickerView.Source.Camera.title" = "Kamera";
+
+/* An option in a menu that display the user's Photo Library and allow them to choose a photo from it */
+"SystemImagePickerView.Source.PhotoLibrary.title" = "Foton";
+
+/* An option to show the image playground */
+"SystemImagePickerView.Source.Playground.title" = "Playground";
+
+/* Title for the profile tab */
+"Tabs.Profile.title" = "Profil";
+
+/* Title for the share tab */
+"Tabs.Share.title" = "Dela";
+
+/* Message for the error when OAuth is denied by the user. */
+"Welcome.Error.OAuth.Denied.message" = "Du måste logga in på Gravatar.com.";
+
+/* Generic error message when OAuth fails. */
+"Welcome.Error.OAuth.Generic.message" = "Kan inte begära åtkomst.";
+
+/* Generic error message when the profile fetch fails for an unkonwn reason. */
+"Welcome.Error.Profile.Generic.message" = "Det var ett okänt problem att ladda in din profil.";
+
+/* Title for the error when the profile fetch fails. */
+"Welcome.Error.Profile.title" = "Kan inte ladda din profil.";
+
+/* Title for the button to login with another account. */
+"Welcome.Login.AnotherAccountButton.title" = "Prova ett annat konto";
+
+/* Title for the main login button. */
+"Welcome.Login.MainButton.title" = "Logga in";
+
+/* Title for the button to try again after a login failure. */
+"Welcome.Login.TryAgainButton.title" = "Försök igen";
+
+/* Subtitle for the login screen */
+"Welcome.Logo.subtitle" = "Din globalt igenkända profilbild.";
+
