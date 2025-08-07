@@ -1,4 +1,5 @@
 import Analytics
+import Combine
 import Gravatar
 import OAuth
 import SwiftData
@@ -7,12 +8,14 @@ import SwiftUI
 @MainActor
 class WelcomeViewModel: ObservableObject {
     @Published var oauthError: OAuthError?
+    @Published var oauthAlertErrorMessage: String?
     @Published var profileFetchingError: APIError?
 
     @Published var isLoading: Bool = false
     @Published var userSession: UserSession?
     @Published var isDeletingAccount: Bool = false
     @Published var accountDeletionError: String?
+    @Published var noInernetConnection: Bool = false
 
     /// This property will have a value only in the case an OAuth request succeed and the profile request fails.
     /// Used to retry the Profile request.
@@ -23,19 +26,33 @@ class WelcomeViewModel: ObservableObject {
     private let oauthManager: OAuthManager
     private let analytics: Analytics
     private let userDefaults: UserDefaults
+    private let networkMonitor: any NetworkMonitor
+    private var cancellables = Set<AnyCancellable>()
 
     init(
         oauthManager: OAuthManager = .shared,
         userDefaults: UserDefaults = .standard,
         analytics: Analytics = .shared,
         profileService: ProfileServiceProtocol = Gravatar.ProfileService(urlSession: GravatarURLSession.shared),
-        context: ModelContext
+        context: ModelContext,
+        networkMonitor: any NetworkMonitor = SystemNetworkMonitor.shared
     ) {
         self.oauthManager = oauthManager
         self.analytics = analytics
         self.userDefaults = userDefaults
         self.profileService = profileService
         self.context = context
+        self.networkMonitor = networkMonitor
+
+        networkMonitor.hasNetworkConnection.sink { [weak self] isConnected in
+            withAnimation(.smooth(duration: 0.2)) {
+                self?.noInernetConnection = !isConnected
+            }
+        }.store(in: &cancellables)
+    }
+
+    func trackLoginButtonTap() {
+        analytics.track(WelcomeScreenEvent.loginButtonPressed)
     }
 
     func fetchProfile(with token: String) async {
@@ -44,10 +61,15 @@ class WelcomeViewModel: ObservableObject {
         }
         do {
             isLoading = true
+            analytics.track(WelcomeScreenEvent.profileFetchStart)
             let profile = try await profileService.fetchOwnProfile(token: token)
+            analytics.track(WelcomeScreenEvent.profileFetchSuccess)
             configureSession(profile: profile, accessToken: token)
             cleanAllErrors()
         } catch {
+            if let error = error as? OAuthError { // Always the case (we need typed throws from the SDK)
+                analytics.track(WelcomeScreenEvent.profileFetchError(error: error.errorDescription))
+            }
             localAccessToken = token
             withAnimation(.smooth(duration: 0.2)) {
                 profileFetchingError = error as? APIError
@@ -144,18 +166,21 @@ class WelcomeViewModel: ObservableObject {
     }
 
     func requestOAuthToken() async {
-        analytics.track(WelcomeScreenEvent.authButtonPressed)
         localAccessToken = nil
         do {
             isLoading = true
+            analytics.track(WelcomeScreenEvent.oauthStart)
             let token = try await oauthManager.requestAccessToken().token
+            analytics.track(WelcomeScreenEvent.oauthSuccess)
             await fetchProfile(with: token)
-            analytics.track(WelcomeScreenEvent.authSuccess)
         } catch {
+            analytics.track(WelcomeScreenEvent.oauthError(error: error.errorDescription))
+            if !(error.isAccessDenied || error.isCancelled) {
+                oauthAlertErrorMessage = error.errorDescription
+            }
             withAnimation {
                 self.oauthError = error
             }
-
             isLoading = false
         }
     }

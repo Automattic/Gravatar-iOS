@@ -17,6 +17,37 @@ public enum OAuthError: Error {
         default: false
         }
     }
+
+    public var isCancelled: Bool {
+        switch self {
+        case .oauthResponseError(let error, let code) where code == .canceledLogin:
+            // Taping on cancel and the "Using HTTPS callbacks requires Associated Domains" error are both code `canceledLogin`
+            // We need to differenciate them to treate them differently.
+            !error.contains("HTTPS")
+        default: false
+        }
+    }
+
+    public var errorDescription: String {
+        switch self {
+        case .couldNotParseAccessCode(let string):
+            string
+        case .oauthResponseError(let string, _):
+            string
+        case .tokenRequestError(let uRLError):
+            uRLError.localizedDescription
+        case .tokenResponseError(let string):
+            string
+        case .decodingError(let string):
+            string
+        case .unknown(let error):
+            error.localizedDescription
+        case .notConfigured, .configurationError:
+            "\(self)"
+        default:
+            "Unknown error"
+        }
+    }
 }
 
 extension OAuthError {
