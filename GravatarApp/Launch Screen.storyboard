@@ -28,7 +28,7 @@
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Gravatar-logo" translatesAutoresizingMaskIntoConstraints="NO" id="ipK-mP-any">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gravatar-logo" translatesAutoresizingMaskIntoConstraints="NO" id="ipK-mP-any">
                                 <rect key="frame" x="138.66666666666666" y="314" width="116" height="116"/>
                                 <color key="tintColor" name="gravatar-blue"/>
                                 <constraints>
@@ -59,9 +59,9 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Gravatar-logo" width="22" height="22"/>
+        <image name="gravatar-logo" width="22" height="22"/>
         <namedColor name="gravatar-blue">
-            <color red="0.10999999940395355" green="0.31000000238418579" blue="0.76999998092651367" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.11" green="0.31" blue="0.77000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
