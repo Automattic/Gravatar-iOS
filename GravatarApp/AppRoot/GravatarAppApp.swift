@@ -10,7 +10,7 @@ struct GravatarAppApp: App {
     @StateObject private var welcomeViewModel: WelcomeViewModel
 
     init() {
-        Analytics.setPushEventsToRemote(false)
+        Analytics.setPushEventsToRemote(true)
         do {
             let context = try ModelContext(ModelContainer(for: ProfileStore.self))
             self.modelContext = context
