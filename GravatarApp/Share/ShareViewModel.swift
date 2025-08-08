@@ -21,7 +21,7 @@ class ShareViewModel: ObservableObject {
     private let networkMonitor: NetworkMonitor
     private let userDefaults: UserDefaults
 
-    let qrGenerator: QRGenerator
+    private let qrGenerator: QRGenerator
 
     @Published var storedUserEmail: String {
         didSet { userDefaults.set(storedUserEmail, forKey: StorageKeys.email) }
@@ -57,7 +57,7 @@ class ShareViewModel: ObservableObject {
         }
     }
 
-    func setupObservers() {
+    private func setupObservers() {
         userSession.$profile
             .receive(on: RunLoop.main)
             .sink { [weak self] newProfile in
