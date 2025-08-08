@@ -6,8 +6,6 @@ require 'xcodeproj'
 
 fastlane_version '2.0'
 
-PROJECT_ROOT_FOLDER = File.dirname(File.expand_path(__dir__))
-
 CODE_SIGNING_STORAGE_OPTIONS = {
   storage_mode: 's3',
   s3_bucket: 'a8c-fastlane-match',
@@ -21,12 +19,26 @@ CODE_SIGNING_ENV_VARS = %w[
   MATCH_PASSWORD
 ].freeze
 
+########################################################################
+# Constants
+########################################################################
+PROJECT_ROOT_FOLDER = File.dirname(File.expand_path(__dir__))
+
+VERSION_FILE_PATH = File.join(PROJECT_ROOT_FOLDER, 'Config', 'Version.xcconfig')
 PROJECT_XCCONFIG = Xcodeproj::Config.new(File.join(PROJECT_ROOT_FOLDER, 'Config', 'Project.xcconfig'))
 APP_STORE_XCCONFIG = Xcodeproj::Config.new(File.join(PROJECT_ROOT_FOLDER, 'Config', 'GravatarApp.common.xcconfig'))
 ENTERPRISE_XCCONFIG_PATH = File.join(PROJECT_ROOT_FOLDER, 'Config', 'GravatarApp.enterprise.xcconfig')
 ENTERPRISE_XCCONFIG = Xcodeproj::Config.new(ENTERPRISE_XCCONFIG_PATH)
 
 ARTIFACTS_FOLDER = File.join(PROJECT_ROOT_FOLDER, '.build', 'artifacts')
+
+APP_STORE_CONNECT_BUILD_OUTPUT_NAME = 'GravatarApp'
+APP_STORE_CONNECT_XCARCHIVE_PATH = File.join(ARTIFACTS_FOLDER, "#{APP_STORE_CONNECT_BUILD_OUTPUT_NAME}.xcarchive")
+APP_STORE_CONNECT_XCARCHIVE_ZIP_PATH = File.join(ARTIFACTS_FOLDER, "#{APP_STORE_CONNECT_BUILD_OUTPUT_NAME}.xcarchive.zip")
+APP_STORE_CONNECT_BUILD_IPA_PATH = File.join(ARTIFACTS_FOLDER, "#{APP_STORE_CONNECT_BUILD_OUTPUT_NAME}.ipa")
+APP_STORE_CONNECT_BUILD_DSYMS_PATH = File.join(ARTIFACTS_FOLDER, "#{APP_STORE_CONNECT_BUILD_OUTPUT_NAME}.app.dSYM.zip")
+
+SCHEME = 'GravatarApp'
 
 PROTOTYPE_BUILD_NAME = 'GravatarApp-Prototype'
 
@@ -35,12 +47,26 @@ FIREBASE_TESTERS_GROUP = 'gravatar-ios---prototype-builds'
 
 GITHUB_REPO = 'Automattic/Gravatar-iOS'
 
+# Instantiate versioning classes
+VERSION_CALCULATOR = Fastlane::Wpmreleasetoolkit::Versioning::SemanticVersionCalculator.new
+VERSION_FORMATTER = Fastlane::Wpmreleasetoolkit::Versioning::FourPartVersionFormatter.new
+BUILD_CODE_FORMATTER = Fastlane::Wpmreleasetoolkit::Versioning::FourPartBuildCodeFormatter.new
+PUBLIC_VERSION_FILE = Fastlane::Wpmreleasetoolkit::Versioning::IOSVersionFile.new(xcconfig_path: VERSION_FILE_PATH)
+
 # Required for app_store_connect_api_key to generate the key information to pass down the call chain.
 ASC_API_KEY_ENV_VARS = %w[
   APP_STORE_CONNECT_API_KEY_KEY_ID
   APP_STORE_CONNECT_API_KEY_ISSUER_ID
   APP_STORE_CONNECT_API_KEY_KEY
 ].freeze
+
+
+# Shared options to use when invoking `gym` / `build_app`.
+#
+# - `manageAppVersionAndBuildNumber: false` prevents `xcodebuild` from bumping
+#   the build number when extracting an archive into an IPA file. We want to
+#   use the build number we set!
+COMMON_EXPORT_OPTIONS = { manageAppVersionAndBuildNumber: false }.freeze
 
 GLOTPRESS_PROJECT_URL = 'https://translate.wordpress.com/projects/gravatar/gravatar-ios'
 LOCALIZATIONS_ROOT = File.join('GravatarApp', 'Resources')
@@ -79,6 +105,43 @@ end
 default_platform :ios
 
 platform :ios do
+  # Builds the Gravatar app for distribution to App Store Connect
+  #
+  # @param fetch_code_signing [Boolean] If true, will call `configure_code_signing_app_store` before building. Recommended on CI.
+  #
+  lane :build_app_store_connect do |fetch_code_signing: true|
+    configure_code_signing_app_store
+
+    build_app(
+      scheme: SCHEME,
+      include_symbols: true,
+      clean: true,
+      export_team_id: asc_team_id!,
+      export_options: { **COMMON_EXPORT_OPTIONS, method: 'app-store' },
+      archive_path: APP_STORE_CONNECT_XCARCHIVE_PATH,
+      output_directory: ARTIFACTS_FOLDER,
+      output_name: APP_STORE_CONNECT_BUILD_OUTPUT_NAME
+    )
+  end
+
+  # Uploads the binary to TestFlight and distributes it to testers
+  #
+  # Typically called after having built the binary with `build_app_store_connect`
+  #
+  # @param ipa_path [String] Path to the `.ipa` file to upload to TestFlight
+  #
+  lane :upload_to_app_store_connect do |ipa_path: APP_STORE_CONNECT_BUILD_IPA_PATH|
+    require_env_vars!(*ASC_API_KEY_ENV_VARS)
+
+    upload_to_testflight(
+      ipa: ipa_path,
+      distribute_external: false,
+      team_id: asc_team_id!,
+      api_key: app_store_connect_api_key,
+      reject_build_waiting_for_review: true
+    )
+  end
+
   # Builds the app binary for Enterprise distribution (Prototype Build)
   #
   # @param fetch_code_signing [Boolean] If true, will call `configure_code_signing_enterprise` before building. Recommended on CI.
@@ -140,6 +203,49 @@ platform :ios do
         fold: true
       )
     )
+  end
+
+  #####################################################################################
+  # Release lanes & utils
+  #####################################################################################
+
+  # Creates a new beta by bumping the app version appropriately then triggering a beta build on CI
+  #
+  # @param skip_confirm [Boolean] If true, avoids any interactive prompt (default: false)
+  #
+  lane :new_beta_release do |skip_confirm: false|
+    require_env_vars!('BUILDKITE_TOKEN')
+    ensure_git_status_clean
+    ensure_git_branch(branch: '^release/')
+
+    message = <<~MESSAGE
+      Initiating a new beta release.
+      This will:
+      - Checkout and pull the #{release_branch_name} branch (if running on CI)
+      - Bump and build the code from #{build_code_current} to #{build_code_next}
+      - Trigger a new TestFlight build in Buildkite
+    MESSAGE
+
+    Fastlane::Helper::GitHelper.checkout_and_pull(release: release_version_current) if is_ci?
+
+    UI.important(message)
+    UI.user_error!('Aborted by user request') unless skip_confirm || UI.confirm('Continue?')
+
+    UI.message 'Bumping Build Number...'
+    bump_build_code
+    UI.success "Done! New Build Number: #{build_code_current}"
+
+    push_to_git_remote(tags: false)
+
+    trigger_beta_build(branch_to_build: release_branch_name)
+  end
+
+  # Triggers a beta build on CI
+  #
+  # @param branch_to_build [String] The name of the branch we want the CI to build, e.g. `release/19.3`
+  #
+  lane :trigger_beta_build do |branch_to_build:|
+    trigger_buildkite_release_build(branch: branch_to_build, beta: true)
   end
 
   # Download and configure code signing certificates and provisioning profiles for the App Store build.
@@ -245,6 +351,43 @@ def configure_code_signing(app_identifier:, type:, team_id:, readonly:)
   )
 end
 
+#####################################################################################
+# Helper Functions
+#####################################################################################
+
+# Name of the `release/` branch for the current version
+#
+def release_branch_name
+  "release/#{release_version_current}"
+end
+
+# Kicks off a Buildkite build using the `release-builds.yml` pipeline
+#
+# @param branch [String] The git branch on which to trigger the CI build on
+# @param beta [Boolean] If true, build a beta; if false, build a final release
+# @return [String] The URL of the build that has been triggered
+#
+def trigger_buildkite_release_build(branch:, beta:)
+  pipeline_args = {
+    pipeline_file: 'release-builds.yml',
+    environment: {
+      RELEASE_VERSION: release_version_current,
+      BETA_RELEASE: beta
+    }
+  }
+  if is_ci?
+    buildkite_pipeline_upload(**pipeline_args)
+  else
+    require_env_vars!('BUILDKITE_TOKEN')
+    buildkite_trigger_build(
+      buildkite_organization: 'automattic',
+      buildkite_pipeline: 'gravatar-ios',
+      branch: branch,
+      **pipeline_args
+    )
+  end
+end
+
 def asc_team_id!
   read_from_xcconfig!(key: 'DEVELOPMENT_TEAM', xcconfig: PROJECT_XCCONFIG)
 end
@@ -289,4 +432,97 @@ def pull_request_number
   # Buildkite sets this env var to the PR number if on a PR, but to 'false' (and not nil) if not on a PR
   pr_num = ENV.fetch('BUILDKITE_PULL_REQUEST', 'false')
   pr_num == 'false' ? nil : Integer(pr_num)
+end
+
+#####################################################################################
+# Versioning utils
+#####################################################################################
+
+# Updates the build code in PUBLIC_VERSION_FILE to the next build code and commits the change
+#
+def bump_build_code
+  PUBLIC_VERSION_FILE.write(
+    version_short: release_version_current,
+    version_long: build_code_next
+  )
+  commit_version_update(message: '[skip ci] Bump build code')
+end
+
+# Updates the version name in PUBLIC_VERSION_FILE to the next release version and commits the change
+#
+def bump_version
+  PUBLIC_VERSION_FILE.write(
+    version_short: release_version_next
+  )
+  commit_version_update(message: '[skip ci] Bump app version')
+end
+
+# Commits the version update to the PUBLIC_VERSION_FILE
+#
+def commit_version_update(message:)
+  Fastlane::Helper::GitHelper.commit(
+    message: message,
+    files: VERSION_FILE_PATH
+  )
+end
+
+# Returns the release version of the app in the format `1.2` or `1.2.3` if it is a hotfix
+#
+def release_version_current
+  current_version = VERSION_FORMATTER.parse(PUBLIC_VERSION_FILE.read_release_version)
+  VERSION_FORMATTER.release_version(current_version)
+end
+
+# Returns the next release version of the app in the format `1.2` or `1.2.3` if it is a hotfix
+#
+def release_version_next
+  current_version = VERSION_FORMATTER.parse(PUBLIC_VERSION_FILE.read_release_version)
+  next_calculated_release_version = VERSION_CALCULATOR.next_release_version(version: current_version)
+  VERSION_FORMATTER.release_version(next_calculated_release_version)
+end
+
+# Returns the current build code of the app
+#
+def build_code_current
+  # We use the four part (1.2.3.4) build code format, so the version calculator can be used to calculate the next four-part version
+  version = VERSION_FORMATTER.parse(PUBLIC_VERSION_FILE.read_build_code(attribute_name: 'VERSION_LONG'))
+  BUILD_CODE_FORMATTER.build_code(version: version)
+end
+
+# Returns the build code of the app for the code freeze.
+# It is the release version name with build number (last of the four components) set to 0.
+#
+def build_code_code_freeze
+  # We use the four part (1.2.3.4) build code format, so the version calculator can be used to calculate the next four-part version
+  release_version_current = VERSION_FORMATTER.parse(PUBLIC_VERSION_FILE.read_release_version)
+  build_code_code_freeze = VERSION_CALCULATOR.next_release_version(version: release_version_current)
+  BUILD_CODE_FORMATTER.build_code(version: build_code_code_freeze)
+end
+
+# Returns the build code of the app for the code freeze.
+# It is the release version name with build number (last of the four components) set to 0.
+#
+def build_code_hotfix(release_version:)
+  version = VERSION_FORMATTER.parse(release_version)
+  BUILD_CODE_FORMATTER.build_code(version: version)
+end
+
+# Returns the next build code of the app
+#
+def build_code_next
+  # We use the four part (1.2.3.4) build code format, so the version calculator can be used to calculate the next four-part version
+  build_code_current = VERSION_FORMATTER.parse(PUBLIC_VERSION_FILE.read_build_code(attribute_name: 'VERSION_LONG'))
+  build_code_next = VERSION_CALCULATOR.next_build_number(version: build_code_current)
+  BUILD_CODE_FORMATTER.build_code(version: build_code_next)
+end
+
+
+#####################################################################################
+# Other utils
+#####################################################################################
+
+def require_env_vars!(*keys)
+  keys.each do |key|
+    UI.user_error!("Environment variable '#{key}' is not set.") unless ENV.key?(key)
+  end
 end

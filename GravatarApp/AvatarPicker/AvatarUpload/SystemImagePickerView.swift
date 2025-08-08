@@ -65,6 +65,9 @@ struct ImagePicker<Label>: View where Label: View {
                     })
             }
         )
+        .sensoryFeedback(.selection, trigger: presentPicker) { _, presentPicker in
+            presentPicker == true
+        }
     }
 
     func imageEditor(with item: ImagePickerItem) -> some View {

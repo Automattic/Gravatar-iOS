@@ -5,5 +5,3 @@ DEVELOPMENT_TEAM = PZYM8XX95Q
 // See https://github.com/Automattic/Gravatar-SDK-iOS/blob/71350ef7274a989ca2ed89c512f8b9dd99bc8c3d/Package.swift#L12
 SUPPORTED_PLATFORMS = iphoneos iphonesimulator xros xrsimulator
 
-MARKETING_VERSION = 1.0
-CURRENT_PROJECT_VERSION = 1

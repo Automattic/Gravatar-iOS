@@ -8,6 +8,7 @@ struct AvatarPickerView: View {
 
     @State private var avatarToDelete: AvatarImageModel?
     @State private var shareSheetItem: AvatarShareItem?
+    @State private var presentAccountDeletionWarning: Bool = false
 
     var headerAvatarURL: URL? {
         AvatarURL.preferredURL(for: avatarPickerModel.userSession.profile.hash)
@@ -70,6 +71,8 @@ struct AvatarPickerView: View {
             }
         })
         .avatarShareSheet(item: $shareSheetItem)
+        .sensoryFeedback(.error, trigger: avatarPickerModel.imageUploadErrorID)
+        .sensoryFeedback(.success, trigger: avatarPickerModel.imageUploadSuccessID)
     }
 
     func gridView() -> some View {
@@ -158,10 +161,16 @@ extension View {
 
 #if DEBUG
 #Preview {
-    AvatarPickerView(avatarPickerModel: .preview_init(avatars: [
-        .init(id: "1", source: .remote(url: ""), state: .loaded, isSelected: false, altText: ""),
-        .init(id: "2", source: .remote(url: ""), state: .loaded, isSelected: true, altText: ""),
-        .init(id: "3", source: .remote(url: ""), state: .loading, isSelected: false, altText: ""),
-    ]), onLogout: {})
+    let modalManager = ModalPresentationManager()
+    AvatarPickerView(
+        avatarPickerModel: .preview_init(avatars: [
+            .init(id: "1", source: .remote(url: ""), state: .loaded, isSelected: false, altText: ""),
+            .init(id: "2", source: .remote(url: ""), state: .loaded, isSelected: true, altText: ""),
+            .init(id: "3", source: .remote(url: ""), state: .loading, isSelected: false, altText: ""),
+        ]),
+        onLogout: {}
+    )
+    .modalPresentation(manager: modalManager)
+    .environmentObject(modalManager)
 }
 #endif

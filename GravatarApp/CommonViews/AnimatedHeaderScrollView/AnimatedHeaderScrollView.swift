@@ -59,8 +59,9 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
                 OffsetReaderView(scrollOffset: $scrollOffset)
                 VStack(alignment: .center) {
                     scrollableHeader(scrollableHeaderTopPadding)
-                        .contentHeightReader($scrollableHeaderHeight)
                         .ignoresSafeArea(.container, edges: .horizontal)
+                        .contentHeightReader($scrollableHeaderHeight)
+
                     content()
                 }
             }

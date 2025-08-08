@@ -26,6 +26,9 @@ class AvatarPickerViewModel: ObservableObject {
 
     let userSession: UserSession
 
+    var imageUploadErrorID: UUID?
+    var imageUploadSuccessID: UUID?
+
     @Published var selectedAvatarURL: URL?
     @Published private(set) var backendSelectedAvatarURL: URL?
     @Published private(set) var gridResponseStatus: Result<Void, Error>?
@@ -91,7 +94,7 @@ class AvatarPickerViewModel: ObservableObject {
 
         $selectedAvatarURL
             .removeDuplicates()
-            .dropFirst(2) // First value is nil, second value is the first time we load the URL, no need to `forceRefresh` for these cases.
+            .dropFirst(1) // First value is nil, no need to `forceRefresh` in that case.
             .sink { [weak self] _ in
                 self?.forceRefreshAvatar = true
             }
@@ -303,6 +306,7 @@ class AvatarPickerViewModel: ObservableObject {
                 self.selectedAvatarURL = URL(string: avatar.imageURL)
                 self.backendSelectedAvatarURL = URL(string: avatar.imageURL)
             }
+            imageUploadSuccessID = UUID()
         } catch ImageUploadError.responseError(reason: let .invalidHTTPStatusCode(response, errorPayload))
             where response.statusCode == HTTPStatus.badRequest.rawValue || response.statusCode == HTTPStatus.payloadTooLarge.rawValue
         {
@@ -353,6 +357,7 @@ class AvatarPickerViewModel: ObservableObject {
             altText: storedModel?.altText ?? ""
         )
         grid.replaceModel(withID: imageID, with: newModel)
+        imageUploadErrorID = UUID()
     }
 
     private func handleUnrecoverableClientError(_ error: Error) {

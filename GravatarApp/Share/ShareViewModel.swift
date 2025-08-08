@@ -88,7 +88,7 @@ class ShareViewModel: ObservableObject {
 
     func previewVCard() {
         Task {
-            let data = await getVCardWithAvatarData()
+            let data = await getVCard(withAvatarData: false)
             let url = getURL(for: data)
             Task { @MainActor in
                 contactPreviewURL = url
@@ -97,7 +97,7 @@ class ShareViewModel: ObservableObject {
     }
 
     func shareVCard() async {
-        let vCardString = await getVCardWithAvatarData()
+        let vCardString = await getVCard(withAvatarData: true)
         shareVCardURL = getURL(for: vCardString)
     }
 
@@ -108,8 +108,8 @@ class ShareViewModel: ObservableObject {
         return url
     }
 
-    private func getVCardWithAvatarData() async -> String {
-        let data = await fetchAvatarData()
+    private func getVCard(withAvatarData: Bool = true) async -> String {
+        let data = withAvatarData ? await fetchAvatarData() : nil
         let vCardModel = vcardModel(with: data)
         return vCardModel.generateVCard()
     }
