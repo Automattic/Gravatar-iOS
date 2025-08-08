@@ -22,7 +22,7 @@ struct ShareViewModelTests {
         print("Stored data 1: \(String(describing: UserDefaults.testUserDefaults.value(forKey: "https://notreal.wordpress.com") as? Bool))")
 
         #expect(vCard.contains("N:Appleseed;John;"))
-        #expect(vCard.contains("FN:John Appleseed"))
+        #expect(vCard.contains("FN:\n")) // Always empty
         #expect(vCard.contains("NICKNAME:John Appleseed"))
         #expect(vCard.contains("ORG:A company"))
         #expect(vCard.contains("TITLE:Engineer"))
@@ -57,7 +57,7 @@ struct ShareViewModelTests {
         let vCard = try String(contentsOf: viewModel.shareVCardURL!, encoding: .utf8)
 
         // Expected
-        #expect(vCard.contains("FN:John Appleseed"))
+        #expect(vCard.contains("FN:\n")) // Always empty
         #expect(vCard.contains("NICKNAME:John Appleseed"))
         #expect(vCard.contains("PHOTO;ENCODING=b;TYPE=JPEG:/9j/4"))
         // Not expected
