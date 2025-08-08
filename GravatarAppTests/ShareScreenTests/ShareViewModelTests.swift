@@ -84,6 +84,8 @@ struct ShareViewModelTests {
         let image = viewModel.qrCodeImage!.resizable().frame(width: 100, height: 100)
 
         assertSnapshots(of: image, as: [.image])
+
+        UserDefaults.deleteTestData(named: #function)
     }
 
     @Test("Test the qr code is generated correctly with minimal data")
@@ -106,6 +108,8 @@ struct ShareViewModelTests {
         let image = viewModel.qrCodeImage!.resizable().frame(width: 100, height: 100)
 
         assertSnapshots(of: image, as: [.image])
+
+        UserDefaults.deleteTestData(named: #function)
     }
 }
 
