@@ -41,7 +41,9 @@ final class URLSessionMock: URLSessionProtocol, @unchecked Sendable {
 
         if request.isProfilesRequest {
             return (Bundle.fullProfileJsonData, HTTPURLResponse.successResponse()) // Profile data
-        } else if request.isAvatarsRequest == true {
+        }
+
+        if request.isAvatarsRequest == true {
             if shouldFetchEmptyAvatarsGrid {
                 if let data = "[]".data(using: .utf8) {
                     return (data, HTTPURLResponse.successResponse())
@@ -49,6 +51,10 @@ final class URLSessionMock: URLSessionProtocol, @unchecked Sendable {
             } else {
                 return (Bundle.getAvatarsJsonData, HTTPURLResponse.successResponse()) // Avatars data
             }
+        }
+
+        if request.isGetAvatarRequest {
+            return (ImageHelper.testImageData, HTTPURLResponse.successResponse())
         }
 
         fatalError("Request not mocked: \(request.url?.absoluteString ?? "unknown request")")
@@ -109,6 +115,17 @@ extension URLRequest {
             return false
         }
         return self.httpBody.contains("email_hash")
+    }
+
+    fileprivate var isGetAvatarRequest: Bool {
+        guard
+            httpMethod == "GET",
+            value(forHTTPHeaderField: "Accept")?.contains("image/*") == true,
+            url?.absoluteString.contains("avatar") == true,
+            httpBody == nil
+        else { return false }
+
+        return true
     }
 }
 

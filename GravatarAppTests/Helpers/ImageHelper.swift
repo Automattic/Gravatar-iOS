@@ -22,7 +22,7 @@ enum ImageHelper {
     }
 
     static func dataFromImage(named: String, type: String) -> Data? {
-        guard let url = Bundle.main.url(forResource: named, withExtension: type) else {
+        guard let url = Bundle.testsBundle.url(forResource: named, withExtension: type) else {
             return nil
         }
         var data: Data? = nil
