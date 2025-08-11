@@ -47,6 +47,16 @@ struct WelcomeView: View {
             actions: { _ in },
             message: { error in Text(error) }
         )
+        .alert(
+            String.genericErrorTitle,
+            isPresented: .init(
+                get: { viewModel.oauthAlertErrorMessage != nil },
+                set: { present in present ? () : (viewModel.oauthAlertErrorMessage = nil) }
+            ),
+            presenting: viewModel.oauthAlertErrorMessage,
+            actions: { _ in },
+            message: { errorMessage in Text(errorMessage) }
+        )
     }
 
     private func rootView(userSession: UserSession) -> some View {
@@ -91,7 +101,9 @@ struct WelcomeView: View {
 
     @ViewBuilder
     var errorsSection: some View {
-        if let error = viewModel.oauthError {
+        if viewModel.noInernetConnection {
+            errorView(title: .noInternetErrorTitle, subtitle: .noInternetErrorMessage)
+        } else if let error = viewModel.oauthError {
             errorView(with: error)
         } else if let error = viewModel.profileFetchingError {
             errorView(with: error)
@@ -133,6 +145,7 @@ struct WelcomeView: View {
 
     var loginButton: some View {
         Button {
+            viewModel.trackLoginButtonTap()
             Task {
                 if viewModel.profileFetchingError != nil, let token = viewModel.localAccessToken {
                     await viewModel.fetchProfile(with: token)
@@ -143,11 +156,9 @@ struct WelcomeView: View {
         } label: {
             if viewModel.profileFetchingError == nil {
                 Text(verbatim: .loginButtonTitle)
-                    .transition(.offset(y: -44).combined(with: .opacity))
                     .frame(maxWidth: .infinity)
             } else {
                 Text(verbatim: .tryAgainButtonTitle)
-                    .transition(.offset(y: 44).combined(with: .opacity))
                     .frame(maxWidth: .infinity)
             }
         }
@@ -157,9 +168,10 @@ struct WelcomeView: View {
             }
         }
         .padding(.vertical, 12)
-        .background(viewModel.isLoading ? Color(uiColor: .systemFill) : Color.DS.bluishColor)
+        .background(viewModel.isLoading || viewModel.noInernetConnection ? Color(uiColor: .systemFill) : Color.DS.bluishColor)
         .foregroundStyle(Color.white)
         .clipShape(.capsule)
+        .disabled(viewModel.isLoading || viewModel.noInernetConnection)
     }
 
     @ViewBuilder
@@ -230,6 +242,24 @@ extension String {
         "Welcome.Error.DeleteAccount.title",
         value: "Error deleting account.",
         comment: "Title for the error when account deletion fails"
+    )
+
+    static let genericErrorTitle = NSLocalizedString(
+        "Welcome.Error.title",
+        value: "Error",
+        comment: "Title for the generic error alert"
+    )
+
+    static let noInternetErrorTitle = NSLocalizedString(
+        "Welcome.Error.NoInternet.title",
+        value: "No internet connection detected",
+        comment: "Title for the generic error alert"
+    )
+
+    static let noInternetErrorMessage = NSLocalizedString(
+        "Welcome.Error.NoInternet.message",
+        value: "Please check your connection before proceeding.",
+        comment: "Title for the generic error alert"
     )
 }
 
