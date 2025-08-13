@@ -78,11 +78,7 @@ struct AvatarPickerAvatarView: View {
             selectedCheckmarkView()
         }
         AvatarActionsMenu(isAvatarSelected: avatarSelected, labelTapAction: tapAction) {
-            Button {
-                print("Grid item tapped")
-            } label: {
-                Color.clear
-            }
+            Color.clear
         } onActionSelected: { action in
             onActionSelected(action)
         }
