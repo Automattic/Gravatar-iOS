@@ -1,14 +1,27 @@
 import Gravatar
 import SwiftData
 import SwiftUI
+import Analytics
 
 private enum RootTabItem: Int {
     case gravatar = 0
     case profile
-    case share
+    case qr
+    
+    var tapEvent: AnalyticsEvent {
+        switch self {
+        case .gravatar:
+            WelcomeScreenEvent.tabGravatarTapped
+        case .profile:
+            WelcomeScreenEvent.tabProfileTapped
+        case .qr:
+            WelcomeScreenEvent.tabQRTapped
+        }
+    }
 }
 
 struct RootTabView: View {
+    @Environment(\.analytics) var analytics
     @StateObject private var avatarPickerViewModel: AvatarPickerViewModel
     @StateObject private var editProfileViewModel: EditProfileViewModel
     @StateObject private var shareViewModel: ShareViewModel
@@ -65,6 +78,9 @@ struct RootTabView: View {
         .sensoryFeedback(.success, trigger: toastManager.toasts) { _, toasts in
             toasts.first { $0.type == .info } != nil
         }
+        .onChange(of: selectedTab) {_, newValue in
+            analytics.track(newValue.tapEvent)
+        }
     }
 }
 
@@ -115,7 +131,7 @@ struct ShareTab: View {
         .tabItem {
             Label(Localized.shareTabTitle, image: .shareTab)
         }
-        .tag(RootTabItem.share)
+        .tag(RootTabItem.qr)
     }
 }
 
