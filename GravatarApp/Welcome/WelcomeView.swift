@@ -5,6 +5,7 @@ import SwiftUI
 
 struct WelcomeView: View {
     @ObservedObject private var viewModel: WelcomeViewModel
+    @Environment(\.analytics) var analytics
 
     init(viewModel: WelcomeViewModel, userDefaults: UserDefaults = .standard) {
         _viewModel = .init(wrappedValue: viewModel)
@@ -22,6 +23,9 @@ struct WelcomeView: View {
         }
         .modelContext(viewModel.context)
         .onAppear {
+            if !viewModel.hasUserSession {
+                analytics.track(AppEvent.screenView(screen: .login))
+            }
             viewModel.softLogin()
         }
         .onReceive(NotificationCenter.default.publisher(for: .sessionExpired)) { _ in
@@ -145,7 +149,7 @@ struct WelcomeView: View {
 
     var loginButton: some View {
         Button {
-            viewModel.trackLoginButtonTap()
+            analytics.track(WelcomeScreenEvent.loginButtonTapped)
             Task {
                 if viewModel.profileFetchingError != nil, let token = viewModel.localAccessToken {
                     await viewModel.fetchProfile(with: token)

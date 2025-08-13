@@ -51,10 +51,6 @@ class WelcomeViewModel: ObservableObject {
         }.store(in: &cancellables)
     }
 
-    func trackLoginButtonTap() {
-        analytics.track(WelcomeScreenEvent.loginButtonPressed)
-    }
-
     func fetchProfile(with token: String) async {
         defer {
             isLoading = false
@@ -64,7 +60,7 @@ class WelcomeViewModel: ObservableObject {
             analytics.track(WelcomeScreenEvent.profileFetchStart)
             let profile = try await profileService.fetchOwnProfile(token: token)
             analytics.track(WelcomeScreenEvent.profileFetchSuccess)
-            configureSession(profile: profile, accessToken: token)
+            await configureSession(profile: profile, accessToken: token)
             cleanAllErrors()
         } catch {
             if let error = error as? APIError { // Always the case (we need typed throws from the SDK)
@@ -77,12 +73,10 @@ class WelcomeViewModel: ObservableObject {
         }
     }
 
-    private func configureSession(profile: Profile, accessToken: String) {
+    private func configureSession(profile: Profile, accessToken: String) async {
         self.oauthManager.saveToken(AccessToken(token: accessToken), withKey: profile.hash)
 
-        Task {
-            await analytics.setUserName(profile.userLogin)
-        }
+        await analytics.setUserName(profile.userLogin)
         userDefaults.set(profile.hash, forKey: .Gravatar.currentUserKey)
 
         if let userSession {
@@ -118,6 +112,11 @@ class WelcomeViewModel: ObservableObject {
         Task {
             await fetchProfile(with: accessToken)
         }
+    }
+
+    var hasUserSession: Bool {
+        guard let currentUserHash = userDefaults.string(forKey: .Gravatar.currentUserKey) else { return false }
+        return oauthManager.sessionToken(with: currentUserHash)?.token != nil
     }
 
     func logout() async {

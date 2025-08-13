@@ -1,5 +1,6 @@
 {
     "hash": "somehash",
+    "user_login" : "johnappleseed",
     "display_name": "John Appleseed",
     "profile_url": "https://gravatar.com/notreal",
     "avatar_url": "https://2.gravatar.com/avatar/hashhash",

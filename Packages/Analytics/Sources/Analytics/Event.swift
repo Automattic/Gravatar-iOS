@@ -1,6 +1,6 @@
 import Foundation
 
-public typealias EventProperties = (any Encodable & Sendable)
+public typealias EventProperties = (Encodable & Sendable)
 
 public protocol AnalyticsEvent: Sendable {
     var name: String { get }

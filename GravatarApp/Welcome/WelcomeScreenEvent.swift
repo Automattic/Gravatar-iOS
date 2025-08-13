@@ -2,7 +2,7 @@ import Analytics
 import Foundation
 
 enum WelcomeScreenEvent {
-    static let loginButtonPressed: AnalyticsEvent = LoginButtonPressed()
+    static let loginButtonTapped: AnalyticsEvent = LoginButtonTapped()
 
     static let oauthStart: AnalyticsEvent = OAuthStart()
     static let oauthSuccess: AnalyticsEvent = OAuthSuccess()
@@ -17,8 +17,8 @@ enum WelcomeScreenEvent {
     }
 }
 
-private struct LoginButtonPressed: AnalyticsEvent {
-    let name: String = "login_button_pressed"
+private struct LoginButtonTapped: AnalyticsEvent {
+    let name: String = "login_button_tapped"
     let properties: EventProperties? = nil
 }
 
@@ -33,7 +33,7 @@ private struct OAuthSuccess: AnalyticsEvent {
 }
 
 private struct OAuthError: AnalyticsEvent {
-    struct Properties: Encodable, Sendable {
+    struct Properties: EventProperties {
         let error: String
     }
 
@@ -52,7 +52,7 @@ private struct ProfileFetchSuccess: AnalyticsEvent {
 }
 
 private struct ProfileFetchError: AnalyticsEvent {
-    struct Properties: Encodable, Sendable {
+    struct Properties: EventProperties {
         let error: String
     }
 

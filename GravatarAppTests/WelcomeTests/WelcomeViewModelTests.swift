@@ -1,4 +1,4 @@
-import Analytics
+@testable import Analytics
 import Foundation
 import Gravatar
 @testable import GravatarApp
@@ -11,6 +11,7 @@ final class WelcomeViewModelTests {
     let container = ModelContext.testContainer
     let profileService = TestProfileService()
     let oauthSession = TestOAuthSession(callbackURL: URL(string: "https://some.com")!)
+    let tracker = TrackerMock()
 
     lazy var oauthManager = OAuthManager(
         authenticationSession: oauthSession,
@@ -21,12 +22,13 @@ final class WelcomeViewModelTests {
     lazy var model = WelcomeViewModel(
         oauthManager: oauthManager,
         userDefaults: .testUserDefaults,
+        analytics: Analytics(tracker: tracker, userUUIDStorage: UserUUIDStorageMock()),
         profileService: profileService,
         context: container.mainContext
     )
 
     init() async throws {
-        Analytics.setPushEventsToRemote(false)
+        Analytics.setPushEventsToRemote(true)
         UserDefaults.deleteTestData()
     }
 
@@ -37,6 +39,12 @@ final class WelcomeViewModelTests {
         #expect(model.userSession != nil)
         #expect(model.userSession?.profile.fullName == "John Appleseed")
         #expect(model.userSession?.accessToken == "token")
+
+        #expect(tracker.tracked(event: WelcomeScreenEvent.oauthStart))
+        #expect(tracker.tracked(event: WelcomeScreenEvent.oauthSuccess))
+        #expect(tracker.tracked(event: WelcomeScreenEvent.profileFetchStart))
+        #expect(tracker.tracked(event: WelcomeScreenEvent.profileFetchSuccess))
+        #expect(tracker.userName != nil)
     }
 
     @Test("Logout should reset user session")
@@ -46,10 +54,12 @@ final class WelcomeViewModelTests {
         #expect(model.userSession != nil)
         #expect(model.userSession?.profile.fullName == "John Appleseed")
         #expect(model.userSession?.accessToken == "token")
+        #expect(tracker.userName != nil)
 
         await model.logout()
 
         #expect(model.userSession == nil)
+        #expect(tracker.userName == nil)
     }
 
     @Test("Soft login should succeed")
@@ -68,6 +78,10 @@ final class WelcomeViewModelTests {
         #expect(model.userSession != nil)
         #expect(model.userSession?.profile.fullName == "John Appleseed")
         #expect(model.userSession?.accessToken == "token")
+
+        // Don't track oauth success on soft login. Expected 1 event from requestOAuthToken()
+        #expect(tracker.tracked(event: WelcomeScreenEvent.oauthSuccess, count: 1))
+        #expect(tracker.tracked(event: WelcomeScreenEvent.profileFetchSuccess, count: 1))
     }
 
     @Test("Oauth error should not create user session")
@@ -79,6 +93,9 @@ final class WelcomeViewModelTests {
         #expect(model.userSession == nil)
         #expect(model.oauthError != nil)
         #expect(model.profileFetchingError == nil)
+
+        #expect(tracker.tracked(event: WelcomeScreenEvent.oauthError(error: "")))
+        #expect(tracker.tracked(event: WelcomeScreenEvent.oauthSuccess, count: 0))
     }
 
     @Test("Oauth error clears after successful login")
@@ -108,6 +125,9 @@ final class WelcomeViewModelTests {
         #expect(model.userSession == nil)
         #expect(model.profileFetchingError != nil)
         #expect(model.oauthError == nil)
+
+        #expect(tracker.tracked(event: WelcomeScreenEvent.profileFetchError(error: "")))
+        #expect(tracker.tracked(event: WelcomeScreenEvent.profileFetchSuccess, count: 0))
     }
 
     @Test("Profile error clears after successful profile request")
