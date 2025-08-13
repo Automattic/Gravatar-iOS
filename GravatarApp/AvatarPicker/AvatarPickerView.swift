@@ -3,6 +3,7 @@ import Gravatar
 import SwiftUI
 
 struct AvatarPickerView: View {
+    @Environment(\.analytics) var analytics
     @ObservedObject var avatarPickerModel: AvatarPickerViewModel
     let onLogout: () -> Void
 
@@ -73,6 +74,12 @@ struct AvatarPickerView: View {
         .avatarShareSheet(item: $shareSheetItem)
         .sensoryFeedback(.error, trigger: avatarPickerModel.imageUploadErrorID)
         .sensoryFeedback(.success, trigger: avatarPickerModel.imageUploadSuccessID)
+        .onAppear() {
+            analytics.track(AvatarPickerViewEvents.screenView)
+        }
+        .onDisappear() {
+            analytics.track(AvatarPickerViewEvents.screenLeave)
+        }
     }
 
     func gridView() -> some View {
