@@ -1,13 +1,13 @@
+import Analytics
 import Gravatar
 import SwiftData
 import SwiftUI
-import Analytics
 
 private enum RootTabItem: Int {
     case gravatar = 0
     case profile
     case qr
-    
+
     var tapEvent: AnalyticsEvent {
         switch self {
         case .gravatar:
@@ -78,7 +78,7 @@ struct RootTabView: View {
         .sensoryFeedback(.success, trigger: toastManager.toasts) { _, toasts in
             toasts.first { $0.type == .info } != nil
         }
-        .onChange(of: selectedTab) {_, newValue in
+        .onChange(of: selectedTab) { _, newValue in
             analytics.track(newValue.tapEvent)
         }
     }

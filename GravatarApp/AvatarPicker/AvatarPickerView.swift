@@ -74,10 +74,10 @@ struct AvatarPickerView: View {
         .avatarShareSheet(item: $shareSheetItem)
         .sensoryFeedback(.error, trigger: avatarPickerModel.imageUploadErrorID)
         .sensoryFeedback(.success, trigger: avatarPickerModel.imageUploadSuccessID)
-        .onAppear() {
+        .onAppear {
             analytics.track(AvatarPickerViewEvents.screenView)
         }
-        .onDisappear() {
+        .onDisappear {
             analytics.track(AvatarPickerViewEvents.screenLeave)
         }
     }
