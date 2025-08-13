@@ -6,6 +6,7 @@ import SwiftUI
 struct WelcomeView: View {
     @ObservedObject private var viewModel: WelcomeViewModel
     @Environment(\.analytics) var analytics
+    @State private var hasSessionOnAppear = false
 
     init(viewModel: WelcomeViewModel, userDefaults: UserDefaults = .standard) {
         _viewModel = .init(wrappedValue: viewModel)
@@ -23,9 +24,6 @@ struct WelcomeView: View {
         }
         .modelContext(viewModel.context)
         .onAppear {
-            if !viewModel.hasUserSession {
-                analytics.track(AppEvent.screenView(screen: .login))
-            }
             viewModel.softLogin()
         }
         .onReceive(NotificationCenter.default.publisher(for: .sessionExpired)) { _ in
@@ -87,6 +85,17 @@ struct WelcomeView: View {
             .padding(.bottom, .Global.contentBottomPadding)
             .padding(.horizontal, .Global.contentHorizontalPadding)
             .readableContentWidth()
+        }
+        .onAppear {
+            hasSessionOnAppear = viewModel.hasUserSession
+            if !hasSessionOnAppear {
+                analytics.track(AppEvent.screenView(screen: .login))
+            }
+        }
+        .onDisappear {
+            if !hasSessionOnAppear {
+                analytics.track(AppEvent.screenLeave(screen: .login))
+            }
         }
     }
 
