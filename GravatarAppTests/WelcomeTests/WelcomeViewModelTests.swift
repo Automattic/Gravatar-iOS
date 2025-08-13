@@ -94,7 +94,7 @@ final class WelcomeViewModelTests {
         #expect(model.oauthError != nil)
         #expect(model.profileFetchingError == nil)
 
-        #expect(tracker.tracked(event: WelcomeScreenEvent.oauthError(error: "")))
+        #expect(tracker.tracked(event: WelcomeScreenEvent.oauthCancelled))
         #expect(tracker.tracked(event: WelcomeScreenEvent.oauthSuccess, count: 0))
     }
 
