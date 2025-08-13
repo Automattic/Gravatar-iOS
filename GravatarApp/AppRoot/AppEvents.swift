@@ -20,6 +20,6 @@ enum AppEvent {
     }
 }
 
-private struct ScreenEventProperties: Encodable, Sendable {
+private struct ScreenEventProperties: EventProperties {
     let screen: AppEvent.Screens
 }
