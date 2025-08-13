@@ -117,21 +117,26 @@ extension CGFloat {
     AvatarPickerAvatarView(avatar: avatar, maxSize: 90, minSize: 80) {
         false
     } avatarUploadErrorAction: { _ in
-    } onActionSelected: { _ in } tapAction: {}
+    } onActionSelected: { _ in
+    } tapAction: {}
     AvatarPickerAvatarView(avatar: avatar, maxSize: 90, minSize: 80) {
         true
     } avatarUploadErrorAction: { _ in
-    } onActionSelected: { _ in } tapAction: {}
+    } onActionSelected: { _ in
+    } tapAction: {}
     AvatarPickerAvatarView(avatar: avatarLoading, maxSize: 90, minSize: 80) {
         true
     } avatarUploadErrorAction: { _ in
-    } onActionSelected: { _ in } tapAction: {}
+    } onActionSelected: { _ in
+    } tapAction: {}
     AvatarPickerAvatarView(avatar: avatarError, maxSize: 90, minSize: 80) {
         true
     } avatarUploadErrorAction: { _ in
-    } onActionSelected: { _ in } tapAction: {}
+    } onActionSelected: { _ in
+    } tapAction: {}
     AvatarPickerAvatarView(avatar: avatarErrorNoRetry, maxSize: 90, minSize: 80) {
         true
     } avatarUploadErrorAction: { _ in
-    } onActionSelected: { _ in } tapAction: {}
+    } onActionSelected: { _ in
+    } tapAction: {}
 }
