@@ -173,11 +173,15 @@ class WelcomeViewModel: ObservableObject {
             analytics.track(WelcomeScreenEvent.oauthSuccess)
             await fetchProfile(with: token)
         } catch {
-            analytics.track(WelcomeScreenEvent.oauthError(error: error.errorDescription))
-            if error.isAssociatedDomainError {
+            switch error {
+            case let error where error.isAccessDenied || error.isCancelled:
+                analytics.track(WelcomeScreenEvent.oauthCanceled)
+            case let error where error.isAssociatedDomainError:
                 oauthAlertErrorMessage = Localized.secureLoginErrorMessage
-            } else if !(error.isAccessDenied || error.isCancelled) {
+                analytics.track(WelcomeScreenEvent.oauthError(error: error.errorDescription))
+            default:
                 oauthAlertErrorMessage = error.errorDescription
+                analytics.track(WelcomeScreenEvent.oauthError(error: error.errorDescription))
             }
             withAnimation {
                 self.oauthError = error
