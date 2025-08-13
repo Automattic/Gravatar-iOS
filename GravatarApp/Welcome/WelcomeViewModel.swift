@@ -175,7 +175,7 @@ class WelcomeViewModel: ObservableObject {
         } catch {
             switch error {
             case let error where error.isAccessDenied || error.isCancelled:
-                analytics.track(WelcomeScreenEvent.oauthCanceled)
+                analytics.track(WelcomeScreenEvent.oauthCancelled)
             case let error where error.isAssociatedDomainError:
                 oauthAlertErrorMessage = Localized.secureLoginErrorMessage
                 analytics.track(WelcomeScreenEvent.oauthError(error: error.errorDescription))

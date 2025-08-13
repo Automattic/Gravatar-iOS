@@ -5,7 +5,7 @@ enum WelcomeScreenEvent {
     static let loginButtonTapped: AnalyticsEvent = LoginButtonTapped()
 
     static let oauthStart: AnalyticsEvent = OAuthStart()
-    static let oauthCanceled: AnalyticsEvent = OAuthCanceled()
+    static let oauthCancelled: AnalyticsEvent = OAuthCancelled()
     static let oauthSuccess: AnalyticsEvent = OAuthSuccess()
     static func oauthError(error: String) -> AnalyticsEvent {
         OAuthError(properties: OAuthError.Properties(error: error))
@@ -42,8 +42,8 @@ private struct OAuthError: AnalyticsEvent {
     let properties: EventProperties?
 }
 
-private struct OAuthCanceled: AnalyticsEvent {
-    let name: String = "oauth_canceled"
+private struct OAuthCancelled: AnalyticsEvent {
+    let name: String = "oauth_cancelled"
     let properties: EventProperties? = nil
 }
 
