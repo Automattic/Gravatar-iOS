@@ -5,6 +5,8 @@ import SwiftUI
 
 struct WelcomeView: View {
     @ObservedObject private var viewModel: WelcomeViewModel
+    @Environment(\.analytics) var analytics
+    @State private var hasSessionOnAppear = false
 
     init(viewModel: WelcomeViewModel, userDefaults: UserDefaults = .standard) {
         _viewModel = .init(wrappedValue: viewModel)
@@ -84,6 +86,17 @@ struct WelcomeView: View {
             .padding(.horizontal, .Global.contentHorizontalPadding)
             .readableContentWidth()
         }
+        .onAppear {
+            hasSessionOnAppear = viewModel.hasUserSession
+            if !hasSessionOnAppear {
+                analytics.track(AppEvent.screenView(screen: .login))
+            }
+        }
+        .onDisappear {
+            if !hasSessionOnAppear {
+                analytics.track(AppEvent.screenLeave(screen: .login))
+            }
+        }
     }
 
     @ViewBuilder
@@ -145,7 +158,7 @@ struct WelcomeView: View {
 
     var loginButton: some View {
         Button {
-            viewModel.trackLoginButtonTap()
+            analytics.track(WelcomeScreenEvent.loginButtonTapped)
             Task {
                 if viewModel.profileFetchingError != nil, let token = viewModel.localAccessToken {
                     await viewModel.fetchProfile(with: token)
