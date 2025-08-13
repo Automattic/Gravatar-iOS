@@ -98,7 +98,8 @@ struct AvatarPickerView: View {
             AvatarGrid(
                 grid: avatarPickerModel.grid,
                 onAvatarActionSelected: avatarAction,
-                avatarUploadErrorAction: avatarUploadErrorAction
+                avatarUploadErrorAction: avatarUploadErrorAction,
+                gridItemTapAction: gridItemTapAction
             )
         }
         .appPadding()
@@ -134,6 +135,10 @@ struct AvatarPickerView: View {
                 await avatarPickerModel.retryUpload(of: avatarID)
             }
         }
+    }
+
+    private func gridItemTapAction() {
+        analytics.track(AvatarPickerViewEvents.avatarsGridItemTapped)
     }
 
     enum Localized {

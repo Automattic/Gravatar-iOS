@@ -2,6 +2,7 @@ import SwiftUI
 
 struct AvatarActionsMenu<Label>: View where Label: View {
     let isAvatarSelected: Bool
+    let labelTapAction: (() -> Void)?
     let label: () -> Label
     let onActionSelected: (AvatarAction) -> Void
 
@@ -11,23 +12,29 @@ struct AvatarActionsMenu<Label>: View where Label: View {
 
     func actionsMenu(isSelected: Bool, label: () -> Label) -> some View {
         Menu {
-            Section {
-                if !isSelected {
-                    button(for: .select)
-                }
-                button(for: .share)
-                // TODO: We might use this soon, so keeping it commented for now
-                /**
-                  if #available(iOS 18.2, *) {
-                      if EnvironmentValues().supportsImagePlayground {
-                          button(for: .playground)
+            Group {
+                Section {
+                    if !isSelected {
+                        button(for: .select)
+                    }
+                    button(for: .share)
+                    // TODO: We might use this soon, so keeping it commented for now
+                    /**
+                      if #available(iOS 18.2, *) {
+                          if EnvironmentValues().supportsImagePlayground {
+                              button(for: .playground)
+                          }
                       }
-                  }
-                  button(for: .altText)
-                 */
+                      button(for: .altText)
+                     */
+                }
+
+                Section {
+                    button(for: .delete)
+                }
             }
-            Section {
-                button(for: .delete)
+            .onAppear {
+                labelTapAction?()
             }
         } label: {
             label()
