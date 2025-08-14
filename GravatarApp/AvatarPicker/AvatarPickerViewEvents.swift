@@ -12,7 +12,6 @@ enum AvatarPickerViewEvents {
     static let avatarsAIButtonTapped: AnalyticsEvent = CommonAnalyticsEvent(name: "avatars_ai_button_tapped")
     static let imageToUploadSelected: AnalyticsEvent = CommonAnalyticsEvent(name: "avatar_image_to_upload_selected")
 
-
     static let avatarsActionSelected: AnalyticsEvent = CommonAnalyticsEvent(name: "avatar_action_select")
     static let avatarsActionShare: AnalyticsEvent = CommonAnalyticsEvent(name: "avatar_action_share")
 
@@ -22,12 +21,14 @@ enum AvatarPickerViewEvents {
             properties: AvatarDeleteProperties(isSelected: isSelected)
         )
     }
+
     static func avatarsActionDeleteWarningAccepted(isSelected: Bool) -> AnalyticsEvent {
         CommonAnalyticsEvent(
             name: "avatar_action_delete_warning_accepted",
             properties: AvatarDeleteProperties(isSelected: isSelected)
         )
     }
+
     static func avatarsActionDeleteWarningCancelled(isSelected: Bool) -> AnalyticsEvent {
         CommonAnalyticsEvent(
             name: "avatar_action_delete_warning_cancelled",
