@@ -22,6 +22,7 @@ class AvatarPickerViewSnapshotTests {
         let view = AvatarPickerView(avatarPickerModel: viewModel, onLogout: {})
             .environment(\.analytics, Analytics.test)
             .frame(width: ViewImageConfig.iPhone13Pro.size?.width ?? 0, height: ViewImageConfig.iPhone13Pro.size?.height ?? 0)
+            .transaction { $0.animation = nil }
         assertSnapshots(
             of: view,
             as: [
@@ -40,6 +41,7 @@ class AvatarPickerViewSnapshotTests {
         let view = AvatarPickerView(avatarPickerModel: viewModel, onLogout: {})
             .environment(\.analytics, Analytics.test)
             .frame(width: ViewImageConfig.iPhone13Pro.size?.width ?? 0, height: ViewImageConfig.iPhone13Pro.size?.height ?? 0)
+            .transaction { $0.animation = nil }
         assertSnapshots(
             of: view,
             as: [
@@ -56,6 +58,7 @@ class AvatarPickerViewSnapshotTests {
         let view = AvatarPickerView(avatarPickerModel: viewModel, onLogout: {})
             .environment(\.analytics, Analytics.test)
             .frame(width: ViewImageConfig.iPhone13Pro.size?.width ?? 0, height: ViewImageConfig.iPhone13Pro.size?.height ?? 0)
+            .transaction { $0.animation = nil }
         assertSnapshots(
             of: view,
             as: [
@@ -79,6 +82,7 @@ class AvatarPickerViewSnapshotTests {
         let view = AvatarPickerView(avatarPickerModel: viewModel, onLogout: {})
             .environment(\.analytics, Analytics.test)
             .frame(width: ViewImageConfig.iPhone13Pro.size?.width ?? 0, height: ViewImageConfig.iPhone13Pro.size?.height ?? 0)
+            .transaction { $0.animation = nil }
         assertSnapshots(
             of: view,
             as: [
