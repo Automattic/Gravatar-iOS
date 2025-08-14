@@ -1,3 +1,4 @@
+import Analytics
 import Foundation
 @testable import GravatarApp
 import SnapshotTesting
@@ -12,6 +13,7 @@ struct AboutModalTests {
         let modalManager = ModalPresentationManager()
         modalManager.present {
             AboutView()
+                .environment(\.analytics, Analytics.test)
         }
 
         let view = Color.clear
