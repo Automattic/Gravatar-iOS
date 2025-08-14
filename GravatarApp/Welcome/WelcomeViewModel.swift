@@ -98,6 +98,12 @@ class WelcomeViewModel: ObservableObject {
     }
 
     func softLogin() {
+        // TEMPORARY FOR TESTING!
+        Task {
+            print("PURPOSELY CRASHING!")
+            await GravatarCrashLogger.shared.crash()
+        }
+
         guard
             let currentUserHash = userDefaults.string(forKey: .Gravatar.currentUserKey),
             let accessToken = oauthManager.sessionToken(with: currentUserHash)?.token

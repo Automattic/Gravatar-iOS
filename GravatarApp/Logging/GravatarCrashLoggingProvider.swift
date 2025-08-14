@@ -17,6 +17,11 @@ actor GravatarCrashLogger {
             print("⚠️ Crash logging failed to start: \(error)")
         }
     }
+
+    // TEMPORARY TEST
+    func crash() {
+        self.crashLogging.crash()
+    }
 }
 
 struct GravatarCrashLoggingDataProvider: CrashLoggingDataProvider {
