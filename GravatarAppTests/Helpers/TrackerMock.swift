@@ -1,4 +1,4 @@
-import Analytics
+@testable import Analytics
 
 class UserUUIDStorageMock: UserUUIDStorage {
     var uuid: String?
@@ -37,4 +37,8 @@ final class TrackerMock: Tracker, @unchecked Sendable {
     func tracked(event: AnalyticsEvent, with properties: [String: AnyHashable], count: Int = 1) -> Bool {
         trackedEvents.filter { event.name == $0.name && $0.properties == properties }.count == count
     }
+}
+
+extension Analytics {
+    static let test = Analytics(tracker: TrackerMock(), userUUIDStorage: UserUUIDStorageMock())
 }

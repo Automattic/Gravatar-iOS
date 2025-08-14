@@ -59,11 +59,10 @@ struct AvatarPickerView: View {
                         Spacer()
                     }
                 }
-            } buttonMenuItems: {
-                MainMenuOptions(profile: avatarPickerModel.userSession.profile)
-                    .onAppear {
-                        analytics.track(AvatarPickerViewEvents.mainMenuTapped)
-                    }
+            } mainMenuButton: {
+                MainMenu(profile: avatarPickerModel.userSession.profile) {
+                    analytics.track(AvatarPickerViewEvents.mainMenuTapped)
+                }
             } onRefresh: {
                 await avatarPickerModel.refresh()
                 avatarPickerModel.forceRefreshAvatar = true
