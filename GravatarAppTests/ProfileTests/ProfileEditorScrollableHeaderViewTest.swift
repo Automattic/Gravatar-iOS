@@ -13,7 +13,8 @@ struct ProfileEditorScrollableHeaderViewTest {
             profile: .full,
             topPadding: 0,
             imageURL: nil,
-            forceRefresh: .constant(false)
+            forceRefresh: .constant(false),
+            onProfileButtonTapped: {}
         )
         .fixedSize(horizontal: false, vertical: true)
         .frame(width: ViewImageConfig.iPhone13Pro.size?.width ?? 0)
@@ -39,7 +40,8 @@ struct ProfileEditorScrollableHeaderViewTest {
                 profile: profile,
                 topPadding: 0,
                 imageURL: nil,
-                forceRefresh: .constant(false)
+                forceRefresh: .constant(false),
+                onProfileButtonTapped: {}
             )
         }
         .frame(width: ViewImageConfig.iPhone13Pro.size?.width ?? 0, height: 350)
