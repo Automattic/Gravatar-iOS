@@ -112,12 +112,15 @@ struct AvatarPickerView: View {
     private func avatarAction(avatar: AvatarImageModel, action: AvatarAction) {
         switch action {
         case .select:
+            analytics.track(AvatarPickerViewEvents.avatarsActionSelected)
             Task {
                 _ = await avatarPickerModel.selectAvatar(with: avatar.id)
             }
         case .delete:
+            analytics.track(AvatarPickerViewEvents.avatarsActionDelete)
             avatarToDelete = avatar
         case .share:
+            analytics.track(AvatarPickerViewEvents.avatarsActionShare)
             Task {
                 if let fileURL = await avatarPickerModel.fetchAndSaveToFile(avatar: avatar) {
                     shareSheetItem = AvatarShareItem(id: avatar.id, fileURL: fileURL)
