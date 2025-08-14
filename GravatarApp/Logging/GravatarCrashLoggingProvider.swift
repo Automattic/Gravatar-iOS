@@ -39,7 +39,7 @@ struct GravatarCrashLoggingDataProvider: CrashLoggingDataProvider {
     var buildType: String {
         #if DEBUG
         return "debug"
-        #elseif ENTERPRISE
+        #elseif PROTOTYPE
         return "prototype"
         #else
         return "release"
