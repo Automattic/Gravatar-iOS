@@ -12,28 +12,18 @@ enum AppEvent {
     }
 
     static func screenView(screen: AppEvent.Screens) -> AnalyticsEvent {
-        ScreenView(properties: ScreenView.Properties(screen: screen))
+        CommonAnalyticsEvent(name: "screen_view", properties: ScreenEventProperties(screen: screen))
     }
 
     static func screenLeave(screen: AppEvent.Screens) -> AnalyticsEvent {
-        ScreenLeave(properties: ScreenView.Properties(screen: screen))
+        CommonAnalyticsEvent(name: "screen_leave", properties: ScreenEventProperties(screen: screen))
+    }
+
+    static func mainMenuTapped(screen: AppEvent.Screens) -> AnalyticsEvent {
+        CommonAnalyticsEvent(name: "mainmenu_tapped", properties: ScreenEventProperties(screen: screen))
     }
 }
 
-private struct ScreenView: AnalyticsEvent {
-    struct Properties: EventProperties {
-        let screen: AppEvent.Screens
-    }
-
-    let name: String = "screen_view"
-    let properties: EventProperties?
-}
-
-private struct ScreenLeave: AnalyticsEvent {
-    struct Properties: EventProperties {
-        let screen: AppEvent.Screens
-    }
-
-    let name: String = "screen_leave"
-    let properties: EventProperties?
+private struct ScreenEventProperties: EventProperties {
+    let screen: AppEvent.Screens
 }

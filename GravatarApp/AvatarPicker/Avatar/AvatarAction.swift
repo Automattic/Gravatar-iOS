@@ -18,19 +18,26 @@ enum AvatarAction: Identifiable {
         }
     }
 
-    var icon: Image {
+    var icon: String {
         switch self {
         case .select:
-            Image(systemName: "checkmark.circle")
+            "checkmark.circle"
         case .delete:
-            Image(systemName: "trash")
+            "trash"
         case .share:
-            Image(systemName: "square.and.arrow.up")
+            "square.and.arrow.up"
         case .playground:
-            Image(systemName: "apple.image.playground")
+            "apple.image.playground"
             /* case .altText:
                  Image(systemName: "text.below.photo")
              */
+        }
+    }
+
+    var attribures: UIMenuElement.Attributes {
+        switch self {
+        case .delete: .destructive
+        default: []
         }
     }
 

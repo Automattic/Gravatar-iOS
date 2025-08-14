@@ -29,6 +29,7 @@ enum ImagePickerSource: CaseIterable, Identifiable {
 
 struct ImagePicker<Label>: View where Label: View {
     let sourceType: ImagePickerSource
+    let tapAction: (() -> Void)?
 
     @ViewBuilder var label: () -> Label
 
@@ -39,6 +40,7 @@ struct ImagePicker<Label>: View where Label: View {
 
     var body: some View {
         Button {
+            tapAction?()
             presentPicker = true
         } label: {
             label()

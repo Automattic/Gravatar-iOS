@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, StickyHeader: View, MenuItems: View>: View {
+struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, StickyHeader: View, MainMenuView: View>: View {
     enum AnimationBehavior {
         case automatic
         case interactive
@@ -10,7 +10,7 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
     let scrollableHeader: (CGFloat) -> ScrollableHeader
     let stickyHeader: (CGFloat, EdgeInsets) -> StickyHeader
     let content: () -> ContentView
-    let buttonMenuItems: () -> MenuItems
+    let mainMenuButton: () -> MainMenuView
     let onRefresh: () async -> Void
 
     private let refreshOffsetThreshold: CGFloat = 80
@@ -89,11 +89,7 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
 
             HStack {
                 Spacer()
-                Menu {
-                    buttonMenuItems()
-                } label: {
-                    EllipsisButton(action: {})
-                }
+                mainMenuButton()
             }
             .padding(.top, safeAreaInset.top == 0 ? defaultTopPadding : offsetReaderHeight + topPaddingCompensation)
             // `safeAreaInset.trailing` can be set to -0 on iOS 18.2
@@ -151,6 +147,7 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
     }
 }
 
+#if DEBUG
 #Preview("Avatar Picker Header") {
     let imageURL = URL(string: "https://1.gravatar.com/avatar/1?size=256")
 
@@ -177,18 +174,13 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
                 .padding(.horizontal, 16)
                 .padding(.vertical, 4)
         }
-    } buttonMenuItems: {
-        Button(
-            "Logout",
-            systemImage: "iphone.and.arrow.forward.outward",
-            role: .destructive
-        ) {}
+    } mainMenuButton: {
+        MainMenu(profile: .testProfile)
     } onRefresh: {
         try? await Task.sleep(for: .seconds(2))
     }
 }
 
-#if DEBUG
 #Preview("Profile editor Header") {
     let imageURL = URL(string: "https://1.gravatar.com/avatar/1?size=256")
 
@@ -197,7 +189,8 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
             profile: .testProfile,
             topPadding: topPadding,
             imageURL: imageURL,
-            forceRefresh: .constant(false)
+            forceRefresh: .constant(false),
+            onProfileButtonTapped: {}
         )
     } stickyHeader: { opacity, safeAreaInsets in
         ProfileEditorStickyHeaderView(
@@ -217,12 +210,8 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
                 .padding(.horizontal, 16)
                 .padding(.vertical, 4)
         }
-    } buttonMenuItems: {
-        Button(
-            "Logout",
-            systemImage: "iphone.and.arrow.forward.outward",
-            role: .destructive
-        ) {}
+    } mainMenuButton: {
+        MainMenu(profile: .testProfile)
     } onRefresh: {
         try? await Task.sleep(for: .seconds(2))
     }

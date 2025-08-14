@@ -2,6 +2,8 @@ import SwiftUI
 
 struct SaveToolbar: View {
     @ObservedObject var viewModel: EditProfileViewModel
+    let onSave: () -> Void
+    let onCancel: () -> Void
 
     var body: some View {
         HStack {
@@ -14,6 +16,7 @@ struct SaveToolbar: View {
                     .opacity(0)
             } else {
                 Button {
+                    onCancel()
                     viewModel.removeUnsavedChanges()
                 } label: {
                     Text(ProfileEditLocalization.cancelButtonTitle)
@@ -22,6 +25,7 @@ struct SaveToolbar: View {
                 .buttonStyle(.actionButton(style: .secondary))
 
                 Button {
+                    onSave()
                     Task {
                         await viewModel.save()
                     }
@@ -47,6 +51,6 @@ struct SaveToolbar: View {
         profile: .testProfile,
         accessToken: "",
         context: .testContext
-    )))
+    )), onSave: {}, onCancel: {})
 }
 #endif

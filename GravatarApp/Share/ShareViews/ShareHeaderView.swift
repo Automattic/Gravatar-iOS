@@ -112,13 +112,9 @@ struct ShareHeaderView<QRImage: View>: View {
 
     @ViewBuilder
     var buttonsSection: some View {
-        Menu {
-            MainMenuOptions(profile: profile)
-        } label: {
-            EllipsisButton {}
-        }
-        // skip forced dark mode coming from parent view (Bouncy)
-        .environment(\.colorScheme, UITraitCollection.current.userInterfaceStyle == .dark ? .dark : .light)
+        MainMenu(profile: profile) {}
+            // skip forced dark mode coming from parent view (Bouncy)
+            .environment(\.colorScheme, UITraitCollection.current.userInterfaceStyle == .dark ? .dark : .light)
 
         CircularButton {
             onShareButtonPressed?()
