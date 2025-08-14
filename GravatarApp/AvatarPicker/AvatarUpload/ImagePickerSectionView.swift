@@ -1,6 +1,8 @@
+import Analytics
 import SwiftUI
 
 struct ImagePickerSectionView: View {
+    @Environment(\.analytics) var analytics
     let onImageSelected: (UIImage) -> Void
 
     var body: some View {
@@ -14,7 +16,9 @@ struct ImagePickerSectionView: View {
             }
             HStack {
                 ForEach(ImagePickerSource.allCases, id: \.id) { source in
-                    ImagePicker(sourceType: source) {
+                    ImagePicker(sourceType: source, tapAction: {
+                        analytics.track(source.tapEvent)
+                    }) {
                         uploadAvatarButton(title: source.localizedTitle, icon: source.icon)
                     } onImageSelected: { image in
                         onImageSelected(image)
@@ -78,6 +82,19 @@ struct VerticalLabelStyle: LabelStyle {
 extension LabelStyle where Self == VerticalLabelStyle {
     @MainActor static var vertical: VerticalLabelStyle {
         VerticalLabelStyle()
+    }
+}
+
+extension ImagePickerSource {
+    fileprivate var tapEvent: AnalyticsEvent {
+        switch self {
+        case .camera:
+            AvatarPickerViewEvents.avatarsCameraButtonTapped
+        case .photoLibrary:
+            AvatarPickerViewEvents.avatarsPhotosButtonTapped
+        case .playground:
+            AvatarPickerViewEvents.avatarsAIButtonTapped
+        }
     }
 }
 

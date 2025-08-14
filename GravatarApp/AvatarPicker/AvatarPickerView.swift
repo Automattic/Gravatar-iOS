@@ -3,6 +3,7 @@ import Gravatar
 import SwiftUI
 
 struct AvatarPickerView: View {
+    @Environment(\.analytics) var analytics
     @ObservedObject var avatarPickerModel: AvatarPickerViewModel
     let onLogout: () -> Void
 
@@ -60,6 +61,9 @@ struct AvatarPickerView: View {
                 }
             } buttonMenuItems: {
                 MainMenuOptions(profile: avatarPickerModel.userSession.profile)
+                    .onAppear {
+                        analytics.track(AvatarPickerViewEvents.mainMenuTapped)
+                    }
             } onRefresh: {
                 await avatarPickerModel.refresh()
                 avatarPickerModel.forceRefreshAvatar = true
@@ -73,6 +77,12 @@ struct AvatarPickerView: View {
         .avatarShareSheet(item: $shareSheetItem)
         .sensoryFeedback(.error, trigger: avatarPickerModel.imageUploadErrorID)
         .sensoryFeedback(.success, trigger: avatarPickerModel.imageUploadSuccessID)
+        .onAppear {
+            analytics.track(AvatarPickerViewEvents.screenView)
+        }
+        .onDisappear {
+            analytics.track(AvatarPickerViewEvents.screenLeave)
+        }
     }
 
     func gridView() -> some View {
@@ -91,7 +101,8 @@ struct AvatarPickerView: View {
             AvatarGrid(
                 grid: avatarPickerModel.grid,
                 onAvatarActionSelected: avatarAction,
-                avatarUploadErrorAction: avatarUploadErrorAction
+                avatarUploadErrorAction: avatarUploadErrorAction,
+                gridItemTapAction: gridItemTapAction
             )
         }
         .appPadding()
@@ -127,6 +138,10 @@ struct AvatarPickerView: View {
                 await avatarPickerModel.retryUpload(of: avatarID)
             }
         }
+    }
+
+    private func gridItemTapAction() {
+        analytics.track(AvatarPickerViewEvents.avatarsGridItemTapped)
     }
 
     enum Localized {
