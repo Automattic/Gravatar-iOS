@@ -32,6 +32,7 @@ extension QRScreenEvents {
             case profileURL
             case verifiedAccount(String)
         }
+
         let isOn: Bool
         let field: String
     }
@@ -41,15 +42,15 @@ extension QRScreenEvents.FieldToggle.Field {
     fileprivate var rawValue: String {
         switch self {
         case .email, .phone, .name, .company, .location:
-            return String(describing: self)
-        case .jobTitle: 
-            return "job_title"
-        case .aboutMe: 
-            return "about_me"
-        case .profileURL: 
-            return "profile_url"
+            String(describing: self)
+        case .jobTitle:
+            "job_title"
+        case .aboutMe:
+            "about_me"
+        case .profileURL:
+            "profile_url"
         case .verifiedAccount(let service):
-            return "verified_account_\(service)"
+            "verified_account_\(service)"
         }
     }
 }

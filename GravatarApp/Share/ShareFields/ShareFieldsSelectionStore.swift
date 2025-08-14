@@ -1,6 +1,6 @@
+import Analytics
 import Gravatar
 import SwiftUI
-import Analytics
 
 class ShareFieldsSelectionStore: ObservableObject {
     private let userDefaults: UserDefaults

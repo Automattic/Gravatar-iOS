@@ -1,7 +1,7 @@
+import Analytics
 import Combine
 import Gravatar
 import SwiftUI
-import Analytics
 
 @MainActor
 class ShareViewModel: ObservableObject {
