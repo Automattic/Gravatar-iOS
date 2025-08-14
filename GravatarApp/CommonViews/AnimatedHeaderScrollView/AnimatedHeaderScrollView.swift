@@ -147,6 +147,7 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
     }
 }
 
+#if DEBUG
 #Preview("Avatar Picker Header") {
     let imageURL = URL(string: "https://1.gravatar.com/avatar/1?size=256")
 
@@ -180,7 +181,6 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
     }
 }
 
-#if DEBUG
 #Preview("Profile editor Header") {
     let imageURL = URL(string: "https://1.gravatar.com/avatar/1?size=256")
 
