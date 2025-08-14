@@ -34,7 +34,8 @@ public actor Analytics {
         }
 
         #if DEBUG
-        let trackingText = !Self.pushEventsToRemote ? " (Locally)" : ""
+        let isMockTracker = String(describing: type(of: tracker)).contains("TrackerMock")
+        let trackingText = !Self.pushEventsToRemote || isMockTracker ? " (Locally)" : ""
         logger.debug("🔹 Tracking\(trackingText): \(event.name); properties: \(event.jsonStringProperties ?? "{}")")
         #endif
     }

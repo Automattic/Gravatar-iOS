@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct ShareQRFullScreenView<QRImage: View>: View {
+    @Environment(\.analytics) var analytics
+
     @Binding var presentFullScreen: Bool
     let topPadding: CGFloat
     let imageURL: URL?
@@ -43,7 +45,11 @@ struct ShareQRFullScreenView<QRImage: View>: View {
         }
         .environment(\.colorScheme, .dark)
         .onAppear {
+            analytics.track(QRScreenEvents.qrFullScreenView)
             incrementBrightness()
+        }
+        .onDisappear {
+            analytics.track(QRScreenEvents.qrFullScreenLeave)
         }
         .onChange(of: presentFullScreen) { _, newValue in
             if !newValue {
@@ -80,6 +86,7 @@ struct ShareQRFullScreenView<QRImage: View>: View {
 
     var closeButton: some View {
         CircularButton {
+            analytics.track(QRScreenEvents.qrFullScreenCloseButtonTapped)
             presentFullScreen = false
         } image: {
             Image(systemName: "xmark")

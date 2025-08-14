@@ -13,6 +13,10 @@ enum QRScreenEvents {
     static func fieldToggled(isOn: Bool, field: FieldToggle.Field) -> AnalyticsEvent {
         CommonAnalyticsEvent(name: "qr_field_toggled", properties: FieldToggle(isOn: isOn, field: field.rawValue))
     }
+
+    static let qrFullScreenView: AnalyticsEvent = AppEvent.screenView(screen: .qrFullScreen)
+    static let qrFullScreenLeave: AnalyticsEvent = AppEvent.screenLeave(screen: .qrFullScreen)
+    static let qrFullScreenCloseButtonTapped: AnalyticsEvent = CommonAnalyticsEvent(name: "qr_full_screen_close_button_tapped")
 }
 
 extension QRScreenEvents {

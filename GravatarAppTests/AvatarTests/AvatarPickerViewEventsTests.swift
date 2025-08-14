@@ -7,21 +7,21 @@ struct AvatarPickerViewEventsTests {
     func screenView() async throws {
         let event = AvatarPickerViewEvents.screenView
         #expect(event.name == "screen_view")
-        #expect(event.jsonProperties?["screen"] as? String == "avatars")
+        #expect(event.dictionaryProperties?["screen"] as? String == "avatars")
     }
 
     @Test
     func screenLeave() async throws {
         let event = AvatarPickerViewEvents.screenLeave
         #expect(event.name == "screen_leave")
-        #expect(event.jsonProperties?["screen"] as? String == "avatars")
+        #expect(event.dictionaryProperties?["screen"] as? String == "avatars")
     }
 
     @Test
     func mainMenuTapped() async throws {
         let event = AvatarPickerViewEvents.mainMenuTapped
         #expect(event.name == "mainmenu_tapped")
-        #expect(event.jsonProperties?["screen"] as? String == "avatars")
+        #expect(event.dictionaryProperties?["screen"] as? String == "avatars")
     }
 
     @Test
