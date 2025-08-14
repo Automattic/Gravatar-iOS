@@ -1,5 +1,5 @@
-import SwiftUI
 import Analytics
+import SwiftUI
 
 struct AboutView: View {
     @EnvironmentObject var modalManager: ModalPresentationManager

@@ -7,5 +7,3 @@ enum MainMenuEvents {
     static let aboutTapped: AnalyticsEvent = CommonAnalyticsEvent(name: "mainmenu_about_button_tapped")
     static let signOutTapped: AnalyticsEvent = CommonAnalyticsEvent(name: "mainmenu_signout_button_tapped")
 }
-
-
