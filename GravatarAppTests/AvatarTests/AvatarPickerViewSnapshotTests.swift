@@ -20,9 +20,7 @@ class AvatarPickerViewSnapshotTests {
         urlSession.shouldFetchEmptyAvatarsGrid = true
         await viewModel.fetchAvatars()
         let view = AvatarPickerView(avatarPickerModel: viewModel, onLogout: {})
-            .environment(\.analytics, Analytics.test)
-            .frame(width: ViewImageConfig.iPhone13Pro.size?.width ?? 0, height: ViewImageConfig.iPhone13Pro.size?.height ?? 0)
-            .transaction { $0.animation = nil }
+            .forTests()
         assertSnapshots(
             of: view,
             as: [
@@ -39,9 +37,8 @@ class AvatarPickerViewSnapshotTests {
             _ = await viewModel.delete(selectedAvatar)
         }
         let view = AvatarPickerView(avatarPickerModel: viewModel, onLogout: {})
-            .environment(\.analytics, Analytics.test)
-            .frame(width: ViewImageConfig.iPhone13Pro.size?.width ?? 0, height: ViewImageConfig.iPhone13Pro.size?.height ?? 0)
-            .transaction { $0.animation = nil }
+            .forTests()
+
         assertSnapshots(
             of: view,
             as: [
@@ -56,9 +53,8 @@ class AvatarPickerViewSnapshotTests {
         urlSession.returnErrorCode = isSuccess ? nil : 400
         await viewModel.fetchAvatars()
         let view = AvatarPickerView(avatarPickerModel: viewModel, onLogout: {})
-            .environment(\.analytics, Analytics.test)
-            .frame(width: ViewImageConfig.iPhone13Pro.size?.width ?? 0, height: ViewImageConfig.iPhone13Pro.size?.height ?? 0)
-            .transaction { $0.animation = nil }
+            .forTests()
+
         assertSnapshots(
             of: view,
             as: [
@@ -80,9 +76,8 @@ class AvatarPickerViewSnapshotTests {
         await viewModel.fetchAvatars()
 
         let view = AvatarPickerView(avatarPickerModel: viewModel, onLogout: {})
-            .environment(\.analytics, Analytics.test)
-            .frame(width: ViewImageConfig.iPhone13Pro.size?.width ?? 0, height: ViewImageConfig.iPhone13Pro.size?.height ?? 0)
-            .transaction { $0.animation = nil }
+            .forTests()
+
         assertSnapshots(
             of: view,
             as: [
@@ -91,5 +86,13 @@ class AvatarPickerViewSnapshotTests {
             ],
             testName: "avatarFetchingWhenGirdIsNotEmpty-\(isSuccess ? "success" : "error")"
         )
+    }
+}
+
+extension View {
+    fileprivate func forTests() -> some View {
+        self.environment(\.analytics, Analytics.test)
+            .frame(width: ViewImageConfig.iPhone13Pro.size?.width ?? 0, height: ViewImageConfig.iPhone13Pro.size?.height ?? 0)
+            .transaction { $0.animation = nil }
     }
 }
