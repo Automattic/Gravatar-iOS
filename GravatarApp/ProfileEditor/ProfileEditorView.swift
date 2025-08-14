@@ -28,8 +28,10 @@ struct ProfileEditorView: View {
         } content: {
             ProfileEditContentView(viewModel: viewModel)
                 .readableContentWidth()
-        } buttonMenuItems: {
-            MainMenuOptions(profile: viewModel.userSession.profile)
+        } mainMenuButton: {
+            MainMenu(profile: viewModel.userSession.profile) {
+                print("---> On Main Menu Appear")
+            }
         } onRefresh: {
             await viewModel.fetchProfile()
             forceRefreshAvatar = true

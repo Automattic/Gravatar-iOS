@@ -112,10 +112,8 @@ struct ShareHeaderView<QRImage: View>: View {
 
     @ViewBuilder
     var buttonsSection: some View {
-        Menu {
-            MainMenuOptions(profile: profile)
-        } label: {
-            EllipsisButton {}
+        MainMenu(profile: profile) {
+            print("---> On Main Menu Appear")
         }
         // skip forced dark mode coming from parent view (Bouncy)
         .environment(\.colorScheme, UITraitCollection.current.userInterfaceStyle == .dark ? .dark : .light)
