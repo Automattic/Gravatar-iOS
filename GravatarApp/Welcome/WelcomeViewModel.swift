@@ -101,6 +101,7 @@ class WelcomeViewModel: ObservableObject {
         // TEMPORARY FOR TESTING!
         Task {
             print("PURPOSELY CRASHING!")
+            try? await Task.sleep(for: .seconds(5))
             await GravatarCrashLogger.shared.crash()
         }
 

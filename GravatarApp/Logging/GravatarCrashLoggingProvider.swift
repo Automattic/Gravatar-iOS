@@ -11,8 +11,12 @@ actor GravatarCrashLogger {
     }
 
     func start() {
+        // TEMPORARY
+        UserDefaults.standard.set(true, forKey: "force-crash-logging")
+
         do {
             _ = try crashLogging.start()
+            print("Crash logging started!")
         } catch {
             print("⚠️ Crash logging failed to start: \(error)")
         }
