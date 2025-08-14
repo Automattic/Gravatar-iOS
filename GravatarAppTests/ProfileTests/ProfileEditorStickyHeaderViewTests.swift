@@ -49,8 +49,8 @@ struct ProfileEditorStickyHeaderViewTests {
             EmptyView()
         } content: {
             Text("Content")
-        } buttonMenuItems: {
-            EmptyView()
+        } mainMenuButton: {
+            MainMenu(profile: .testProfile)
         } onRefresh: {}
             .frame(width: ViewImageConfig.iPhone13Pro.size?.width ?? 0, height: 200)
 
