@@ -14,7 +14,8 @@ struct AvatarPickerAvatarViewTests {
         let view = AvatarPickerAvatarView(avatar: avatar, maxSize: 90, minSize: 80) {
             false
         } avatarUploadErrorAction: { _ in
-        } onActionSelected: { _ in }
+        } onActionSelected: { _ in
+        } tapAction: {}
 
         assertSnapshots(
             of: view,
@@ -32,7 +33,8 @@ struct AvatarPickerAvatarViewTests {
         let view = AvatarPickerAvatarView(avatar: avatar, maxSize: 90, minSize: 80) {
             true
         } avatarUploadErrorAction: { _ in
-        } onActionSelected: { _ in }
+        } onActionSelected: { _ in
+        } tapAction: {}
             .transaction { transaction in
                 transaction.animation = nil
             }
@@ -53,7 +55,8 @@ struct AvatarPickerAvatarViewTests {
         let view = AvatarPickerAvatarView(avatar: avatarLoading, maxSize: 90, minSize: 80) {
             false
         } avatarUploadErrorAction: { _ in
-        } onActionSelected: { _ in }
+        } onActionSelected: { _ in
+        } tapAction: {}
             .transaction { transaction in
                 transaction.animation = nil
             }
@@ -76,7 +79,8 @@ struct AvatarPickerAvatarViewTests {
         let view = AvatarPickerAvatarView(avatar: avatarError, maxSize: 90, minSize: 80) {
             false
         } avatarUploadErrorAction: { _ in
-        } onActionSelected: { _ in }
+        } onActionSelected: { _ in
+        } tapAction: {}
             .transaction { transaction in
                 transaction.animation = nil
             }

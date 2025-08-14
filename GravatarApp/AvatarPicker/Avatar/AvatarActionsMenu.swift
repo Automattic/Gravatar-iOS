@@ -2,6 +2,7 @@ import SwiftUI
 
 struct AvatarActionsMenu<Label>: View where Label: View {
     let isAvatarSelected: Bool
+    let labelTapAction: (() -> Void)?
     let label: () -> Label
     let onActionSelected: (AvatarAction) -> Void
 
@@ -32,7 +33,7 @@ struct AvatarActionsMenu<Label>: View where Label: View {
             }
         }
         onMenuAppear: {
-            print("---> Avatar menu Appeared")
+            labelTapAction?()
         }
     }
 

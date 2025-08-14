@@ -11,6 +11,7 @@ struct AvatarGrid: View {
 
     let onAvatarActionSelected: (AvatarImageModel, AvatarAction) -> Void
     let avatarUploadErrorAction: (AvatarUploadErrorAction) -> Void
+    let gridItemTapAction: (() -> Void)?
 
     var body: some View {
         let columns: [GridItem] = [GridItem(
@@ -41,7 +42,8 @@ struct AvatarGrid: View {
             avatarUploadErrorAction: avatarUploadErrorAction,
             onActionSelected: { action in
                 onAvatarActionSelected(avatar, action)
-            }
+            },
+            tapAction: gridItemTapAction
         )
     }
 
@@ -61,8 +63,10 @@ struct AvatarGrid: View {
     return VStack {
         AvatarGrid(grid: grid) { avatar, _ in
             grid.selectAvatar(withID: avatar.id)
-        } avatarUploadErrorAction: { _ in }
-            .padding()
+        }
+        avatarUploadErrorAction: { _ in }
+        gridItemTapAction: {}
+        .padding()
         Button("Add avatar cell") {
             grid.append(newAvatarModel(nil))
         }
