@@ -6,6 +6,7 @@ struct ShareContentView: View {
     @ObservedObject var viewModel: ShareViewModel
     @FocusState var focusState: Bool
     @EnvironmentObject var modalManager: ModalPresentationManager
+    @Environment(\.analytics) var analytics
 
     var body: some View {
         VStack(spacing: .Global.verticalSectionSpacing) {
@@ -141,6 +142,7 @@ struct ShareContentView: View {
             .foregroundStyle(.secondary)
 
         Button(Localized.previewButtonTitle) {
+            analytics.track(QRScreenEvents.previewButtonTapped)
             viewModel.previewVCard()
         }
         .buttonStyle(.actionButton())
@@ -153,6 +155,7 @@ struct ShareContentView: View {
         showExclamationButton: Bool = false
     ) -> some View {
         Button {
+            analytics.track(QRScreenEvents.privateInfoButtonTapped)
             modalManager.present {
                 PrivateInformationAlertView(onDismiss: {
                     modalManager.dismiss()

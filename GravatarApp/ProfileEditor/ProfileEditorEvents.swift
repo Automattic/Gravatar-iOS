@@ -1,5 +1,4 @@
 import Analytics
-import Foundation
 
 enum ProfileEditorEvents {
     static let screenView: AnalyticsEvent = AppEvent.screenView(screen: .profile)

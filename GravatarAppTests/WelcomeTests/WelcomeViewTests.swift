@@ -8,7 +8,11 @@ import Testing
 @Suite(.snapshots(record: .failed, diffTool: .ksdiff))
 @MainActor
 struct WelcomeViewTests {
-    let viewModel = WelcomeViewModel(userDefaults: UserDefaults(suiteName: "tests")!, context: .testContext)
+    let viewModel = WelcomeViewModel(
+        userDefaults: UserDefaults(suiteName: "tests")!,
+        analytics: Analytics.test,
+        context: .testContext
+    )
 
     @Test("Welcome view clean state")
     @MainActor
