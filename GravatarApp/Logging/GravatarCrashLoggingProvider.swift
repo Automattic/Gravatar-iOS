@@ -22,6 +22,7 @@ actor GravatarCrashLogger {
 struct GravatarCrashLoggingDataProvider: CrashLoggingDataProvider {
     let sentryDSN = Secrets.sentryDSN
     let userHasOptedOut = false
+    let shouldEnableAutomaticSessionTracking = true
 
     // TODO: Add current user
     var currentUser: TracksUser? = nil
