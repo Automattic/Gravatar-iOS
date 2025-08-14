@@ -18,6 +18,10 @@ enum AppEvent {
     static func screenLeave(screen: AppEvent.Screens) -> AnalyticsEvent {
         CommonAnalyticsEvent(name: "screen_leave", properties: ScreenEventProperties(screen: screen))
     }
+
+    static func mainMenuTapped(screen: AppEvent.Screens) -> AnalyticsEvent {
+        CommonAnalyticsEvent(name: "mainmenu_tapped", properties: ScreenEventProperties(screen: screen))
+    }
 }
 
 private struct ScreenEventProperties: EventProperties {

@@ -189,7 +189,8 @@ struct AnimatedHeaderScrollView<ContentView: View, ScrollableHeader: View, Stick
             profile: .testProfile,
             topPadding: topPadding,
             imageURL: imageURL,
-            forceRefresh: .constant(false)
+            forceRefresh: .constant(false),
+            onProfileButtonTapped: {}
         )
     } stickyHeader: { opacity, safeAreaInsets in
         ProfileEditorStickyHeaderView(
