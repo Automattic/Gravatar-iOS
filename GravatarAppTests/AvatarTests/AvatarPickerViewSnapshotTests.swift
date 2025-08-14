@@ -2,15 +2,15 @@ import Analytics
 import Foundation
 @testable import GravatarApp
 import SnapshotTesting
-import Testing
 import SwiftUI
+import Testing
 
 @MainActor
 @Suite(.snapshots(record: .failed, diffTool: .ksdiff))
 class AvatarPickerViewSnapshotTests {
     let urlSession = URLSessionMock()
 
-    lazy var viewModel: AvatarPickerViewModel = AvatarPickerViewModel(
+    lazy var viewModel: AvatarPickerViewModel = .init(
         userSession: UserSession(profile: .testProfile, accessToken: "token", context: .testContext),
         urlSession: urlSession
     )
