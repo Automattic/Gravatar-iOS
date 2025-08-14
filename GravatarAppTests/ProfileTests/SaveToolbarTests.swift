@@ -16,7 +16,7 @@ struct SaveToolbarTests {
 
     @Test("Save Profile Toolbar initial state")
     func saveToolbarSnapshot() async throws {
-        let view = SaveToolbar(viewModel: viewModel)
+        let view = SaveToolbar(viewModel: viewModel, onSave: {}, onCancel: {})
             .frame(width: ViewImageConfig.iPhone13Pro.size?.width ?? 0)
 
         assertSnapshots(
@@ -30,7 +30,7 @@ struct SaveToolbarTests {
 
     @Test("Save Profile Toolbar on saving state")
     func saveToolbarSnapshotSaving() async throws {
-        let view = SaveToolbar(viewModel: viewModel)
+        let view = SaveToolbar(viewModel: viewModel, onSave: {}, onCancel: {})
             .frame(width: ViewImageConfig.iPhone13Pro.size?.width ?? 0)
 
         viewModel.isSaving = true
