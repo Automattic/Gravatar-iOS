@@ -1,3 +1,4 @@
+import Analytics
 @testable import GravatarApp
 import SnapshotTesting
 import SwiftUI
@@ -19,6 +20,7 @@ struct ShareQRFillScreenViewTests {
                 windowWidth: geometry.size.width,
                 qrImage: { Image.fallbakQRCodeImage }
             )
+            .environment(\.analytics, Analytics.test)
         }
         .background(Color.secondary)
 

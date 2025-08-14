@@ -1,3 +1,4 @@
+import Analytics
 import Foundation
 import Gravatar
 @testable import GravatarApp
@@ -126,7 +127,8 @@ private func createViewModel(_ testUnitName: String = #function) -> ShareViewMod
         urlSession: URLSessionMock(),
         networkMonitor: TestNetworkMonitor(),
         // These tests run in parallel, so we need different UserDefaults for each one of them.
-        userDefaults: .testUserDefaults(named: testUnitName)
+        userDefaults: .testUserDefaults(named: testUnitName),
+        analytics: Analytics.test
     )
     viewModel.storedUserEmail = "notreal@example.com"
     viewModel.storedPhoneNumber = "+1234567890"
