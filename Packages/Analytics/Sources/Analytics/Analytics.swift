@@ -27,7 +27,7 @@ public actor Analytics {
 
     public nonisolated
     func track(_ event: AnalyticsEvent) {
-        let properties = event.jsonProperties ?? [:]
+        let properties = event.dictionaryProperties ?? [:]
 
         if Self.pushEventsToRemote {
             tracker.track(event.name, withCustomProperties: properties)
@@ -35,7 +35,7 @@ public actor Analytics {
 
         #if DEBUG
         let trackingText = !Self.pushEventsToRemote ? " (Locally)" : ""
-        logger.debug("🔹 Tracking\(trackingText): \(event.name); properties: \(properties)")
+        logger.debug("🔹 Tracking\(trackingText): \(event.name); properties: \(event.jsonStringProperties ?? "{}")")
         #endif
     }
 

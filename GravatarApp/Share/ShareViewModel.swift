@@ -1,6 +1,7 @@
 import Combine
 import Gravatar
 import SwiftUI
+import Analytics
 
 @MainActor
 class ShareViewModel: ObservableObject {
@@ -35,14 +36,15 @@ class ShareViewModel: ObservableObject {
         userSession: UserSession,
         urlSession: URLSessionProtocol? = nil,
         networkMonitor: NetworkMonitor = SystemNetworkMonitor.shared,
-        userDefaults: UserDefaults = .standard
+        userDefaults: UserDefaults = .standard,
+        analytics: Analytics = .shared
     ) {
         self.userSession = userSession
         self.profile = userSession.profile
         self.qrGenerator = QRGenerator()
         self.urlSession = urlSession ?? GravatarURLSession.shared
         self.networkMonitor = networkMonitor
-        self.share = .init(userDefaults: userDefaults)
+        self.share = .init(userDefaults: userDefaults, analytics: analytics)
         self.userDefaults = userDefaults
 
         storedUserEmail = userDefaults.string(forKey: StorageKeys.email) ?? ""
