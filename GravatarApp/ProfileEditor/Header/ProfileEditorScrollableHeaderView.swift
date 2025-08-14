@@ -8,6 +8,7 @@ struct ProfileEditorScrollableHeaderView: View {
     @Binding var forceRefresh: Bool
 
     @Environment(\.openURL) var openURL
+    let onProfileButtonTapped: () -> Void
 
     var body: some View {
         BouncyImageBackgroundHeaderView(
@@ -55,6 +56,7 @@ struct ProfileEditorScrollableHeaderView: View {
 
     func profileURLButton() -> some View {
         Button {
+            onProfileButtonTapped()
             guard let url = URL(string: profile.profileUrl) else { return }
             openURL(url)
         } label: {
@@ -83,7 +85,8 @@ struct ProfileEditorScrollableHeaderView: View {
                 profile: .testProfile,
                 topPadding: geo.safeAreaInsets.top,
                 imageURL: imageURL,
-                forceRefresh: .constant(false)
+                forceRefresh: .constant(false),
+                onProfileButtonTapped: {}
             )
             Spacer()
         }.ignoresSafeArea()

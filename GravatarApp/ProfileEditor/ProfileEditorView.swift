@@ -4,6 +4,7 @@ import SwiftUI
 struct ProfileEditorView: View {
     @ObservedObject var viewModel: EditProfileViewModel
     @Binding var forceRefreshAvatar: Bool
+    @Environment(\.analytics) var analytics
 
     var headerAvatarURL: URL? {
         AvatarURL.preferredURL(for: viewModel.userSession.profile.hash)
@@ -15,7 +16,10 @@ struct ProfileEditorView: View {
                 profile: viewModel.userSession.profile,
                 topPadding: topPadding,
                 imageURL: headerAvatarURL,
-                forceRefresh: $forceRefreshAvatar
+                forceRefresh: $forceRefreshAvatar,
+                onProfileButtonTapped: {
+                    analytics.track(ProfileEditorEvents.profileHeaderLinkTapped)
+                }
             )
         } stickyHeader: { opacity, safeArea in
             ProfileEditorStickyHeaderView(
@@ -28,8 +32,10 @@ struct ProfileEditorView: View {
         } content: {
             ProfileEditContentView(viewModel: viewModel)
                 .readableContentWidth()
-        } buttonMenuItems: {
-            MainMenuOptions(profile: viewModel.userSession.profile)
+        } mainMenuButton: {
+            MainMenu(profile: viewModel.userSession.profile) {
+                analytics.track(ProfileEditorEvents.mainMenuTapped)
+            }
         } onRefresh: {
             await viewModel.fetchProfile()
             forceRefreshAvatar = true
@@ -37,7 +43,11 @@ struct ProfileEditorView: View {
         .safeAreaInset(edge: .bottom, alignment: .center, spacing: nil) {
             Group {
                 if viewModel.hasUnsavedChanges {
-                    SaveToolbar(viewModel: viewModel)
+                    SaveToolbar(viewModel: viewModel) {
+                        analytics.track(ProfileEditorEvents.profileSaveChangesTapped)
+                    } onCancel: {
+                        analytics.track(ProfileEditorEvents.profileCancelChangesTapped)
+                    }
                 } else {
                     // Keep the save area of the same height of the toolbar
                     // It will grow acordingly with different font sizes
@@ -48,6 +58,12 @@ struct ProfileEditorView: View {
                 }
             }
             .animation(.smooth(duration: 0.3), value: viewModel.hasUnsavedChanges)
+        }
+        .onAppear {
+            analytics.track(ProfileEditorEvents.screenView)
+        }
+        .onDisappear {
+            analytics.track(ProfileEditorEvents.screenLeave)
         }
     }
 }

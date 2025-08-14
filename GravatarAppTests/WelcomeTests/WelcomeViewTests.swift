@@ -1,3 +1,4 @@
+import Analytics
 import Foundation
 @testable import GravatarApp
 import SnapshotTesting
@@ -12,8 +13,7 @@ struct WelcomeViewTests {
     @Test("Welcome view clean state")
     @MainActor
     func welcomeView() async throws {
-        let view = WelcomeView(viewModel: viewModel)
-            .frame(width: ViewImageConfig.iPhone13.size?.width ?? 0, height: ViewImageConfig.iPhone13.size?.height ?? 0)
+        let view = WelcomeView(viewModel: viewModel).fullScreenFrame()
 
         assertSnapshots(
             of: view,
@@ -78,5 +78,6 @@ struct WelcomeViewTests {
 extension View {
     func fullScreenFrame() -> some View {
         self.frame(width: ViewImageConfig.iPhone13.size?.width ?? 0, height: ViewImageConfig.iPhone13.size?.height ?? 0)
+            .environment(\.analytics, Analytics.test)
     }
 }
