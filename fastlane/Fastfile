@@ -208,8 +208,9 @@ platform :ios do
     )
   end
 
-  # Uploads DSYM Symbols
+  # Uploads a dSYM file. Typically called from CI after running a build.
   #
+  desc 'Uploads a dSYM file. Typically called from CI after running a build.'
   lane :symbols_upload do |dsym_path: APP_STORE_CONNECT_BUILD_DSYMS_PATH|
     require_env_vars!('SENTRY_AUTH_TOKEN')
 
