@@ -57,7 +57,7 @@ struct PrivacySettingsScreen: View {
         }
         .padding(.vertical, CGFloat.Global.verticalSectionSpacing)
         .padding(.horizontal, CGFloat.Global.contentHorizontalPadding)
-        .background(Color(uiColor: .systemBackground))
+        .background(Color.DS.backgroundOverMaterial)
         .shape(RoundedRectangle(cornerRadius: 12))
     }
 }

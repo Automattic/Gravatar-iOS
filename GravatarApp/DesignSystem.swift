@@ -43,7 +43,7 @@ extension Color {
         ))
         static let backgroundOverMaterial = Color(uiColor: .init(
             light: .white,
-            dark: .secondarySystemBackground.resolvedColor(with: .init(userInterfaceStyle: .dark))
+            dark: .quaternarySystemFill.resolvedColor(with: .init(userInterfaceStyle: .dark))
         ))
     }
 }
