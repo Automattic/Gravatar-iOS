@@ -3,4 +3,5 @@ enum Secrets {
     static let clientID: String = ""
     static let clientSecret: String = ""
     static let redirectURI: String = ""
+    static let sentryDSN: String = ""
 }

@@ -19,3 +19,13 @@ bundle exec fastlane run configure_apply
 echo "--- :testflight: Uploading to TestFlight"
 bundle exec fastlane upload_to_app_store_connect
 
+echo "--- :arrow_up: Uploading dSYM to Sentry"
+set +e
+bundle exec fastlane symbols_upload
+SENTRY_UPLOAD_STATUS=$?
+set -e
+
+if [[ $SENTRY_UPLOAD_STATUS -ne 0 ]]; then
+  echo "^^^ +++ Failed to upload dSYM to Sentry! Make sure to download dSYM from the build step artifacts and upload manually."
+  buildkite-agent annotate --style error --context sentry-failure 'Failed to upload dSYM to Sentry! Make sure to download dSYM from the build step artifacts and upload manually.'
+fi
