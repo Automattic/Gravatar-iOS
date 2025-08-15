@@ -5,6 +5,7 @@ struct AboutView: View {
     @EnvironmentObject var modalManager: ModalPresentationManager
     @Environment(\.analytics) private var analytics
     @State private var inAppURL: URL?
+    @State private var presentPrivacySettings: Bool = false
     @Environment(\.openURL) private var openURL
 
     @State private var presentAccountDeletionWarning: Bool = false
@@ -42,11 +43,10 @@ struct AboutView: View {
                     url: "https://automattic.com/tos/",
                     tracking: AboutModalEvents.tosTapped
                 )
-                inAppSafariLink(
-                    Localized.privacyPolicyText,
-                    url: "https://automattic.com/privacy/",
-                    tracking: AboutModalEvents.privacyPolicyTapped
-                )
+                button(Localized.privacySettingsText) {
+                    analytics.track(AboutModalEvents.privacySettingsTapped)
+                    presentPrivacySettings = true
+                }
             }
             VStack(alignment: .leading) {
                 title(Localized.deleteAccountTitle)
@@ -70,6 +70,13 @@ struct AboutView: View {
         }
         .onDisappear {
             analytics.track(AboutModalEvents.screenLeave)
+        }
+        .sheet(isPresented: $presentPrivacySettings) {
+            NavigationStack {
+                ScrollView {
+                    PrivacySettingsScreen(isPresented: $presentPrivacySettings)
+                }.scrollBounceBehavior(.basedOnSize)
+            }
         }
     }
 
@@ -118,11 +125,17 @@ struct AboutView: View {
     }
 
     private func inAppSafariLink(_ text: String, url: String, tracking event: any AnalyticsEvent) -> some View {
-        Button {
+        button(text) {
             analytics.track(event)
             inAppURL = URL(string: url)
+        }
+    }
+
+    private func button(_ title: String, action: @escaping () -> Void) -> some View {
+        Button {
+            action()
         } label: {
-            Text(text)
+            Text(title)
                 .foregroundStyle(textColor)
         }
     }
@@ -157,13 +170,13 @@ private enum Localized {
     static let termsOfServiceText = NSLocalizedString(
         "AboutModal.termsOfServiceText",
         value: "Terms of Service",
-        comment: "Link text for the 'Terms of Service' in the 'About Gravatar' view"
+        comment: "Link text for the 'Terms of Service' button in the 'About Gravatar' view"
     )
 
-    static let privacyPolicyText = NSLocalizedString(
-        "AboutModal.privacyPolicyText",
-        value: "Privacy Policy",
-        comment: "Link text for the 'Privacy Policy' in the 'About Gravatar' view"
+    static let privacySettingsText = NSLocalizedString(
+        "AboutModal.privacySettingsText",
+        value: "Privacy Settigs",
+        comment: "Link text for the 'Privacy Settings' button in the 'About Gravatar' view"
     )
 
     static let closeButtonTitle = NSLocalizedString(

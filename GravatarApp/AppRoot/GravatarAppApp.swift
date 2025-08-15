@@ -10,7 +10,8 @@ struct GravatarAppApp: App {
     @StateObject private var welcomeViewModel: WelcomeViewModel
 
     init() {
-        Analytics.setPushEventsToRemote(true)
+        let settings = PrivacySettingsUserSelection()
+        Analytics.setPushEventsToRemote(settings.shareAnalytics)
         do {
             let context = try ModelContext(ModelContainer(for: ProfileStore.self))
             self.modelContext = context
