@@ -12,6 +12,11 @@ struct GravatarAppApp: App {
     init() {
         let settings = PrivacySettingsUserSelection()
         Analytics.setPushEventsToRemote(settings.shareAnalytics)
+
+        Task { 
+
+            await GravatarCrashLogger.shared.start() 
+            }
         do {
             let context = try ModelContext(ModelContainer(for: ProfileStore.self))
             self.modelContext = context
