@@ -3,6 +3,7 @@ import SwiftUI
 
 struct MainMenu: View {
     @Environment(\.openURL) private var openURL
+    @Environment(\.analytics) private var analytics
     @EnvironmentObject private var modalManager: ModalPresentationManager
     @State private var shareProfileURL: URL?
     let onMenuAppear: (() -> Void)?
@@ -36,16 +37,20 @@ struct MainMenu: View {
         MenuSection {
             MenuItem(Localized.visitProfileTitle, systemImage: "safari") {
                 guard let url = URL(string: profile.profileUrl) else { return }
+                analytics.track(MainMenuEvents.visitProfileTapped)
                 openURL(url)
             }
             MenuItem(Localized.shareTitle, systemImage: "square.and.arrow.up") {
+                analytics.track(MainMenuEvents.shareProfileTapped)
                 shareProfileURL = profile.profileURL
             }
             MenuItem("Gravatar.com", systemImage: "globe") {
                 guard let url = URL(string: "https://gravatar.com") else { return }
+                analytics.track(MainMenuEvents.visitGravatarComTapped)
                 openURL(url)
             }
             MenuItem(Localized.aboutTitle, systemImage: "list.bullet.clipboard") {
+                analytics.track(MainMenuEvents.aboutTapped)
                 modalManager.present {
                     AboutView()
                 }
@@ -57,6 +62,7 @@ struct MainMenu: View {
                 systemImage: "iphone.and.arrow.forward.outward",
                 attributes: .destructive
             ) {
+                analytics.track(MainMenuEvents.signOutTapped)
                 notificationCenter.post(name: .signOut, object: nil)
             }
         }

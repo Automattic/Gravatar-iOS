@@ -11,6 +11,7 @@ struct GravatarAppApp: App {
 
     init() {
         Analytics.setPushEventsToRemote(true)
+        Task { await GravatarCrashLogger.shared.start() }
         do {
             let context = try ModelContext(ModelContainer(for: ProfileStore.self))
             self.modelContext = context
