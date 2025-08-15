@@ -32,14 +32,7 @@ struct PrivacySettingsScreen: View {
         }
         .padding(.horizontal, CGFloat.Global.contentHorizontalPadding)
         .padding(.top, CGFloat.Global.verticalSectionSpacing)
-        .frame(maxHeight: .infinity)
-        .navigationTitle(Localized.pageTitle)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                closeButton
-            }
-        }
+        .navigationSetup(isPresented: $isPresented)
         .presentSafariView(url: $inAppURL)
         .presentationBackground(.ultraThickMaterial)
     }
@@ -64,20 +57,31 @@ struct PrivacySettingsScreen: View {
         }
         .padding(.vertical, CGFloat.Global.verticalSectionSpacing)
         .padding(.horizontal, CGFloat.Global.contentHorizontalPadding)
-        .frame(maxWidth: .infinity)
         .background(Color(uiColor: .systemBackground))
         .shape(RoundedRectangle(cornerRadius: 12))
     }
+}
 
-    private var closeButton: some View {
-        Button {
-            isPresented = false
-        } label: {
-            Image(systemName: "xmark.circle.fill")
-                .font(.system(size: 20))
-                .symbolRenderingMode(.hierarchical)
+extension View {
+    fileprivate func navigationSetup(isPresented: Binding<Bool>) -> some View {
+        var closeButton: some View {
+            Button {
+                isPresented.wrappedValue = false
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 20))
+                    .symbolRenderingMode(.hierarchical)
+            }
+            .tint(.primary.opacity(0.6))
         }
-        .tint(.primary.opacity(0.6))
+
+        return self.navigationTitle(Localized.pageTitle)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    closeButton
+                }
+            }
     }
 }
 
