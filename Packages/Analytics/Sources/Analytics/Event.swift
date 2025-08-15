@@ -8,13 +8,22 @@ public protocol AnalyticsEvent: Sendable {
 }
 
 extension AnalyticsEvent {
-    var jsonProperties: [String: AnyHashable]? {
+    var dictionaryProperties: [String: AnyHashable]? {
         guard
-            let properties,
-            let data = try? JSONEncoder.snakeCaseEncoder.encode(properties)
+            let data = jsonDataProperties
         else { return nil }
 
         return (try? JSONSerialization.jsonObject(with: data)).flatMap { $0 as? [String: AnyHashable] }
+    }
+
+    var jsonDataProperties: Data? {
+        guard let properties else { return nil }
+        return try? JSONEncoder.snakeCaseEncoder.encode(properties)
+    }
+
+    var jsonStringProperties: String? {
+        guard let data = jsonDataProperties else { return nil }
+        return String(data: data, encoding: .utf8)
     }
 }
 

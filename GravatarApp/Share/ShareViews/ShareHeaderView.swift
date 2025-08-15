@@ -11,6 +11,8 @@ struct ShareHeaderView<QRImage: View>: View {
     @Environment(\.openURL) var openURL
 
     let onShareButtonPressed: (() -> Void)?
+    let onMainMenuButtonPressed: (() -> Void)?
+    let onFullScreenButtonPressed: (() -> Void)?
 
     private var qrImage: () -> QRImage
 
@@ -43,7 +45,9 @@ struct ShareHeaderView<QRImage: View>: View {
         imageURL: URL?,
         forceRefresh: Binding<Bool>,
         windowWidth: Binding<CGFloat>,
-        onShareButtonPressed: (() -> Void)? = nil
+        onShareButtonPressed: (() -> Void)? = nil,
+        onMainMenuButtonPressed: (() -> Void)? = nil,
+        onFullScreenButtonPressed: (() -> Void)? = nil
     ) {
         self.profile = profile
         self.topPadding = topPadding
@@ -52,6 +56,8 @@ struct ShareHeaderView<QRImage: View>: View {
         self._windowWidth = windowWidth
         self.qrImage = qrImage
         self.onShareButtonPressed = onShareButtonPressed
+        self.onMainMenuButtonPressed = onMainMenuButtonPressed
+        self.onFullScreenButtonPressed = onFullScreenButtonPressed
     }
 
     var body: some View {
@@ -112,9 +118,11 @@ struct ShareHeaderView<QRImage: View>: View {
 
     @ViewBuilder
     var buttonsSection: some View {
-        MainMenu(profile: profile) {}
-            // skip forced dark mode coming from parent view (Bouncy)
-            .environment(\.colorScheme, UITraitCollection.current.userInterfaceStyle == .dark ? .dark : .light)
+        MainMenu(profile: profile) {
+            onMainMenuButtonPressed?()
+        }
+        // skip forced dark mode coming from parent view (Bouncy)
+        .environment(\.colorScheme, UITraitCollection.current.userInterfaceStyle == .dark ? .dark : .light)
 
         CircularButton {
             onShareButtonPressed?()
@@ -127,6 +135,7 @@ struct ShareHeaderView<QRImage: View>: View {
          }
          */
         CircularButton {
+            onFullScreenButtonPressed?()
             presentFullScreen = true
         } image: {
             Image(.enlargeIcon)
