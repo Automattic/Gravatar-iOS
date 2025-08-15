@@ -81,15 +81,19 @@ struct AvatarPickerAvatarView: View {
             selectedCheckmarkView()
         }
         AvatarActionsMenu(isAvatarSelected: avatarSelected) {
-            isTapped = true
-            withAnimation(.smooth) {
-                isTapped = false
-            }
+            runOnTapAnimation()
             tapAction?()
         } label: {
             Color.clear
         } onActionSelected: { action in
             onActionSelected(action)
+        }
+    }
+
+    private func runOnTapAnimation() {
+        isTapped = true
+        withAnimation(.smooth) {
+            isTapped = false
         }
     }
 
