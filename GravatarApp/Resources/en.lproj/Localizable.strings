@@ -1,3 +1,6 @@
+/* Title for the 'Cancel' button when deleting an account in the 'About Gravatar' view */
+"AboutModal.accountDeletion.cancel" = "Cancel";
+
 /* Warning message for the 'Delete account' section in the 'About Gravatar' view */
 "AboutModal.accountDeletion.message" = "No longer using Gravatar? Delete your account here.";
 
@@ -17,10 +20,10 @@
 /* Title for the 'Legal' section in the 'About Gravatar' view */
 "AboutModal.legalTitle" = "Legal";
 
-/* Link text for the 'Privacy Policy' in the 'About Gravatar' view */
-"AboutModal.privacyPolicyText" = "Privacy Policy";
+/* Link text for the 'Privacy Settings' button in the 'About Gravatar' view */
+"AboutModal.privacySettingsText" = "Privacy Settigs";
 
-/* Link text for the 'Terms of Service' in the 'About Gravatar' view */
+/* Link text for the 'Terms of Service' button in the 'About Gravatar' view */
 "AboutModal.termsOfServiceText" = "Terms of Service";
 
 /* Title for the 'About Gravatar' view */
@@ -127,6 +130,27 @@
 
 /* Title for the button to visit the user's profile */
 "MainMenu.Option.visitProfile" = "Visit your profile";
+
+/* First paragraph descrption for the analytics section of Privacy Settings */
+"PrivacySettings.Analytics.paragraph_1" = "Share information with our analytics tool about how you interact with this app and our services.";
+
+/* Second paragraph descrption for the analytics section of Privacy Settings */
+"PrivacySettings.Analytics.paragraph_2" = "This information helps us improve our products, and offer you a better experience.";
+
+/* Title for the analytics section of Privacy Settings */
+"PrivacySettings.Analytics.title" = "Share Analytics Data";
+
+/* Descrption for the crash report section of Privacy Settings */
+"PrivacySettings.CrashReport.description" = "Share information with our analytics tool about how you interact with this app and our services.";
+
+/* Title for the crash report section of Privacy Settings */
+"PrivacySettings.CrashReport.title" = "Share Crash Reports";
+
+/* Link text for the 'Privacy Policy' button in the Privacy Settings */
+"PrivacySettings.PrivacyPolicy.Button.title" = "Privacy Policy";
+
+/* Title for the Privacy Settings screen */
+"PrivacySettings.Screen.title" = "Privacy Settings";
 
 /* Label of a field that contains a short biography or description about the user. */
 "Profile.AboutInfoField.aboutMe" = "About Me";
