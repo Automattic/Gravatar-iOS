@@ -12,6 +12,7 @@ struct AvatarPickerAvatarView: View {
 
     @State private var uploadError: AvatarUploadErrorInfo?
     @State private var presentUploadErrorActions: Bool = false
+    @State private var isTapped: Bool = false
 
     var body: some View {
         AvatarView(
@@ -45,6 +46,8 @@ struct AvatarPickerAvatarView: View {
         .accessibilityAddTraits(.isButton)
         .accessibilityAddTraits(shouldSelect() ? .isSelected : [])
         .accessibilityLabel(Text(avatar.accessibilityLabel(altText: avatar.altText)))
+        .scaleEffect(isTapped ? 0.95 : 1.0)
+        .opacity(isTapped ? 0.8 : 1.0)
     }
 
     @ViewBuilder
@@ -77,10 +80,20 @@ struct AvatarPickerAvatarView: View {
         if avatarSelected {
             selectedCheckmarkView()
         }
-        AvatarActionsMenu(isAvatarSelected: avatarSelected, labelTapAction: tapAction) {
+        AvatarActionsMenu(isAvatarSelected: avatarSelected) {
+            runOnTapAnimation()
+            tapAction?()
+        } label: {
             Color.clear
         } onActionSelected: { action in
             onActionSelected(action)
+        }
+    }
+
+    private func runOnTapAnimation() {
+        isTapped = true
+        withAnimation(.smooth) {
+            isTapped = false
         }
     }
 

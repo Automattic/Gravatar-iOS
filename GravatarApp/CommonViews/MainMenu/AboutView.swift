@@ -1,8 +1,11 @@
+import Analytics
 import SwiftUI
 
 struct AboutView: View {
     @EnvironmentObject var modalManager: ModalPresentationManager
+    @Environment(\.analytics) private var analytics
     @State private var inAppURL: URL?
+    @Environment(\.openURL) private var openURL
 
     @State private var presentAccountDeletionWarning: Bool = false
 
@@ -21,13 +24,29 @@ struct AboutView: View {
             }
             VStack(alignment: .leading) {
                 title(Localized.getHelpTitle)
-                link("support.gravatar.com", url: "https://support.gravatar.com")
-                link("support@gravatar.com", url: "mailto:support@gravatar.com")
+                link(
+                    "support.gravatar.com",
+                    url: "https://support.gravatar.com",
+                    event: AboutModalEvents.supportLinkTapped
+                )
+                link(
+                    "support@gravatar.com",
+                    url: "mailto:support@gravatar.com",
+                    event: AboutModalEvents.supportEmailTapped
+                )
             }
             VStack(alignment: .leading) {
                 title(Localized.legalTitle)
-                inAppSafariLink(Localized.termsOfServiceText, url: "https://automattic.com/tos/")
-                inAppSafariLink(Localized.privacyPolicyText, url: "https://automattic.com/privacy/")
+                inAppSafariLink(
+                    Localized.termsOfServiceText,
+                    url: "https://automattic.com/tos/",
+                    tracking: AboutModalEvents.tosTapped
+                )
+                inAppSafariLink(
+                    Localized.privacyPolicyText,
+                    url: "https://automattic.com/privacy/",
+                    tracking: AboutModalEvents.privacyPolicyTapped
+                )
             }
             VStack(alignment: .leading) {
                 title(Localized.deleteAccountTitle)
@@ -46,6 +65,12 @@ struct AboutView: View {
         }
         .padding()
         .presentSafariView(url: $inAppURL)
+        .onAppear {
+            analytics.track(AboutModalEvents.screenView)
+        }
+        .onDisappear {
+            analytics.track(AboutModalEvents.screenLeave)
+        }
     }
 
     private func title(_ text: String) -> some View {
@@ -55,9 +80,14 @@ struct AboutView: View {
             .padding(.bottom, .DS.Padding.half)
     }
 
-    private func link(_ text: String, url: String) -> some View {
-        Link(text, destination: URL(string: url)!)
-            .foregroundStyle(textColor)
+    private func link(_ text: String, url: String, event: AnalyticsEvent) -> some View {
+        Button {
+            analytics.track(event)
+            openURL(URL(string: url)!)
+        } label: {
+            Text(text)
+        }
+        .foregroundStyle(textColor)
     }
 
     private func label(_ text: String) -> some View {
@@ -67,6 +97,7 @@ struct AboutView: View {
 
     private var deleteAccountButton: some View {
         Button {
+            analytics.track(AboutModalEvents.deleteAccountTapped)
             presentAccountDeletionWarning = true
         } label: {
             Text(Localized.deleteAccountTitle)
@@ -75,15 +106,20 @@ struct AboutView: View {
         }
         .confirmationDialog(Localized.deleteAccountWarningTitle, isPresented: $presentAccountDeletionWarning, titleVisibility: .visible) {
             Button(Localized.deleteAccountTitle, role: .destructive) {
+                analytics.track(AboutModalEvents.deleteAccountWarningAccepted)
                 notificationCenter.post(name: .deleteAccount, object: nil)
+            }
+            Button(Localized.cancelTitle, role: .cancel) {
+                analytics.track(AboutModalEvents.deleteAccountWarningCancelled)
             }
         } message: {
             Text(Localized.deleteAccountWarningMessage)
         }
     }
 
-    private func inAppSafariLink(_ text: String, url: String) -> some View {
+    private func inAppSafariLink(_ text: String, url: String, tracking event: any AnalyticsEvent) -> some View {
         Button {
+            analytics.track(event)
             inAppURL = URL(string: url)
         } label: {
             Text(text)
@@ -140,6 +176,12 @@ private enum Localized {
         "AboutModal.accountDeletion.title",
         value: "Delete account",
         comment: "Title for the 'Delete account' section in the 'About Gravatar' view"
+    )
+
+    static let cancelTitle = NSLocalizedString(
+        "AboutModal.accountDeletion.cancel",
+        value: "Cancel",
+        comment: "Title for the 'Cancel' button when deleting an account in the 'About Gravatar' view"
     )
 
     static let deleteAccountMessage = NSLocalizedString(
