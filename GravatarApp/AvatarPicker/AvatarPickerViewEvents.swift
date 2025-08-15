@@ -10,7 +10,10 @@ enum AvatarPickerViewEvents {
     static let avatarsCameraButtonTapped: AnalyticsEvent = CommonAnalyticsEvent(name: "avatars_camera_button_tapped")
     static let avatarsPhotosButtonTapped: AnalyticsEvent = CommonAnalyticsEvent(name: "avatars_photos_button_tapped")
     static let avatarsAIButtonTapped: AnalyticsEvent = CommonAnalyticsEvent(name: "avatars_ai_button_tapped")
-    static let imageToUploadSelected: AnalyticsEvent = CommonAnalyticsEvent(name: "avatar_image_to_upload_selected")
+
+    static func imageToUploadSelected(source: ImagePickerSource) -> AnalyticsEvent {
+        CommonAnalyticsEvent(name: "avatar_image_selected_for_upload", properties: ImageUploadSource(source: source.map()))
+    }
 
     static let avatarsActionSelected: AnalyticsEvent = CommonAnalyticsEvent(name: "avatar_action_select")
     static let avatarsActionShare: AnalyticsEvent = CommonAnalyticsEvent(name: "avatar_action_share")
@@ -40,5 +43,30 @@ enum AvatarPickerViewEvents {
 extension AvatarPickerViewEvents {
     fileprivate struct AvatarDeleteProperties: EventProperties {
         let isSelected: Bool
+    }
+}
+
+extension AvatarPickerViewEvents {
+    fileprivate struct ImageUploadSource: EventProperties {
+        enum Source: String, Encodable {
+            case photoLibrary = "photo_library"
+            case camera
+            case ai
+        }
+
+        let source: Source
+    }
+}
+
+extension ImagePickerSource {
+    fileprivate func map() -> AvatarPickerViewEvents.ImageUploadSource.Source {
+        switch self {
+        case .photoLibrary:
+            .photoLibrary
+        case .camera:
+            .camera
+        case .playground:
+            .ai
+        }
     }
 }

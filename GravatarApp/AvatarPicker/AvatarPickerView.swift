@@ -32,8 +32,8 @@ struct AvatarPickerView: View {
                 )
             } content: {
                 Group {
-                    ImagePickerSectionView(onImageSelected: { selectedImage in
-                        analytics.track(AvatarPickerViewEvents.imageToUploadSelected)
+                    ImagePickerSectionView(onImageSelected: { selectedImage, source in
+                        analytics.track(AvatarPickerViewEvents.imageToUploadSelected(source: source))
                         Task {
                             await avatarPickerModel.upload(selectedImage)
                         }
