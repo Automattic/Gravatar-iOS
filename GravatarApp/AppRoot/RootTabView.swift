@@ -129,7 +129,7 @@ struct ShareTab: View {
         }
         .background(Color(uiColor: .secondarySystemBackground))
         .tabItem {
-            Label(Localized.shareTabTitle, image: .shareTab)
+            Label("QR", image: .shareTab)
         }
         .tag(RootTabItem.qr)
     }
@@ -153,12 +153,6 @@ private enum Localized {
         "Tabs.Profile.title",
         value: "Profile",
         comment: "Title for the profile tab"
-    )
-
-    static let shareTabTitle = NSLocalizedString(
-        "Tabs.Share.title",
-        value: "Share",
-        comment: "Title for the share tab"
     )
 }
 

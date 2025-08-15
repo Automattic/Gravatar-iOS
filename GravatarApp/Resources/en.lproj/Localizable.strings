@@ -1,3 +1,13 @@
+/* Warning message for the 'Delete account' section in the 'About Gravatar' view */
+"AboutModal.accountDeletion.message" = "No longer using Gravatar? Delete your account here.";
+
+/* Title for the 'Delete account' section in the 'About Gravatar' view */
+"AboutModal.accountDeletion.title" = "Delete account";
+
+/* Detailed Title warning for the 'Delete account' action in the 'About Gravatar' view
+   Detailed warning message for the 'Delete account' section in the 'About Gravatar' view */
+"AboutModal.accountDeletion.warning.message" = "Deleting your Gravatar account will immediately prevent all access to your profile";
+
 /* Text for the 'Done' button in the 'About Gravatar' view */
 "AboutModal.CloseButton.title" = "Done";
 
@@ -241,8 +251,17 @@
 /* Title for the profile tab */
 "Tabs.Profile.title" = "Profile";
 
-/* Title for the share tab */
-"Tabs.Share.title" = "Share";
+/* Error message shown when an unknown error occurs while deleting an account */
+"Welcome.accountDeletion.unknownError" = "An unknown error has occurred while deleting your account";
+
+/* Title for the error when account deletion fails */
+"Welcome.Error.DeleteAccount.title" = "Error deleting account.";
+
+/* Title for the generic error alert */
+"Welcome.Error.NoInternet.message" = "Please check your connection before proceeding.";
+
+/* Title for the generic error alert */
+"Welcome.Error.NoInternet.title" = "No internet connection detected";
 
 /* Message for the error when OAuth is denied by the user. */
 "Welcome.Error.OAuth.Denied.message" = "You need to log in to Gravatar.com.";
@@ -256,6 +275,9 @@
 /* Title for the error when the profile fetch fails. */
 "Welcome.Error.Profile.title" = "Unable to load your profile.";
 
+/* Title for the generic error alert */
+"Welcome.Error.title" = "Error";
+
 /* Title for the button to login with another account. */
 "Welcome.Login.AnotherAccountButton.title" = "Try with another account";
 
@@ -267,4 +289,7 @@
 
 /* Subtitle for the login screen */
 "Welcome.Logo.subtitle" = "Your globally recognized avatar.";
+
+/* Error message shown when associated domain setup hasn't finished yet */
+"Welcome.OAuth.secureLoginErrorMessage" = "Setting up secure login… Please try again in a few seconds.";
 

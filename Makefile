@@ -53,6 +53,12 @@ check-docker:
 	@command -v docker >/dev/null 2>&1 || { echo "Error: Docker is not installed or not in PATH"; false; }
 	@docker info >/dev/null 2>&1 || { echo "Error: Docker is installed but not running or accessible by the current user"; false; }
 
+generate-strings: # Generates strings from source and commits the result
+	bundle exec fastlane generate_strings
+
+generate-strings-no-commit: # Generates strings from source without commits the result
+	bundle exec fastlane generate_strings skip_commit:true
+
 
 dump:  # Dump all derived values used by the Makefile.
 	@echo "CURRENT_MAKEFILE_PATH = $(CURRENT_MAKEFILE_PATH)"
