@@ -1,5 +1,5 @@
-import SwiftUI
 import Analytics
+import SwiftUI
 
 final class PrivacySettingsUserSelection: ObservableObject {
     private let userDefaults: UserDefaults
@@ -24,7 +24,7 @@ final class PrivacySettingsUserSelection: ObservableObject {
     }
 }
 
-private extension String {
-    static let analyticsKey = "AnalyticsKey"
-    static let crashReportKey = "CrashReportKey"
+extension String {
+    fileprivate static let analyticsKey = "AnalyticsKey"
+    fileprivate static let crashReportKey = "CrashReportKey"
 }

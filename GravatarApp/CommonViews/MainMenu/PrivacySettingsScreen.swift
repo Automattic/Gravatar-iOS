@@ -1,5 +1,5 @@
-import SwiftUI
 import Analytics
+import SwiftUI
 
 struct PrivacySettingsScreen: View {
     @Environment(\.analytics) var analytics
@@ -45,7 +45,7 @@ struct PrivacySettingsScreen: View {
     }
 
     private func infoCard(title: String, paragraphs: String..., showButton: Bool = false, value: Binding<Bool>) -> some View {
-        return VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 16) {
             Toggle(isOn: value) {
                 Text(title).fontWeight(.semibold)
             }
@@ -119,14 +119,13 @@ private enum Localized {
     )
 }
 
-
 #Preview {
     Color.clear
-    .sheet(isPresented: .constant(true)) {
-        NavigationStack {
-            ScrollView {
-                PrivacySettingsScreen(isPresented: .constant(true))
+        .sheet(isPresented: .constant(true)) {
+            NavigationStack {
+                ScrollView {
+                    PrivacySettingsScreen(isPresented: .constant(true))
+                }
             }
         }
-    }
 }
