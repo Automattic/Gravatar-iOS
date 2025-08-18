@@ -20,6 +20,7 @@ final class PrivacySettingsUserSelection: ObservableObject {
     @Published var shareCrashReports: Bool {
         didSet {
             userDefaults.set(shareCrashReports, forKey: .crashReportKey)
+            NotificationCenter.default.post(name: .crashLoggerOptOutChanged, object: nil)
         }
     }
 }
