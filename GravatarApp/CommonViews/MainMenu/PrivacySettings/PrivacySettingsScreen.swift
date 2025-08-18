@@ -19,12 +19,14 @@ struct PrivacySettingsScreen: View {
         VStack(spacing: CGFloat.Global.verticalSectionSpacing) {
             infoCard(
                 title: Localized.analyticsTitle,
+                icon: {Image(systemName: "chart.bar.xaxis")},
                 paragraphs: Localized.analyticsMessage1, Localized.analyticsMessage2,
                 showButton: true,
                 value: $viewModel.shareAnalytics
             )
             infoCard(
                 title: Localized.crashReportTitle,
+                icon: {Image(systemName: "ant.fill")},
                 paragraphs: Localized.crashReportMessage,
                 value: $viewModel.shareCrashReports
             )
@@ -37,10 +39,13 @@ struct PrivacySettingsScreen: View {
         .presentationBackground(.ultraThickMaterial)
     }
 
-    private func infoCard(title: String, paragraphs: String..., showButton: Bool = false, value: Binding<Bool>) -> some View {
+    private func infoCard(title: String, icon: () -> Image, paragraphs: String..., showButton: Bool = false, value: Binding<Bool>) -> some View {
         VStack(alignment: .leading, spacing: .Global.verticalSectionSpacing) {
             Toggle(isOn: value) {
-                Text(title).fontWeight(.semibold)
+                HStack {
+                    icon().foregroundStyle(.secondary)
+                    Text(title).fontWeight(.semibold)
+                }
             }
             .padding(.trailing, .Global.contentHorizontalPadding)
             Divider()
