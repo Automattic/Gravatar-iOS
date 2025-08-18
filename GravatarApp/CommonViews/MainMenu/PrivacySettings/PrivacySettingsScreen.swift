@@ -19,14 +19,14 @@ struct PrivacySettingsScreen: View {
         VStack(spacing: CGFloat.Global.verticalSectionSpacing) {
             infoCard(
                 title: Localized.analyticsTitle,
-                icon: {Image(systemName: "chart.bar.xaxis")},
+                icon: { Image(systemName: "chart.bar.xaxis") },
                 paragraphs: Localized.analyticsMessage1, Localized.analyticsMessage2,
                 showButton: true,
                 value: $viewModel.shareAnalytics
             )
             infoCard(
                 title: Localized.crashReportTitle,
-                icon: {Image(systemName: "ant.fill")},
+                icon: { Image(systemName: "ant.fill") },
                 paragraphs: Localized.crashReportMessage,
                 value: $viewModel.shareCrashReports
             )
@@ -41,13 +41,7 @@ struct PrivacySettingsScreen: View {
 
     private func infoCard(title: String, icon: () -> Image, paragraphs: String..., showButton: Bool = false, value: Binding<Bool>) -> some View {
         VStack(alignment: .leading, spacing: .Global.verticalSectionSpacing) {
-            Toggle(isOn: value) {
-                HStack {
-                    icon().foregroundStyle(.secondary)
-                    Text(title).fontWeight(.semibold)
-                }
-            }
-            .padding(.trailing, .Global.contentHorizontalPadding)
+            toggleView(title: title, icon: icon, value: value)
             Divider()
             ForEach(paragraphs, id: \.self) { text in
                 Text(text)
@@ -66,6 +60,16 @@ struct PrivacySettingsScreen: View {
         .padding(.leading, CGFloat.Global.contentHorizontalPadding)
         .background(Color.DS.backgroundOverMaterial)
         .shape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    private func toggleView(title: String, icon: () -> Image, value: Binding<Bool>) -> some View {
+        Toggle(isOn: value) {
+            HStack {
+                icon().foregroundStyle(.secondary)
+                Text(title).fontWeight(.semibold)
+            }
+        }
+        .padding(.trailing, .Global.contentHorizontalPadding)
     }
 }
 
