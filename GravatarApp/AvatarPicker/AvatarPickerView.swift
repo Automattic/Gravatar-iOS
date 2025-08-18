@@ -32,7 +32,8 @@ struct AvatarPickerView: View {
                 )
             } content: {
                 Group {
-                    ImagePickerSectionView(onImageSelected: { selectedImage in
+                    ImagePickerSectionView(onImageSelected: { selectedImage, source in
+                        analytics.track(AvatarPickerViewEvents.imageToUploadSelected(source: source))
                         Task {
                             await avatarPickerModel.upload(selectedImage)
                         }
@@ -68,11 +69,14 @@ struct AvatarPickerView: View {
                 avatarPickerModel.forceRefreshAvatar = true
             }
         }
-        .avatarDeletionDialog(avatar: $avatarToDelete, deleteAction: { avatar in
+        .avatarDeletionDialog(avatar: $avatarToDelete) { avatar in
+            analytics.track(AvatarPickerViewEvents.avatarsActionDeleteWarningAccepted(isSelected: avatar.isSelected))
             Task {
                 await avatarPickerModel.delete(avatar)
             }
-        })
+        } cancelAction: { avatar in
+            analytics.track(AvatarPickerViewEvents.avatarsActionDeleteWarningCancelled(isSelected: avatar.isSelected))
+        }
         .avatarShareSheet(item: $shareSheetItem)
         .sensoryFeedback(.error, trigger: avatarPickerModel.imageUploadErrorID)
         .sensoryFeedback(.success, trigger: avatarPickerModel.imageUploadSuccessID)
@@ -112,12 +116,15 @@ struct AvatarPickerView: View {
     private func avatarAction(avatar: AvatarImageModel, action: AvatarAction) {
         switch action {
         case .select:
+            analytics.track(AvatarPickerViewEvents.avatarsActionSelected)
             Task {
                 _ = await avatarPickerModel.selectAvatar(with: avatar.id)
             }
         case .delete:
+            analytics.track(AvatarPickerViewEvents.avatarsActionDelete(isSelected: avatar.isSelected))
             avatarToDelete = avatar
         case .share:
+            analytics.track(AvatarPickerViewEvents.avatarsActionShare)
             Task {
                 if let fileURL = await avatarPickerModel.fetchAndSaveToFile(avatar: avatar) {
                     shareSheetItem = AvatarShareItem(id: avatar.id, fileURL: fileURL)

@@ -3,7 +3,7 @@ import SwiftUI
 
 struct ImagePickerSectionView: View {
     @Environment(\.analytics) var analytics
-    let onImageSelected: (UIImage) -> Void
+    let onImageSelected: (UIImage, ImagePickerSource) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -21,7 +21,7 @@ struct ImagePickerSectionView: View {
                     }) {
                         uploadAvatarButton(title: source.localizedTitle, icon: source.icon)
                     } onImageSelected: { image in
-                        onImageSelected(image)
+                        onImageSelected(image, source)
                     }
                 }
             }
@@ -99,6 +99,6 @@ extension ImagePickerSource {
 }
 
 #Preview("Avatar Upload") {
-    ImagePickerSectionView { _ in
+    ImagePickerSectionView { _, _ in
     }
 }
