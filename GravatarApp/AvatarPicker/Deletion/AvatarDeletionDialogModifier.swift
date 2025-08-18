@@ -3,6 +3,7 @@ import SwiftUI
 struct AvatarDeletionDialogModifier: ViewModifier {
     @Binding var avatar: AvatarImageModel?
     let deleteAction: (AvatarImageModel) -> Void
+    let cancelAction: (AvatarImageModel) -> Void
 
     func body(content: Content) -> some View {
         content.confirmationDialog(
@@ -16,6 +17,9 @@ struct AvatarDeletionDialogModifier: ViewModifier {
             Button(Localized.deleteButtonTitle, role: .destructive) {
                 deleteAction(avatar)
             }
+            Button(Localized.cancelButtonTitle, role: .cancel) {
+                cancelAction(avatar)
+            }
         } message: { _ in
             Text(Localized.confirmationTitle)
         }
@@ -25,11 +29,13 @@ struct AvatarDeletionDialogModifier: ViewModifier {
 extension View {
     func avatarDeletionDialog(
         avatar: Binding<AvatarImageModel?>,
-        deleteAction: @escaping (AvatarImageModel) -> Void
+        deleteAction: @escaping (AvatarImageModel) -> Void,
+        cancelAction: @escaping (AvatarImageModel) -> Void
     ) -> some View {
         self.modifier(AvatarDeletionDialogModifier(
             avatar: avatar,
-            deleteAction: deleteAction
+            deleteAction: deleteAction,
+            cancelAction: cancelAction
         ))
     }
 }
@@ -44,5 +50,10 @@ private enum Localized {
         "AvatarPicker.Deletion.Confirmation.ctaButtonTitle",
         value: "Delete",
         comment: "The title button which confirms the avatar deletion."
+    )
+    fileprivate static let cancelButtonTitle = NSLocalizedString(
+        "AvatarPicker.Deletion.Cancel.buttonTitle",
+        value: "Cancel",
+        comment: "The title button which cancels the avatar deletion."
     )
 }
