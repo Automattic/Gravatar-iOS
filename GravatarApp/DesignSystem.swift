@@ -41,6 +41,10 @@ extension Color {
             light: .rgba(178, 178, 186),
             dark: .rgba(68, 68, 78)
         ))
+        static let backgroundOverMaterial = Color(uiColor: .init(
+            light: .white,
+            dark: .quaternarySystemFill.resolvedColor(with: .init(userInterfaceStyle: .dark))
+        ))
     }
 }
 
