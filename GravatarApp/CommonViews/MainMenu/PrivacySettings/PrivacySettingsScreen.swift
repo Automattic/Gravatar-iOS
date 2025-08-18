@@ -113,7 +113,7 @@ private enum Localized {
     )
     static let crashReportMessage = NSLocalizedString(
         "PrivacySettings.CrashReport.description",
-        value: "Share information with our analytics tool about how you interact with this app and our services.",
+        value: "To help us improve the app’s performance and fix occasional bugs, enable automatic crash reports.",
         comment: "Descrption for the crash report section of Privacy Settings"
     )
     static let privacyPolicyButtonTitle = NSLocalizedString(

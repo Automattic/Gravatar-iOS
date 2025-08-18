@@ -141,7 +141,7 @@
 "PrivacySettings.Analytics.title" = "Share Analytics Data";
 
 /* Descrption for the crash report section of Privacy Settings */
-"PrivacySettings.CrashReport.description" = "Share information with our analytics tool about how you interact with this app and our services.";
+"PrivacySettings.CrashReport.description" = "To help us improve the app’s performance and fix occasional bugs, enable automatic crash reports.";
 
 /* Title for the crash report section of Privacy Settings */
 "PrivacySettings.CrashReport.title" = "Share Crash Reports";
