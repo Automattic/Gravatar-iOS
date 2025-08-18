@@ -51,7 +51,7 @@ extension AvatarPickerViewEvents {
         enum Source: String, Encodable {
             case photoLibrary = "photo_library"
             case camera
-            case ai
+            case playground
         }
 
         let source: Source
@@ -66,7 +66,7 @@ extension ImagePickerSource {
         case .camera:
             .camera
         case .playground:
-            .ai
+            .playground
         }
     }
 }
