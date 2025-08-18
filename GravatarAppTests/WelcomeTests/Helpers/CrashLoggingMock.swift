@@ -16,7 +16,7 @@ class CrashLoggingMock: CrashLoggingType {
         setNeedsDataRefreshCalled = true
     }
 
-#if DEBUG
+    #if DEBUG
     func crash() {}
-#endif
+    #endif
 }

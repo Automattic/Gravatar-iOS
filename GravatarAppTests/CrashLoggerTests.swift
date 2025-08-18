@@ -1,7 +1,7 @@
-import Testing
+import Foundation
 @testable import GravatarApp
 import SwiftData
-import Foundation
+import Testing
 
 @MainActor
 struct CrashLoggerTests {
