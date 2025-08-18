@@ -27,6 +27,7 @@ class WelcomeViewModel: ObservableObject {
     private let analytics: Analytics
     private let userDefaults: UserDefaults
     private let networkMonitor: any NetworkMonitor
+    private let crashLogger: CrashLogger
     private var cancellables = Set<AnyCancellable>()
 
     init(
@@ -35,7 +36,8 @@ class WelcomeViewModel: ObservableObject {
         analytics: Analytics = .shared,
         profileService: ProfileServiceProtocol = Gravatar.ProfileService(urlSession: GravatarURLSession.shared),
         context: ModelContext,
-        networkMonitor: any NetworkMonitor = SystemNetworkMonitor.shared
+        networkMonitor: any NetworkMonitor = SystemNetworkMonitor.shared,
+        crashLogger: CrashLogger
     ) {
         self.oauthManager = oauthManager
         self.analytics = analytics
@@ -43,12 +45,30 @@ class WelcomeViewModel: ObservableObject {
         self.profileService = profileService
         self.context = context
         self.networkMonitor = networkMonitor
+        self.crashLogger = crashLogger
 
+        setupListeners(with: crashLogger)
+        crashLogger.start()
+    }
+
+    private func setupListeners(with crashLogger: CrashLogger) {
         networkMonitor.hasNetworkConnection.sink { [weak self] isConnected in
             withAnimation(.smooth(duration: 0.2)) {
                 self?.noInernetConnection = !isConnected
             }
         }.store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: .crashLoggerOptOutChanged).sink { _ in
+            Task {
+                crashLogger.optOutChanged()
+            }
+        }.store(in: &cancellables)
+
+        #if DEBUG
+        NotificationCenter.default.publisher(for: .crashApp).sink { _ in
+            crashLogger.crash()
+        }.store(in: &cancellables)
+        #endif
     }
 
     func fetchProfile(with token: String) async {
@@ -88,10 +108,13 @@ class WelcomeViewModel: ObservableObject {
             context.insert(ProfileStore(profile: profile))
             context.saveNow()
         }
+        crashLogger.refreshUser()
     }
 
     private func softLoginConfiguration(profile: Profile, accessToken: String) {
         userSession = .init(profile: profile, accessToken: accessToken, context: context)
+        crashLogger.refreshUser()
+
         Task {
             await analytics.setUserName(profile.userLogin)
         }
@@ -135,6 +158,7 @@ class WelcomeViewModel: ObservableObject {
         withAnimation {
             self.userSession = nil
         }
+        crashLogger.refreshUser()
     }
 
     func deleteAccount() async {
