@@ -277,5 +277,5 @@ extension String {
 }
 
 #Preview {
-    WelcomeView(viewModel: .init(context: .testContext))
+    WelcomeView(viewModel: .init(context: .testContext, crashLogger: CrashLogger(context: .testContext)))
 }
