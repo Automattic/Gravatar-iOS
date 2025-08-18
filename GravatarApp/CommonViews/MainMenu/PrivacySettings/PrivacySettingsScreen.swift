@@ -30,22 +30,24 @@ struct PrivacySettingsScreen: View {
             )
             Spacer()
         }
-        .padding(.horizontal, CGFloat.Global.contentHorizontalPadding)
-        .padding(.top, CGFloat.Global.verticalSectionSpacing)
+        .padding(.horizontal, .Global.contentHorizontalPadding)
+        .padding(.top, .Global.verticalSectionSpacing)
         .navigationSetup(isPresented: $isPresented)
         .presentSafariView(url: $inAppURL)
         .presentationBackground(.ultraThickMaterial)
     }
 
     private func infoCard(title: String, paragraphs: String..., showButton: Bool = false, value: Binding<Bool>) -> some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: .Global.verticalSectionSpacing) {
             Toggle(isOn: value) {
                 Text(title).fontWeight(.semibold)
             }
-            Divider().offset(y: -4).padding(.trailing, 60)
+            .padding(.trailing, .Global.contentHorizontalPadding)
+            Divider()
             ForEach(paragraphs, id: \.self) { text in
                 Text(text)
             }
+            .padding(.trailing, .Global.contentHorizontalPadding)
             if showButton {
                 Button {
                     analytics.track(PrivacySettingsEvents.privacyPolicyTapped)
@@ -56,7 +58,7 @@ struct PrivacySettingsScreen: View {
             }
         }
         .padding(.vertical, CGFloat.Global.verticalSectionSpacing)
-        .padding(.horizontal, CGFloat.Global.contentHorizontalPadding)
+        .padding(.leading, CGFloat.Global.contentHorizontalPadding)
         .background(Color.DS.backgroundOverMaterial)
         .shape(RoundedRectangle(cornerRadius: 12))
     }
