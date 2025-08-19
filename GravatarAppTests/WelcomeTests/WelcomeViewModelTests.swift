@@ -133,10 +133,10 @@ final class WelcomeViewModelTests {
         #expect(tracker.tracked(event: WelcomeScreenEvent.profileFetchSuccess, count: 0))
     }
 
-    @Test("Connection errors should not be logged when fetching profile")
-    func profileErrorNoInternet() async throws {
+    @Test("Connection errors should not be logged when fetching profile", arguments: [NSURLErrorNotConnectedToInternet, NSURLErrorNetworkConnectionLost])
+    func profileErrorNoInternet(errorCode: Int) async throws {
         profileService.error = .responseError(
-            reason: .URLSessionError(error: NSError(domain: NSURLErrorDomain, code: NSURLErrorNotConnectedToInternet))
+            reason: .URLSessionError(error: NSError(domain: NSURLErrorDomain, code: errorCode))
         )
 
         await model.requestOAuthToken()
