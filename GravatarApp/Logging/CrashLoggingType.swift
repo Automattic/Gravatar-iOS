@@ -7,6 +7,7 @@ protocol CrashLoggingType {
     func startLogging() throws
     func stopLogging()
     func setNeedsDataRefresh()
+    func logError(_ error: Error, tags: [String: String])
 }
 
 extension CrashLogging: CrashLoggingType {
@@ -20,5 +21,9 @@ extension CrashLogging: CrashLoggingType {
 
     func startLogging() throws {
         _ = try self.start()
+    }
+
+    func logError(_ error: Error, tags: [String: String] = [:]) {
+        logError(error, tags: tags, level: .error)
     }
 }

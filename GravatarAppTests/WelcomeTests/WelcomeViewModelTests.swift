@@ -12,6 +12,7 @@ final class WelcomeViewModelTests {
     let profileService = TestProfileService()
     let oauthSession = TestOAuthSession(callbackURL: URL(string: "https://some.com")!)
     let tracker = TrackerMock()
+    let crashLoggingMock = CrashLoggingMock()
 
     lazy var oauthManager = OAuthManager(
         authenticationSession: oauthSession,
@@ -25,7 +26,7 @@ final class WelcomeViewModelTests {
         analytics: Analytics(tracker: tracker, userUUIDStorage: UserUUIDStorageMock()),
         profileService: profileService,
         context: container.mainContext,
-        crashLogger: CrashLogger(crashLogging: CrashLoggingMock(), context: .testContext)
+        crashLogger: CrashLogger(crashLogging: crashLoggingMock, context: .testContext)
     )
 
     init() async throws {
@@ -127,7 +128,24 @@ final class WelcomeViewModelTests {
         #expect(model.profileFetchingError != nil)
         #expect(model.oauthError == nil)
 
-        #expect(tracker.tracked(event: WelcomeScreenEvent.profileFetchError(error: "")))
+        #expect(crashLoggingMock.loggedErrors.first?.error as? APIError != nil)
+        #expect(crashLoggingMock.loggedErrors.first?.tags["error_type"] == "profile_fetch_error")
+        #expect(tracker.tracked(event: WelcomeScreenEvent.profileFetchSuccess, count: 0))
+    }
+
+    @Test("Connection errors should not be logged when fetching profile", arguments: [NSURLErrorNotConnectedToInternet, NSURLErrorNetworkConnectionLost])
+    func profileErrorNoInternet(errorCode: Int) async throws {
+        profileService.error = .responseError(
+            reason: .URLSessionError(error: NSError(domain: NSURLErrorDomain, code: errorCode))
+        )
+
+        await model.requestOAuthToken()
+
+        #expect(model.userSession == nil)
+        #expect(model.profileFetchingError != nil)
+        #expect(model.oauthError == nil)
+
+        #expect(crashLoggingMock.loggedErrors.count == 0)
         #expect(tracker.tracked(event: WelcomeScreenEvent.profileFetchSuccess, count: 0))
     }
 

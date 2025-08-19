@@ -77,8 +77,12 @@ class WelcomeViewModel: ObservableObject {
             await configureSession(profile: profile, accessToken: token)
             cleanAllErrors()
         } catch {
-            if let error = error as? APIError { // Always the case (we need typed throws from the SDK)
-                analytics.track(WelcomeScreenEvent.profileFetchError(error: error.debugDescription))
+            if let error = error as? APIError, // Always the case (we need typed throws from the SDK)
+               !error.isNotConnectedToInternet // Not interested in connection errors
+            {
+                crashLogger.logError(error, tags: [
+                    CrashLogger.Key.errorTypeKey: "profile_fetch_error",
+                ])
             }
             localAccessToken = token
             withAnimation(.smooth(duration: 0.2)) {
@@ -196,16 +200,26 @@ class WelcomeViewModel: ObservableObject {
                 analytics.track(WelcomeScreenEvent.oauthCancelled)
             case let error where error.isAssociatedDomainError:
                 oauthAlertErrorMessage = Localized.secureLoginErrorMessage
-                analytics.track(WelcomeScreenEvent.oauthError(error: error.errorDescription))
+                logOAuthError(error)
             default:
                 oauthAlertErrorMessage = error.errorDescription
-                analytics.track(WelcomeScreenEvent.oauthError(error: error.errorDescription))
+                logOAuthError(error)
             }
             withAnimation {
                 self.oauthError = error
             }
             isLoading = false
         }
+    }
+
+    private func logOAuthError(_ error: OAuthError) {
+        crashLogger.logError(
+            error,
+            tags: [
+                CrashLogger.Key.errorTypeKey: "oauth_error",
+                CrashLogger.Key.errorTagKey: error.errorTag,
+            ]
+        )
     }
 }
 

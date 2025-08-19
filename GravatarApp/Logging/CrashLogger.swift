@@ -2,6 +2,11 @@ import AutomatticRemoteLogging
 import SwiftData
 
 final class CrashLogger {
+    enum Key {
+        static let errorTypeKey = "error_type"
+        static let errorTagKey = "error_tag"
+    }
+
     private let crashLogging: CrashLoggingType
     private let dataProvider: AppCrashLoggingDataProvider
 
@@ -31,6 +36,10 @@ final class CrashLogger {
     func refreshUser() {
         guard crashLogging.isEnabled else { return }
         crashLogging.setNeedsDataRefresh()
+    }
+
+    func logError(_ error: Error, tags: [String: String] = [:]) {
+        crashLogging.logError(error, tags: tags)
     }
 }
 
