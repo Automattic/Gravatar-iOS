@@ -78,7 +78,9 @@ class WelcomeViewModel: ObservableObject {
             cleanAllErrors()
         } catch {
             if let error = error as? APIError { // Always the case (we need typed throws from the SDK)
-                analytics.track(WelcomeScreenEvent.profileFetchError(error: error.debugDescription))
+                crashLogger.logError(error, tags: [
+                    CrashLogger.Key.errorTypeKey: "profile_fetch_error",
+                ])
             }
             localAccessToken = token
             withAnimation(.smooth(duration: 0.2)) {

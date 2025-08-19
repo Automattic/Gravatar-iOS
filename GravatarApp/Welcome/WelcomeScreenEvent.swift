@@ -7,13 +7,8 @@ enum WelcomeScreenEvent {
     static let oauthStart: AnalyticsEvent = CommonAnalyticsEvent(name: "oauth_start")
     static let oauthCancelled: AnalyticsEvent = CommonAnalyticsEvent(name: "oauth_cancelled")
     static let oauthSuccess: AnalyticsEvent = CommonAnalyticsEvent(name: "oauth_success")
-
     static let profileFetchStart: AnalyticsEvent = CommonAnalyticsEvent(name: "profile_fetch_start")
     static let profileFetchSuccess: AnalyticsEvent = CommonAnalyticsEvent(name: "profile_fetch_success")
-    static func profileFetchError(error: String) -> AnalyticsEvent {
-        CommonAnalyticsEvent(name: "profile_fetch_error", properties: ErrorEventProperties(error: error))
-    }
-
     static let tabGravatarTapped: AnalyticsEvent = CommonAnalyticsEvent(name: "tab_gravatar_tapped")
     static let tabProfileTapped: AnalyticsEvent = CommonAnalyticsEvent(name: "tab_profile_tapped")
     static let tabQRTapped: AnalyticsEvent = CommonAnalyticsEvent(name: "tab_qr_tapped")
