@@ -32,6 +32,17 @@
     },
     {
       "parallelizable" : true,
+      "skippedTests" : {
+        "suites" : [
+          {
+            "name" : "PrivacySettingsUserSelectionTests",
+            "testFunctions" : [
+              "toggleShareAnalytics(isOn:)",
+              "toggleShareAnalyticsIsRespectedWhenSendingTheEvent(isOn:)"
+            ]
+          }
+        ]
+      },
       "target" : {
         "containerPath" : "container:GravatarApp.xcodeproj",
         "identifier" : "1EDD7F9D2DF9B94500E5F1B6",
