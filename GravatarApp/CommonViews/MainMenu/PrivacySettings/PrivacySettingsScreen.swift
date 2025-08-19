@@ -19,33 +19,34 @@ struct PrivacySettingsScreen: View {
         VStack(spacing: CGFloat.Global.verticalSectionSpacing) {
             infoCard(
                 title: Localized.analyticsTitle,
+                icon: { Image(systemName: "chart.bar.xaxis") },
                 paragraphs: Localized.analyticsMessage1, Localized.analyticsMessage2,
                 showButton: true,
                 value: $viewModel.shareAnalytics
             )
             infoCard(
                 title: Localized.crashReportTitle,
+                icon: { Image(systemName: "ant.fill") },
                 paragraphs: Localized.crashReportMessage,
                 value: $viewModel.shareCrashReports
             )
             Spacer()
         }
-        .padding(.horizontal, CGFloat.Global.contentHorizontalPadding)
-        .padding(.top, CGFloat.Global.verticalSectionSpacing)
+        .padding(.horizontal, .Global.contentHorizontalPadding)
+        .padding(.top, .Global.verticalSectionSpacing)
         .navigationSetup(isPresented: $isPresented)
         .presentSafariView(url: $inAppURL)
         .presentationBackground(.ultraThickMaterial)
     }
 
-    private func infoCard(title: String, paragraphs: String..., showButton: Bool = false, value: Binding<Bool>) -> some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Toggle(isOn: value) {
-                Text(title).fontWeight(.semibold)
-            }
-            Divider().offset(y: -4).padding(.trailing, 60)
+    private func infoCard(title: String, icon: () -> Image, paragraphs: String..., showButton: Bool = false, value: Binding<Bool>) -> some View {
+        VStack(alignment: .leading, spacing: .Global.verticalSectionSpacing) {
+            toggleView(title: title, icon: icon, value: value)
+            Divider()
             ForEach(paragraphs, id: \.self) { text in
                 Text(text)
             }
+            .padding(.trailing, .Global.contentHorizontalPadding)
             if showButton {
                 Button {
                     analytics.track(PrivacySettingsEvents.privacyPolicyTapped)
@@ -56,9 +57,19 @@ struct PrivacySettingsScreen: View {
             }
         }
         .padding(.vertical, CGFloat.Global.verticalSectionSpacing)
-        .padding(.horizontal, CGFloat.Global.contentHorizontalPadding)
+        .padding(.leading, CGFloat.Global.contentHorizontalPadding)
         .background(Color.DS.backgroundOverMaterial)
         .shape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    private func toggleView(title: String, icon: () -> Image, value: Binding<Bool>) -> some View {
+        Toggle(isOn: value) {
+            HStack {
+                icon().foregroundStyle(.secondary)
+                Text(title).fontWeight(.semibold)
+            }
+        }
+        .padding(.trailing, .Global.contentHorizontalPadding)
     }
 }
 

@@ -63,12 +63,6 @@ class WelcomeViewModel: ObservableObject {
                 crashLogger.optOutChanged()
             }
         }.store(in: &cancellables)
-
-        #if DEBUG
-        NotificationCenter.default.publisher(for: .crashApp).sink { _ in
-            crashLogger.crash()
-        }.store(in: &cancellables)
-        #endif
     }
 
     func fetchProfile(with token: String) async {
