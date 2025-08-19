@@ -6,20 +6,12 @@ final class CrashLogger {
     private let dataProvider: AppCrashLoggingDataProvider
 
     init(crashLogging: CrashLoggingType? = nil, context: ModelContext, userDefaults: UserDefaults = .standard) {
-        // ⚠️ WARNING: Remove next line before merging
-        userDefaults.set(true, forKey: CrashLogging.forceCrashLoggingKey)
         self.dataProvider = AppCrashLoggingDataProvider(userDefaults: userDefaults, context: context)
 
         self.crashLogging = crashLogging ?? CrashLogging(
             dataProvider: dataProvider,
         )
     }
-
-    #if DEBUG
-    func crash() {
-        crashLogging.crash()
-    }
-    #endif
 
     func start() {
         guard !dataProvider.userHasOptedOut else { return }
