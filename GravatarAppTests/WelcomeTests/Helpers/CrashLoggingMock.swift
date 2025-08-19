@@ -3,6 +3,7 @@
 class CrashLoggingMock: CrashLoggingType {
     var isEnabled: Bool = false
     var setNeedsDataRefreshCalled = false
+    var loggedError: (Error, [String: Any]?)?
 
     func stopLogging() {
         isEnabled = false
@@ -14,5 +15,9 @@ class CrashLoggingMock: CrashLoggingType {
 
     func setNeedsDataRefresh() {
         setNeedsDataRefreshCalled = true
+    }
+
+    func logError(_ error: any Error, userInfo: [String: Any]?) {
+        loggedError = (error, userInfo)
     }
 }
