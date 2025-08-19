@@ -12,6 +12,7 @@ final class WelcomeViewModelTests {
     let profileService = TestProfileService()
     let oauthSession = TestOAuthSession(callbackURL: URL(string: "https://some.com")!)
     let tracker = TrackerMock()
+    let crashLoggingMock = CrashLoggingMock()
 
     lazy var oauthManager = OAuthManager(
         authenticationSession: oauthSession,
@@ -25,7 +26,7 @@ final class WelcomeViewModelTests {
         analytics: Analytics(tracker: tracker, userUUIDStorage: UserUUIDStorageMock()),
         profileService: profileService,
         context: container.mainContext,
-        crashLogger: CrashLogger(crashLogging: CrashLoggingMock(), context: .testContext)
+        crashLogger: CrashLogger(crashLogging: crashLoggingMock, context: .testContext)
     )
 
     init() async throws {
@@ -127,7 +128,8 @@ final class WelcomeViewModelTests {
         #expect(model.profileFetchingError != nil)
         #expect(model.oauthError == nil)
 
-        #expect(tracker.tracked(event: WelcomeScreenEvent.profileFetchError(error: "")))
+        #expect(crashLoggingMock.loggedErrors.first?.error as? APIError != nil)
+        #expect(crashLoggingMock.loggedErrors.first?.tags["error_type"] == "profile_fetch_error")
         #expect(tracker.tracked(event: WelcomeScreenEvent.profileFetchSuccess, count: 0))
     }
 
