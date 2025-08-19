@@ -133,6 +133,22 @@ final class WelcomeViewModelTests {
         #expect(tracker.tracked(event: WelcomeScreenEvent.profileFetchSuccess, count: 0))
     }
 
+    @Test("Connection errors should not be logged when fetching profile")
+    func profileErrorNoInternet() async throws {
+        profileService.error = .responseError(
+            reason: .URLSessionError(error: NSError(domain: NSURLErrorDomain, code: NSURLErrorNotConnectedToInternet))
+        )
+
+        await model.requestOAuthToken()
+
+        #expect(model.userSession == nil)
+        #expect(model.profileFetchingError != nil)
+        #expect(model.oauthError == nil)
+
+        #expect(crashLoggingMock.loggedErrors.count == 0)
+        #expect(tracker.tracked(event: WelcomeScreenEvent.profileFetchSuccess, count: 0))
+    }
+
     @Test("Profile error clears after successful profile request")
     func profileErrorClears() async throws {
         profileService.error = .responseError(

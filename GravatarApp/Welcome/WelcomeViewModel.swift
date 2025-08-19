@@ -77,7 +77,9 @@ class WelcomeViewModel: ObservableObject {
             await configureSession(profile: profile, accessToken: token)
             cleanAllErrors()
         } catch {
-            if let error = error as? APIError { // Always the case (we need typed throws from the SDK)
+            if let error = error as? APIError, // Always the case (we need typed throws from the SDK)
+               !error.isNotConnectedToInternet // Not interested in connection errors
+            {
                 crashLogger.logError(error, tags: [
                     CrashLogger.Key.errorTypeKey: "profile_fetch_error",
                 ])
