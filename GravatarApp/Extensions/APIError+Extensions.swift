@@ -7,10 +7,10 @@ extension APIError {
         case .responseError(reason: .URLSessionError(error: let error)):
             let error = error as NSError
             return error.domain == NSURLErrorDomain &&
-            (
-                error.code == NSURLErrorNotConnectedToInternet ||
-                error.code == NSURLErrorNetworkConnectionLost
-            )
+                (
+                    error.code == NSURLErrorNotConnectedToInternet ||
+                        error.code == NSURLErrorNetworkConnectionLost
+                )
         default:
             return false
         }
