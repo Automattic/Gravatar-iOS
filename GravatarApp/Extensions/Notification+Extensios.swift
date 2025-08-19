@@ -6,7 +6,4 @@ extension Notification.Name {
     static let signOut = Notification.Name("SignOutNotification")
     static let deleteAccount = Notification.Name("DeleteAccountNotification")
     static let crashLoggerOptOutChanged = Notification.Name("CrashLoggerOptOutChanged")
-    #if DEBUG
-    static let crashApp = Notification.Name("CrashApp")
-    #endif
 }

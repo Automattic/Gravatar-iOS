@@ -4,10 +4,6 @@ import Sentry
 protocol CrashLoggingType {
     var isEnabled: Bool { get }
 
-    #if DEBUG
-    func crash()
-    #endif
-
     func startLogging() throws
     func stopLogging()
     func setNeedsDataRefresh()

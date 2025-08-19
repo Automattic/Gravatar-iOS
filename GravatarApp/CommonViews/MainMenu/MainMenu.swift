@@ -65,11 +65,6 @@ struct MainMenu: View {
                 analytics.track(MainMenuEvents.signOutTapped)
                 notificationCenter.post(name: .signOut, object: nil)
             }
-            #if DEBUG
-            MenuItem("Crash app", systemImage: "exclamationmark.triangle", attributes: .destructive) {
-                NotificationCenter.default.post(name: .crashApp, object: nil)
-            }
-            #endif
         }
     }
 }
