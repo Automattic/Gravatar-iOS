@@ -4,7 +4,6 @@ import SwiftData
 import SwiftUI
 
 struct GravatarAppApp: App {
-    var modelContext: ModelContext
     @State private var unrecoberableError: Error?
     @StateObject private var welcomeViewModel: WelcomeViewModel
 
@@ -12,19 +11,14 @@ struct GravatarAppApp: App {
         let settings = PrivacySettingsUserSelection()
         Analytics.setPushEventsToRemote(settings.shareAnalytics)
 
-        Task {
-            await GravatarCrashLogger.shared.start()
-        }
         do {
             let context = try ModelContext(ModelContainer(for: ProfileStore.self))
-            self.modelContext = context
-            _welcomeViewModel = .init(wrappedValue: .init(context: context))
+            _welcomeViewModel = .init(wrappedValue: .init(context: context, crashLogger: CrashLogger(context: context)))
         } catch {
             print("Error creating model context: \(error)")
             resetSwiftDataStore()
             let context = try! ModelContext(ModelContainer(for: ProfileStore.self))
-            self.modelContext = context
-            _welcomeViewModel = .init(wrappedValue: .init(context: context))
+            _welcomeViewModel = .init(wrappedValue: .init(context: context, crashLogger: CrashLogger(context: context)))
         }
     }
 

@@ -24,7 +24,8 @@ final class WelcomeViewModelTests {
         userDefaults: .testUserDefaults,
         analytics: Analytics(tracker: tracker, userUUIDStorage: UserUUIDStorageMock()),
         profileService: profileService,
-        context: container.mainContext
+        context: container.mainContext,
+        crashLogger: CrashLogger(crashLogging: CrashLoggingMock(), context: .testContext)
     )
 
     init() async throws {

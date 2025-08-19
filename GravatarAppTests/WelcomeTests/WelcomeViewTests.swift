@@ -11,7 +11,8 @@ struct WelcomeViewTests {
     let viewModel = WelcomeViewModel(
         userDefaults: UserDefaults(suiteName: "tests")!,
         analytics: Analytics.test,
-        context: .testContext
+        context: .testContext,
+        crashLogger: CrashLogger(crashLogging: CrashLoggingMock(), context: .testContext)
     )
 
     @Test("Welcome view clean state")
