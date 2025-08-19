@@ -58,6 +58,32 @@ public enum OAuthError: Error {
             "Unknown error"
         }
     }
+
+    public var errorTag: String {
+        if isAssociatedDomainError {
+            return "associatedDomainError"
+        }
+        switch self {
+        case .couldNotParseAccessCode:
+            return "couldNotParseAccessCode"
+        case .oauthResponseError:
+            return "oauthResponseError"
+        case .tokenRequestError:
+            return "tokenRequestError"
+        case .tokenResponseError:
+            return "tokenResponseError"
+        case .decodingError:
+            return "decodingError"
+        case .unknown:
+            return "unknown"
+        case .notConfigured:
+            return "notConfigured"
+        case .configurationError:
+            return "configurationError"
+        default:
+            return "Uncategorized error"
+        }
+    }
 }
 
 extension OAuthError {
