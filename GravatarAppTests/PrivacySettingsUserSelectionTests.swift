@@ -4,8 +4,8 @@ import Foundation
 import SwiftData
 import Testing
 
-@MainActor
 /// All the tests that alters `Analytics.pushEventsToRemote` is placed here to avoid race conditions and flaky tests.
+@MainActor
 struct PrivacySettingsUserSelectionTests {
     let modelContainer = ModelContext.testContainer
 
