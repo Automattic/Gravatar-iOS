@@ -5,7 +5,8 @@ import SwiftData
 import Testing
 
 @MainActor
-struct CrashLoggerTests {
+/// All the tests that alters `Analytics.pushEventsToRemote` is placed here to avoid race conditions and flaky tests.
+struct PrivacySettingsUserSelectionTests {
     let modelContainer = ModelContext.testContainer
 
     @Test("Crash logging is enabled by default")
