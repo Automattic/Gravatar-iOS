@@ -86,7 +86,7 @@ struct CrashLoggerTests {
         #expect(spyLogging.isEnabled)
         userDefaults.removePersistentDomain(forName: #function)
     }
-    
+
     @Test("Toggle event is sent when sharing analytics is toggled", arguments: [false, true])
     func toggleShareAnalytics(isOn: Bool) async throws {
         let trackerMock = TrackerMock()
