@@ -3,7 +3,6 @@ import OAuth
 import SwiftData
 import SwiftUI
 
-@main
 struct GravatarAppApp: App {
     @State private var unrecoberableError: Error?
     @StateObject private var welcomeViewModel: WelcomeViewModel
