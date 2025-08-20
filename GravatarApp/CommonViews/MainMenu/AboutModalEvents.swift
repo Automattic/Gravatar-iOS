@@ -15,4 +15,11 @@ enum AboutModalEvents {
 
 enum PrivacySettingsEvents {
     static let privacyPolicyTapped: AnalyticsEvent = CommonAnalyticsEvent(name: "privacy_settings_privacy_policy_button_tapped")
+    static func shareAnalyticsToggled(enabled: Bool) -> AnalyticsEvent {
+        CommonAnalyticsEvent(name: "privacy_settings_share_analytics_toggled", properties: ["is_on": enabled])
+    }
+
+    static func shareCrashReportsToggled(enabled: Bool) -> AnalyticsEvent {
+        CommonAnalyticsEvent(name: "privacy_settings_share_crash_reports_toggled", properties: ["is_on": enabled])
+    }
 }
