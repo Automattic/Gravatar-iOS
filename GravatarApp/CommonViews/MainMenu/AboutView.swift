@@ -12,9 +12,11 @@ struct AboutView: View {
 
     private let textColor = Color.primary.opacity(0.6)
     private let notificationCenter: NotificationCenter
+    private let bundle: Bundle
 
-    init(notificationCenter: NotificationCenter = .default) {
+    init(notificationCenter: NotificationCenter = .default, bundle: Bundle = .main) {
         self.notificationCenter = notificationCenter
+        self.bundle = bundle
     }
 
     var body: some View {
@@ -141,7 +143,7 @@ struct AboutView: View {
     }
 
     func getAppVersion() -> String {
-        if let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+        if let appVersion = bundle.infoDictionary?["CFBundleShortVersionString"] as? String {
             return appVersion
         }
         return "?"
