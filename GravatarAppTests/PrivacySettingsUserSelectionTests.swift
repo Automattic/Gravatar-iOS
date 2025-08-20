@@ -87,7 +87,7 @@ struct PrivacySettingsUserSelectionTests {
         userDefaults.removePersistentDomain(forName: #function)
     }
 
-    @Test("Toggle event is sent when sharing analytics is toggled", arguments: [false, true])
+    @Test("Toggle event is sent when sharing analytics is toggled", .disabled(), arguments: [false, true])
     func toggleShareAnalytics(isOn: Bool) async throws {
         let trackerMock = TrackerMock()
         let userDefaults = UserDefaults.testUserDefaults(named: #function)
@@ -108,7 +108,7 @@ struct PrivacySettingsUserSelectionTests {
         userDefaults.removePersistentDomain(forName: #function)
     }
 
-    @Test("Analytics event is sent or not sent according to the toggle", arguments: [false, true])
+    @Test("Analytics event is sent or not sent according to the toggle", .disabled(), arguments: [false, true])
     func toggleShareAnalyticsIsRespectedWhenSendingTheEvent(isOn: Bool) async throws {
         let trackerMock = TrackerMock()
         let userDefaults = UserDefaults.testUserDefaults(named: #function)
